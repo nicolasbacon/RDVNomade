@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Player{% endblock %}
+
+{% block body %}
+    <h1>Player</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ player.id }}</td>
+            </tr>
+            <tr>
+                <th>Pseudo</th>
+                <td>{{ player.pseudo }}</td>
+            </tr>
+            <tr>
+                <th>Mail</th>
+                <td>{{ player.mail }}</td>
+            </tr>
+            <tr>
+                <th>Password</th>
+                <td>{{ player.password }}</td>
+            </tr>
+            <tr>
+                <th>Photo</th>
+                <td>{{ player.photo }}</td>
+            </tr>
+            <tr>
+                <th>DescByAdmin</th>
+                <td>{{ player.descByAdmin }}</td>
+            </tr>
+            <tr>
+                <th>TimePlayer</th>
+                <td>{{ player.timePlayer ? player.timePlayer|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>LastChance</th>
+                <td>{{ player.lastChance ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>RSuccess</th>
+                <td>{{ player.rSuccess }}</td>
+            </tr>
+            <tr>
+                <th>RPrecision</th>
+                <td>{{ player.rPrecision }}</td>
+            </tr>
+            <tr>
+                <th>RHelp</th>
+                <td>{{ player.rHelp }}</td>
+            </tr>
+            <tr>
+                <th>NbrAskHelp</th>
+                <td>{{ player.nbrAskHelp }}</td>
+            </tr>
+            <tr>
+                <th>NbrAskReceivedHelp</th>
+                <td>{{ player.nbrAskReceivedHelp }}</td>
+            </tr>
+            <tr>
+                <th>NbrAcceptHelp</th>
+                <td>{{ player.nbrAcceptHelp }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('player_index') }}">back to list</a>
+
+    <a href="{{ path('player_edit', {'id': player.id}) }}">edit</a>
+
+    {{ include('player/_delete_form.html.twig') }}
+{% endblock %}

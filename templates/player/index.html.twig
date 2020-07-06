@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Player index{% endblock %}
+
+{% block body %}
+    <h1>Player index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Pseudo</th>
+                <th>Mail</th>
+                <th>Password</th>
+                <th>Photo</th>
+                <th>DescByAdmin</th>
+                <th>TimePlayer</th>
+                <th>LastChance</th>
+                <th>RSuccess</th>
+                <th>RPrecision</th>
+                <th>RHelp</th>
+                <th>NbrAskHelp</th>
+                <th>NbrAskReceivedHelp</th>
+                <th>NbrAcceptHelp</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for player in players %}
+            <tr>
+                <td>{{ player.id }}</td>
+                <td>{{ player.pseudo }}</td>
+                <td>{{ player.mail }}</td>
+                <td>{{ player.password }}</td>
+                <td>{{ player.photo }}</td>
+                <td>{{ player.descByAdmin }}</td>
+                <td>{{ player.timePlayer ? player.timePlayer|date('H:i:s') : '' }}</td>
+                <td>{{ player.lastChance ? 'Yes' : 'No' }}</td>
+                <td>{{ player.rSuccess }}</td>
+                <td>{{ player.rPrecision }}</td>
+                <td>{{ player.rHelp }}</td>
+                <td>{{ player.nbrAskHelp }}</td>
+                <td>{{ player.nbrAskReceivedHelp }}</td>
+                <td>{{ player.nbrAcceptHelp }}</td>
+                <td>
+                    <a href="{{ path('player_show', {'id': player.id}) }}">show</a>
+                    <a href="{{ path('player_edit', {'id': player.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="15">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('player_new') }}">Create new</a>
+{% endblock %}
