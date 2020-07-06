@@ -20,7 +20,7 @@ class PlayerController extends AbstractController
      */
     public function login()
     {
-        return $this->render('participant/login.html.twig', []);
+        return $this->render('player/login.html.twig', []);
     }
 
     /**
