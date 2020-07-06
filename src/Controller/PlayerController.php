@@ -16,6 +16,22 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlayerController extends AbstractController
 {
     /**
+     * @Route("/login", name="login")
+     */
+    public function login()
+    {
+        return $this->render('participant/login.html.twig', []);
+    }
+
+    /**
+     * @Route("/logout", name="logout")
+     */
+    public function logout()
+    {
+        $this->addFlash('sucess', 'Mauvais mot de passe !');
+    }
+
+    /**
      * @Route("/", name="player_index", methods={"GET"})
      */
     public function index(PlayerRepository $playerRepository): Response

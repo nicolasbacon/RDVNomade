@@ -3,10 +3,21 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+
+        {% endblock %}
+        <link rel="stylesheet" href="{{ asset ("bootstrap/dist/css/bootstrap.min.css") }}">
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        {% block body %}
+
+        {% endblock %}
+
+
+
+        {% block javascripts %}
+
+        {% endblock %}
+        <script src="{{ asset('bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
     </body>
 </html>
