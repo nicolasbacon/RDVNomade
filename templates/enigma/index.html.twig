@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enigma index{% endblock %}
+
+{% block body %}
+    <h1>Enigma index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Answer</th>
+                <th>Solved</th>
+                <th>Try</th>
+                <th>Star</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for enigma in enigmas %}
+            <tr>
+                <td>{{ enigma.id }}</td>
+                <td>{{ enigma.name }}</td>
+                <td>{{ enigma.description }}</td>
+                <td>{{ enigma.answer }}</td>
+                <td>{{ enigma.solved }}</td>
+                <td>{{ enigma.try }}</td>
+                <td>{{ enigma.star ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('enigma_show', {'id': enigma.id}) }}">show</a>
+                    <a href="{{ path('enigma_edit', {'id': enigma.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('enigma_new') }}">Create new</a>
+{% endblock %}
