@@ -6,6 +6,7 @@ use App\Entity\Admin;
 use App\Form\AdminType;
 use App\Repository\AdminRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,6 +18,8 @@ class AdminController extends AbstractController
 {
     /**
      * @Route("/", name="admin_index", methods={"GET"})
+     * @param AdminRepository $adminRepository
+     * @return Response
      */
     public function index(AdminRepository $adminRepository): Response
     {
@@ -26,7 +29,36 @@ class AdminController extends AbstractController
     }
 
     /**
+     * @Route("/login", name="login")
+     * @param AdminRepository $ar
+     * @return RedirectResponse|Response
+     */
+    public function login(AdminRepository $ar)
+    {
+        if ($this->getUser()) {
+            $admin = $this->getUser()->getUsername();
+            $adminId = $ar->findBy([$admin]);
+            return $this->redirectToRoute('admin_show', [
+                'participantId' => $adminId
+            ]);
+        }
+        return $this->render("admin/login.html.twig", []);
+
+    }
+
+    /**
+     * Symfony gere la route entièrement
+     * @Route("/logout", name="logout")
+     */
+
+    public function logout()
+    {
+    }
+
+    /**
      * @Route("/new", name="admin_new", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
      */
     public function new(Request $request): Response
     {
