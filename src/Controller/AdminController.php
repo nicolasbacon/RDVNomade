@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @Route("/admin")
@@ -53,13 +54,16 @@ class AdminController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function new(Request $request): Response
+    public function new(Request $request, UserPasswordEncoderInterface $encoder): Response
     {
         $admin = new Admin();
         $form = $this->createForm(AdminType::class, $admin);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $hashed = $encoder->encodePassword($admin, $admin->getPassword());
+            $admin->setPassword($hashed);
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($admin);
             $entityManager->flush();
