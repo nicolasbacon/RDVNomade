@@ -37,7 +37,16 @@ class AdminController extends AbstractController
     public function login(AdminRepository $ar)
     {
         return $this->render("admin/login.html.twig", []);
+    }
 
+    /**
+     * @Route("/homeAdmin", name="homeAdmin")
+     */
+    public function homeAdmin()
+    {
+        $personne = $this->getUser();
+
+        return $this->render("admin/homeAdmin.html.twig", ['personne'=>$personne]);
     }
 
     /**
@@ -72,36 +81,6 @@ class AdminController extends AbstractController
         }
 
         return $this->render('admin/new.html.twig', [
-            'admin' => $admin,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * @Route("/{id}", name="admin_show", methods={"GET"})
-     */
-    public function show(Admin $admin): Response
-    {
-        return $this->render('admin/show.html.twig', [
-            'admin' => $admin,
-        ]);
-    }
-
-    /**
-     * @Route("/{id}/edit", name="admin_edit", methods={"GET","POST"})
-     */
-    public function edit(Request $request, Admin $admin): Response
-    {
-        $form = $this->createForm(AdminType::class, $admin);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('admin_index');
-        }
-
-        return $this->render('admin/edit.html.twig', [
             'admin' => $admin,
             'form' => $form->createView(),
         ]);
