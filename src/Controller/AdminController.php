@@ -51,7 +51,7 @@ class AdminController extends AbstractController
 
     /**
      * Symfony gere la route entièrement
-     * @Route("/logout", name="logout")
+     * @Route("/logoutAdmin", name="logoutAdmin")
      */
     public function logout()
     {
@@ -98,4 +98,20 @@ class AdminController extends AbstractController
 
         return $this->redirectToRoute('admin_index');
     }
+
+    /**
+     * @Route("/gestionSession", name="gestion_session)
+     */
+    public function gestionSession()
+    {
+        return $this->render('admin/gestionSession.html.twig',[]);
+    }
+
+
+
+
+
+
+
+
 }

@@ -4,9 +4,28 @@
 {% endblock %}
 
 {% block body %}
+    <link rel="stylesheet" href="{{ asset ("css/app.css") }}">
     {% include "admin/navAdmin.html.twig" %}
+    <div class="col-12 "></div>
+    <div class="buttonAdmin align">
+    <br>
+    <div>
+        <a class="btn-login btn border active" href="gestionSession.html.twig" style="width: 100%; font-size: 75px">Session</a>
+    </div>
+    <br>
+    <div>
+        <a class="btn-login btn border active" href="#" style="width: 100%; font-size: 75px">Enigme</a>
+    </div>
+    <br>
+    <div>
+        <a class="btn-login btn border active" href="#" style="width: 100%; font-size: 75px">Compétence</a>
+    </div>
+    <br>
+    <div>
+        <a class="btn-login btn border active" href="#" style="width: 100%; font-size: 75px">Atout</a>
+    </div>
+    </div>
 
-    <a class="btn-login btn border active" type="submit">Session</a>
-
+    <div></div>
 {%  endblock %}
 
