@@ -1,25 +1,29 @@
 security:
+
     providers:
         our_db_provider:
-          entity:
-                class: App\Entity\User
+            entity:
+                class: App\Entity\Admin
                 property: pseudo
+
     firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
         main:
-            pattern: ^/
             provider: our_db_provider
             anonymous: ~
-            user_checker: App\Security\AdminChecker
             form_login:
                 login_path: login
                 check_path: login
-            #logout_on_user_change: true
+                default_target_path: home
+                always_use_default_target_path: true
+                use_referer: true
+
             logout:
                 path: logout
                 target: home
 
     encoders:
-        App\Entity\Participant:
-            algorithm: bcrypt
-    access_control:
-        - {path: '^/admin', roles: ROLE_ADMIN}
+        App\Entity\Admin:
+            algorithm: none

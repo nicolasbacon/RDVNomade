@@ -35,13 +35,6 @@ class AdminController extends AbstractController
      */
     public function login(AdminRepository $ar)
     {
-        if ($this->getUser()) {
-            $admin = $this->getUser()->getUsername();
-            $adminId = $ar->findBy([$admin]);
-            return $this->redirectToRoute('admin_show', [
-                'participantId' => $adminId
-            ]);
-        }
         return $this->render("admin/login.html.twig", []);
 
     }

@@ -4,11 +4,12 @@ namespace App\Entity;
 
 use App\Repository\AdminRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=AdminRepository::class)
  */
-class Admin extends User
+class Admin extends User implements UserInterface
 {
     /**
      * @ORM\Id()
@@ -24,4 +25,23 @@ class Admin extends User
     }
 
 
+    public function getRoles()
+    {
+        return ["ROLE_ADMIN"];
+    }
+
+    public function getSalt()
+    {
+        return null;
+    }
+
+    public function getUsername()
+    {
+        return $this->getPseudo();
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
 }

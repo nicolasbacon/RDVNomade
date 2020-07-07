@@ -19,15 +19,22 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlayerController extends AbstractController
 {
     /**
-     * @Route("/login", name="login")
+     * @Route("/login", name="login_player", methods={"GET","POST"})
      */
-    public function login()
+    public function login(Request $request, PlayerRepository $playerRepository)
     {
+        if ($request->getMethod() == 'POST') {
+            $pseudo = $request->get('pseudo');
+            $player = $playerRepository->findOneBy(['pseudo' => $pseudo]);
+            dump($player);
+            $_SESSION['user'] = $player;
+        }
+
         return $this->render('player/login.html.twig', []);
     }
 
     /**
-     * @Route("/logout", name="logout")
+     * @Route("/logout", name="logout_player")
      */
     public function logout()
     {
@@ -109,10 +116,11 @@ class PlayerController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="player_show", methods={"GET"})
+     * @Route("/show", name="player_show", methods={"GET"})
      */
-    public function show(Player $player): Response
+    public function show()
     {
+        $player = $_SESSION['user'];
         return $this->render('player/show.html.twig', [
             'player' => $player,
         ]);

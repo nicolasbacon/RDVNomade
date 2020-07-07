@@ -4,17 +4,17 @@
     <div>
         <form method="post">
             <div>
-                <label for="username">Identifiant : </label>
-                <input type="text" name="_username" id="username">
+                <label for="pseudo">Pseudo : </label>
+                <input type="text" name="pseudo" id="pseudo">
             </div>
 
             <div class="button">
                 <button class="btn-login btn border active" type="submit">Connexion</button>
             </div>
-            <div class="button">
-                <a class="btn border active" href="{{ path('player_new') }}">S'inscrire</a>
-            </div>
         </form>
+        <div class="button">
+            <a class="btn border active" href="{{ path('player_new') }}">S'inscrire</a>
+        </div>
     </div>
 {% endblock %}
 
