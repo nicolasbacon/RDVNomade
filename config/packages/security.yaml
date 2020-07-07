@@ -1,22 +1,43 @@
 security:
 
     providers:
-        our_db_provider:
+        provider_admin:
             entity:
                 class: App\Entity\Admin
+                property: pseudo
+        provider_player:
+            entity:
+                class: App\Entity\Player
                 property: pseudo
 
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            provider: our_db_provider
+
+        admin:
+            provider: prodiver_admin
+            pattern: ^/admin
             anonymous: ~
             form_login:
                 login_path: login
                 check_path: login
                 default_target_path: homeAdmin
+                always_use_default_target_path: true
+                use_referer: true
+
+            logout:
+                path: logoutAdmin
+                target: home
+
+        player:
+            provider: provider_player
+            pattern: ^/player
+            anonymous: ~
+            form_login:
+                login_path: login
+                check_path: login
+                default_target_path: ##########
                 always_use_default_target_path: true
                 use_referer: true
 
@@ -27,3 +48,9 @@ security:
     encoders:
         App\Entity\Admin:
             algorithm: bcrypt
+
+    access_control:
+            - { path: '^/admin/login$', roles: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: '^/player/login$', roles: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: '^/admin', roles: ROLE_ADMIN }
+            - { path: '^/player', roles: ROLE_PLAYER }
