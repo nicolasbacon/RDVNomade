@@ -37,7 +37,7 @@ abstract class User
      */
     private $password;
 
-    public function getId(): ?int
+    public function getIdUser(): ?int
     {
         return $this->id;
     }
