@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 /**
  * @Route("/player")
@@ -26,8 +27,9 @@ class PlayerController extends AbstractController
         if ($request->getMethod() == 'POST') {
             $pseudo = $request->get('pseudo');
             $player = $playerRepository->findOneBy(['pseudo' => $pseudo]);
-            dump($player);
-            $_SESSION['user'] = $player;
+            $token = new UsernamePasswordToken($player, null, "main", ['ROLE_USER']);
+            //$previousToken = $this->get("security.token_storage")->getToken();
+            $this->get("security.token_storage")->setToken($token);
         }
 
         return $this->render('player/login.html.twig', []);
@@ -120,7 +122,8 @@ class PlayerController extends AbstractController
      */
     public function show()
     {
-        $player = $_SESSION['user'];
+
+        $player = $this->getUser();
         return $this->render('player/show.html.twig', [
             'player' => $player,
         ]);

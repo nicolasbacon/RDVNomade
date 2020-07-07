@@ -44,7 +44,6 @@ class AdminController extends AbstractController
      * Symfony gere la route entièrement
      * @Route("/logout", name="logout")
      */
-
     public function logout()
     {
     }

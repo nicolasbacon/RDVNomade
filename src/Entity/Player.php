@@ -6,16 +6,17 @@ use App\Repository\PlayerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=PlayerRepository::class)
  */
-class Player extends User
+class Player extends User implements UserInterface
 {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="id_player", type="integer")
      */
     private $id;
 
@@ -93,7 +94,7 @@ class Player extends User
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->getIdUser();
     }
 
     public function getPhoto(): ?string
@@ -278,5 +279,25 @@ class Player extends User
         }
 
         return $this;
+    }
+
+    public function getRoles()
+    {
+        return ["ROLE_USER"];
+    }
+
+    public function getSalt()
+    {
+        return null;
+    }
+
+    public function getUsername()
+    {
+        return $this->getPseudo();
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
     }
 }

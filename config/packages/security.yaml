@@ -5,6 +5,10 @@ security:
             entity:
                 class: App\Entity\Admin
                 property: pseudo
+        pur_db_provider:
+            entity:
+                class: App\Entity\Player
+                property: pseudo
 
     firewalls:
         dev:
@@ -22,7 +26,7 @@ security:
 
             logout:
                 path: logout
-                target: home
+                target: login
 
     encoders:
         App\Entity\Admin:
