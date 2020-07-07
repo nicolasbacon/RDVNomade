@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Player;
+use App\Entity\Session;
+use App\Entity\Team;
 use App\Form\PlayerType;
 use App\Repository\PlayerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,12 +49,53 @@ class PlayerController extends AbstractController
      */
     public function new(Request $request): Response
     {
+        ##TODO : recuperer la session active et le groupe actif
+
+        $session = new Session();
+        $session->setName("session 1");
+        $session->setEnable(true);
+        $session->setSynchrone(false);
+        $session->setTimeAlert(new \DateTime("now"));
+        $session->setTimeSession(new \DateTime("now"));
+
+        $team = new Team();
+        $team->setEnable(true);
+        $team->setNumber(1);
+        $team->setTimeTeam($session->getTimeSession());
+        $team->setSession($session);
+
+
         $player = new Player();
         $form = $this->createForm(PlayerType::class, $player);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //gestion de l'image
+            $brochureFile = $form->get('photo')->getData();
+            if ($brochureFile) {
+                $originalFilename = pathinfo($brochureFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $brochureFile->guessExtension();
+                try {
+                    $brochureFile->move(
+                        $this->getParameter('image_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+
+                }
+                $player->setPhoto($newFilename);
+            }
+            $player->setLastChance(false);
+            $player->setNbrAskHelp(0);
+            $player->setNbrAcceptHelp(0);
+            $player->setNbrAskReceivedHelp(0);
+            $player->setTeam($team);
+
             $entityManager = $this->getDoctrine()->getManager();
+
+            $entityManager->persist($session);
+            $entityManager->persist($team);
             $entityManager->persist($player);
             $entityManager->flush();
 
