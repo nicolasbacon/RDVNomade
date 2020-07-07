@@ -30,7 +30,7 @@ class AdminController extends AbstractController
     }
 
     /**
-     * @Route("/login", name="login")
+     * @Route("/login", name="login_admin")
      * @param AdminRepository $ar
      * @return RedirectResponse|Response
      */
@@ -40,21 +40,21 @@ class AdminController extends AbstractController
     }
 
     /**
-     * @Route("/homeAdmin", name="homeAdmin")
+     * Symfony gere la route entièrement
+     * @Route("/logoutAdmin", name="logout_admin")
+     */
+    public function logout()
+    {
+    }
+
+    /**
+     * @Route("/homeAdmin", name="home_admin")
      */
     public function homeAdmin()
     {
         $personne = $this->getUser();
 
         return $this->render("admin/homeAdmin.html.twig", ['personne'=>$personne]);
-    }
-
-    /**
-     * Symfony gere la route entièrement
-     * @Route("/logoutAdmin", name="logoutAdmin")
-     */
-    public function logout()
-    {
     }
 
     /**
@@ -100,7 +100,7 @@ class AdminController extends AbstractController
     }
 
     /**
-     * @Route("/gestionSession", name="gestion_session)
+     * @Route("/gestionSession", name="gestion_session")
      */
     public function gestionSession()
     {

@@ -283,7 +283,7 @@ class Player extends User implements UserInterface
 
     public function getRoles()
     {
-        return ["ROLE_USER"];
+        return ["ROLE_PLAYER"];
     }
 
     public function getSalt()

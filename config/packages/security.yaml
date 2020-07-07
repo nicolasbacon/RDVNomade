@@ -1,7 +1,7 @@
 security:
 
     providers:
-        our_db_provider:
+        prodiver_admin:
             entity:
                 class: App\Entity\Admin
                 property: pseudo
@@ -20,33 +20,35 @@ security:
             pattern: ^/admin
             anonymous: ~
             form_login:
-                login_path: login
-                check_path: login
-                default_target_path: homeAdmin
+                login_path: login_admin
+                check_path: login_admin
+                default_target_path: home_admin
                 always_use_default_target_path: true
                 use_referer: true
 
             logout:
-                path: logoutAdmin
-                target: home
+                path: logout_admin
+                target: login_admin
 
         player:
             provider: provider_player
             pattern: ^/player
             anonymous: ~
             form_login:
-                login_path: login
-                check_path: login
-                default_target_path: ##########
+                login_path: login_player
+                check_path: login_player
+                default_target_path: player_show
                 always_use_default_target_path: true
                 use_referer: true
 
             logout:
-                path: logout
-                target: home
+                path: logout_player
+                target: login_player
 
     encoders:
         App\Entity\Admin:
+            algorithm: bcrypt
+        App\Entity\Player:
             algorithm: bcrypt
 
     access_control:
