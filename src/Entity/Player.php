@@ -263,6 +263,13 @@ class Player extends User implements UserInterface
         return $this->listEnigma;
     }
 
+    public function setListEnigma(Collection $listEnigma): self
+    {
+        $this->listEnigma = $listEnigma;
+
+        return $this;
+    }
+
     public function addListEnigma(Enigma $listEnigma): self
     {
         if (!$this->listEnigma->contains($listEnigma)) {

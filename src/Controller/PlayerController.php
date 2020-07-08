@@ -6,6 +6,7 @@ use App\Entity\Player;
 use App\Entity\Session;
 use App\Entity\Team;
 use App\Form\PlayerType;
+use App\Repository\EnigmaRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,12 +27,12 @@ class PlayerController extends AbstractController
      */
     public function login(Request $request, PlayerRepository $playerRepository)
     {
-        if ($request->getMethod() == 'POST') {
+        /*if ($request->getMethod() == 'POST') {
             $pseudo = $request->get('pseudo');
             $player = $playerRepository->findOneBy(['pseudo' => $pseudo]);
             $token = new UsernamePasswordToken($player, null, "main", ['ROLE_USER']);
             $this->get("security.token_storage")->setToken($token);
-        }
+        }*/
 
         return $this->render('player/login.html.twig', []);
     }
@@ -69,6 +70,10 @@ class PlayerController extends AbstractController
 
             // Recherche une session active
             $session = $sessionRepository->findOneBy(['enable' => true]);
+            if ($session == null) {
+                $this->addFlash('error', 'Aucune session active');
+                return $this->redirectToRoute('player_new');
+            }
             $teams = $session->getListTeam();
 
             // Parcoure toutes les teams pour trouver celle qui est active
@@ -76,17 +81,19 @@ class PlayerController extends AbstractController
                 if ($team->isEnable() == true) {
 
                     // Si trouve une team active alors attribut cette team au player
-                    // Initialise sa derniere chance a faux
-                    // Initialise son nombre de demande d'aide a 0
-                    // Initialise son nombre d'aide acceptter a 0
-                    // Initialise son nombre de demande d'aide recu a 0
                     $player->setTeam($team);
+                    // Attribut les memes enigmes de la session au joueur
+                    $player->setListEnigma($session->getListEnigma());
                     // Encryption du mot de passse
                     $hashed = $encoder->encodePassword($player, '123');
                     $player->setPassword($hashed);
+                    // Initialise sa derniere chance a faux
                     $player->setLastChance(false);
+                    // Initialise son nombre de demande d'aide a 0
                     $player->setNbrAskHelp(0);
+                    // Initialise son nombre d'aide acceptter a 0
                     $player->setNbrAcceptHelp(0);
+                    // Initialise son nombre de demande d'aide recu a 0
                     $player->setNbrAskReceivedHelp(0);
 
                     //gestion de l'image
@@ -110,8 +117,6 @@ class PlayerController extends AbstractController
 
             $entityManager = $this->getDoctrine()->getManager();
 
-            $entityManager->persist($session);
-            $entityManager->persist($team);
             $entityManager->persist($player);
             $entityManager->flush();
 
@@ -168,5 +173,17 @@ class PlayerController extends AbstractController
         }
 
         return $this->redirectToRoute('player_index');
+    }
+
+    /**
+     * @Route("/list", name="player_listEnigmas", methods={"GET"})
+     */
+    public function listEnigmas(): Response
+    {
+        $player = $this->getUser();
+
+        return $this->render('player/listEnigmas.html.twig', [
+            'enigmas' => $player->getListEnigma(),
+        ]);
     }
 }
