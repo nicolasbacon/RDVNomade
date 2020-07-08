@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Liste Session{% endblock %}
+
+{% block body %}
+    {% include "admin/navAdmin.html.twig" %}
+    <h1>Sessions</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Activée</th>
+            <th>Synchrone</th>
+            <th>Date de Fin</th>
+            <th>Afficher</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for session in sessions %}
+            <tr>
+                <td>{{ session.id }}</td>
+                <td>{{ session.name }}</td>
+                <td>{{ session.enable ? 'Oui' : 'Non' }}</td>
+                <td>{{ session.synchrone ? 'Oui' : 'Non' }}</td>
+                <td>{{ session.dateEndSession ? session.dateEndSession|date('H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('session_show', {'id': session.id}) }}">Ouvrir</a>
+                    <a href="{{ path('session_edit', {'id': session.id}) }}">Activer</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">Aucune Liste trouvée</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Admin;
 use App\Entity\Session;
+use App\Entity\Team;
 use App\Form\AdminType;
 use App\Form\SessionType;
 use App\Repository\AdminRepository;
+use App\Repository\SessionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -121,6 +123,8 @@ class AdminController extends AbstractController
         $session = new Session();
         $form = $this->createForm(SessionType::class, $session);
         $form->handleRequest($request);
+        $nbrTeam = $request->get('nbrTeam');
+        $timePlay = $request->get('timePlay');
         $session->setEnable(false);
         $personne = $this->getUser();
 
@@ -129,12 +133,44 @@ class AdminController extends AbstractController
             $entityManager->persist($session);
             $entityManager->flush();
 
-            return $this->redirectToRoute('gestion_session');
+            $scale = 1;
+
+
+            while($scale <= $nbrTeam)
+            {
+                $groupe = new Team();
+                $groupe->setEnable(false);
+                $groupe->setNumber($scale);
+                $groupe->setSession($session);
+                if($session->getSynchrone() == true)
+                {
+                    $groupe->setTimeTeam($timePlay);
+                }
+                $entityManager-> persist($groupe);
+                $scale = $scale+1;
+            }
+            $entityManager->flush();
+
+            return $this->redirectToRoute('gestion_session',['personne'=>$personne,]);
         }
 
         return $this->render('admin/créerSession.html.twig', [
             'session' => $session,
             'form' => $form->createView(),
+            'personne'=>$personne,
+        ]);
+    }
+
+    /**
+     * @Route("/listeSession", name="liste_session", methods={"GET"})
+     * @param SessionRepository $sessionRepository
+     * @return Response
+     */
+    public function indexSessions(SessionRepository $sessionRepository): Response
+    {
+        $personne = $this->getUser();
+        return $this->render('admin/listeSessions.html.twig', [
+            'sessions' => $sessionRepository->findTenSessions(),
             'personne'=>$personne,
         ]);
     }

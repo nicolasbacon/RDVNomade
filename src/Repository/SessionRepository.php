@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Session;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,6 +18,22 @@ class SessionRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Session::class);
+    }
+
+
+    public function findTenSessions()
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $qb ->addSelect('s.id')
+            ->addSelect('s.name')
+            ->addSelect('s.enable')
+            ->addSelect('s.synchrone')
+            ->addSelect('s.dateEndSession')
+            ->addSelect('s.timeAlert')
+            ->setMaxResults(10)
+            ;
+        return $qb->getQuery()->getResult();
     }
 
     // /**

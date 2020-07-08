@@ -35,9 +35,9 @@ class Session
     private $synchrone;
 
     /**
-     * @ORM\Column(type="time")
+     * @ORM\Column(type="datetime")
      */
-    private $timeSession;
+    private $dateEndSession;
 
     /**
      * @ORM\Column(type="time")
@@ -101,14 +101,14 @@ class Session
         return $this;
     }
 
-    public function getTimeSession()
+    public function getDateEndSession()
     {
-        return $this->timeSession;
+        return $this->dateEndSession;
     }
 
-    public function setTimeSession($timeSession): self
+    public function setDateEndSession($dateEndSession): self
     {
-        $this->timeSession = $timeSession;
+        $this->dateEndSession = $dateEndSession;
 
         return $this;
     }

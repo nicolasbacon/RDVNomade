@@ -1,4 +1,12 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+<div class="form-example">
+    <label for="nbrTeam">Nombre d'équipes : </label>
+    <input type="number" name="nbrTeam" id="nbrTeam" required min="1" value="1">
+</div>
+<div class="form-example">
+    <label for="timePlay">Temps de Jeu (Minutes): </label>
+    <input type="time" name="timePlay" id="timePlay" required placeholder="00:00">
+</div>
+    <button class="btn-success">{{ button_label|default('Sauvegarder') }}</button>
 {{ form_end(form) }}
