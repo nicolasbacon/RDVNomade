@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enigma index{% endblock %}
+
+{% block body %}
+    <h1>Enigma index</h1>
+
+    <div style="display: grid">
+        {% for enigma in enigmas %}
+            <div >
+                <a class="btn btn-warning" style="border-radius: 20px" href="{{ path('enigma_show', {'id': enigma.id}) }}">{{ loop.index }}</a>
+            </div>
+        {% else %}
+            no records found
+        {% endfor %}
+    </div>
+
+
+
+    <a href="{{ path('enigma_new') }}">Create new</a>
+{% endblock %}

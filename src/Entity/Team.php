@@ -36,7 +36,7 @@ class Team
     private $timeTeam;
 
     /**
-     * @ORM\OneToMany(targetEntity=Player::class, mappedBy="team", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Player::class, mappedBy="team")
      */
     private $listPlayer;
 

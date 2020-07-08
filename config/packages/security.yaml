@@ -37,7 +37,7 @@ security:
             form_login:
                 login_path: login_player
                 check_path: login_player
-                default_target_path: player_show
+                default_target_path: player_listEnigmas
                 always_use_default_target_path: true
                 use_referer: true
 

@@ -32,7 +32,7 @@
                 <td>{{ player.pseudo }}</td>
                 <td>{{ player.mail }}</td>
                 <td>{{ player.password }}</td>
-                <td>{{ player.photo }}</td>
+                <td><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="50" height="60"></td>
                 <td>{{ player.descByAdmin }}</td>
                 <td>{{ player.timePlayer ? player.timePlayer|date('H:i:s') : '' }}</td>
                 <td>{{ player.lastChance ? 'Yes' : 'No' }}</td>

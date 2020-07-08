@@ -8,3 +8,25 @@ body{
     margin-right: auto;
     width: 15em
 }
+
+.flash {
+    padding: 20px;
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+.flash-success {
+    background-color: #6b9311;
+    color: #333333;
+}
+
+.flash-error {
+    background-color: red;
+    color: black;
+}
+
+* {
+    font-size: 60px;
+}
