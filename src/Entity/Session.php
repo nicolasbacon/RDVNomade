@@ -77,7 +77,7 @@ class Session
         return $this;
     }
 
-    public function getEnable(): ?bool
+    public function isEnable(): ?bool
     {
         return $this->enable;
     }

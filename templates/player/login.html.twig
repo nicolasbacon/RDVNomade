@@ -5,7 +5,7 @@
         <form method="post">
             <div>
                 <label for="username">Pseudo : </label>
-                <input type="string" name="_username" id="username">
+                <input type="text" name="_username" id="username">
                 <input type="password" name="_password" id="password" value="123" hidden>
             </div>
 
@@ -13,9 +13,9 @@
                 <button class="btn-login btn border active" type="submit">Connexion</button>
             </div>
         </form>
-        <div class="button">
-            <a class="btn border active" href="{{ path('player_new') }}">S'inscrire</a>
-        </div>
+
+            <a class="btn border" href="{{ path('player_new') }}">S'inscrire</a>
+
     </div>
 {% endblock %}
 

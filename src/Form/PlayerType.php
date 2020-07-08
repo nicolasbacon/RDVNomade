@@ -16,7 +16,6 @@ class PlayerType extends AbstractType
         $builder
             ->add('pseudo')
             ->add('mail')
-            ->add('password')
             ->add('photo', FileType::class, [
                 'label' => 'Photo de profil(JPG/PNG)',
 
