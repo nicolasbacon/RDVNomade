@@ -144,7 +144,7 @@ class AdminController extends AbstractController
                 $groupe->setSession($session);
                 if($session->getSynchrone() == true)
                 {
-                    $groupe->setTimeTeam($timePlay);
+                    $groupe->setTimeTeam();
                 }
                 $entityManager-> persist($groupe);
                 $scale = $scale+1;

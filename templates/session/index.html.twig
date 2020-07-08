@@ -24,7 +24,7 @@
                 <td>{{ session.name }}</td>
                 <td>{{ session.enable ? 'Yes' : 'No' }}</td>
                 <td>{{ session.synchrone ? 'Yes' : 'No' }}</td>
-                <td>{{ session.timeSession ? session.timeSession|date('H:i:s') : '' }}</td>
+                <td>{{ session.dateEndSession ? session.dateEndSession|date('H:i:s') : '' }}</td>
                 <td>{{ session.timeAlert ? session.timeAlert|date('H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('session_show', {'id': session.id}) }}">show</a>

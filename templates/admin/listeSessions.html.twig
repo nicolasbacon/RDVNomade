@@ -24,7 +24,7 @@
                 <td>{{ session.name }}</td>
                 <td>{{ session.enable ? 'Oui' : 'Non' }}</td>
                 <td>{{ session.synchrone ? 'Oui' : 'Non' }}</td>
-                <td>{{ session.dateEndSession ? session.dateEndSession|date('H:i:s') : '' }}</td>
+                <td>{{ session.dateEndSession |format_datetime('full', 'none', locale='fr')}}</td>
                 <td>
                     <a href="{{ path('session_show', {'id': session.id}) }}">Ouvrir</a>
                     <a href="{{ path('session_edit', {'id': session.id}) }}">Activer</a>
