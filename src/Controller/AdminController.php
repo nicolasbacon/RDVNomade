@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Admin;
+use App\Entity\Session;
 use App\Form\AdminType;
+use App\Form\SessionType;
 use App\Repository\AdminRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -104,7 +106,37 @@ class AdminController extends AbstractController
      */
     public function gestionSession()
     {
-        return $this->render('admin/gestionSession.html.twig',[]);
+        $personne = $this->getUser();
+        return $this->render('admin/gestionSession.html.twig',['personne'=>$personne]);
+    }
+
+
+    /**
+     * @Route("/sessionNew", name="session_new_admin", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function newSession(Request $request): Response
+    {
+        $session = new Session();
+        $form = $this->createForm(SessionType::class, $session);
+        $form->handleRequest($request);
+        $session->setEnable(false);
+        $personne = $this->getUser();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($session);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('gestion_session');
+        }
+
+        return $this->render('admin/créerSession.html.twig', [
+            'session' => $session,
+            'form' => $form->createView(),
+            'personne'=>$personne,
+        ]);
     }
 
 
