@@ -3,6 +3,9 @@
 {% block title %}Les Enigmes{% endblock %}
 
 {% block body %}
+<link rel="stylesheet" href="{{ asset ("css/appPlayer.css") }}">
+
+<div class="size-60">
 
     <div class="row justify-content-between" style="padding: 100px 0px 20px 0px">
 
@@ -26,5 +29,5 @@
             no records found
         {% endfor %}
     </div>
-
+</div>
 {% endblock %}
