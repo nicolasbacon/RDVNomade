@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Enigma{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset ("css/appPlayer.css") }}">
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
+
+    <a href="{{ path('player_show_enigma', {'id': enigma.id}) }}" class="btn" style="padding: 0 0 0 0"><i
+                class="fa fa-arrow-left fa-3x" aria-hidden="true"></i></a>
+
+<div class="row justify-content-center">
+    <svg width="5em" height="5em" viewBox="0 0 16 16" fill="currentColor">
+        <path fill-rule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z"/>
+        <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z"/>
+    </svg>
+</div>
+
+    <div class="row justify-content-center">
+        EUUUUH non !
+        Mais ou as-tu trouvé
+        ça ?
+    </div>
+
+    <div class="row justify-content-center">
+        Continue !
+    </div>
+{% endblock %}

@@ -1,31 +1,66 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Enigma{% endblock %}
+{% block title %}{{ enigma.name }}{% endblock %}
 
 {% block body %}
-    <h1>Enigma</h1>
+    <link rel="stylesheet" href="{{ asset ("css/appPlayer.css") }}">
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
 
+    <div>
 
-{{ enigma.name }}
-    Description{{ enigma.description }}
-            
-            
-                Answer
-                {{ enigma.answer }}
-            
-            
-                Solved
-                {{ enigma.solved }}
-            
-            
-                Try
-                {{ enigma.try }}
-            
-            
-                Star
-                {{ enigma.star ? 'Yes' : 'No' }}
+        <div class="row justify-content-between" style="padding: 100px 0 20px 0">
+            <div>
+                <!-- Button trigger modal -->
+                <button class="btn" style="padding: 0 50px 0 0" data-toggle="modal"
+                        data-target="#menuModal"><i class="fa fa-bars fa-3x"></i></button>
 
+                <a href="{{ path('player_list_enigmas') }}" class="btn" style="padding: 0 0 0 0"><i
+                            class="fa fa-arrow-left fa-3x" aria-hidden="true"></i></a>
+            </div>
 
-    <a href="{{ path('player_list_enigmas') }}">back to list</a>
+            <img class="photoProfil" src="{{ asset('uploads/' ~ app.user.photo) }}" alt="Photo profil" width="150"
+                 height="170">
+        </div>
 
+        <div class="row justify-content-center" style="padding-bottom: 20px">
+            <h1 style="font-size: 80px">{{ enigma.name }}</h1>
+        </div>
+
+        <div class="row justify-content-center">
+            {{ enigma.description }}
+        </div>
+
+        <div class="row justify-content-center">
+            {{ form_start(form) }}
+
+            <div class="justify-content-center">
+                {{ form_label(form.answer) }}
+                {{ form_widget(form.answer) }}
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="menuModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Menu</h5>
+                </div>
+                <div class="modal-body">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Quitter le jeu</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Voir ma progression</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Voir la progression du groupe
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Reprendre</button>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

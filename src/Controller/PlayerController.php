@@ -6,6 +6,7 @@ use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\Session;
 use App\Entity\Team;
+use App\Form\AnswerType;
 use App\Form\PlayerType;
 use App\Repository\EnigmaRepository;
 use App\Repository\PlayerRepository;
@@ -183,16 +184,32 @@ class PlayerController extends AbstractController
     }
 
     /**
-     * @Route("/enigma/{id}", name="player_show_enigma", methods={"GET"})
+     * @Route("/enigma/{id}", name="player_show_enigma", methods={"GET","POST"})
      */
-    public function showEnigma(Enigma $enigma): Response
+    public function showEnigma(Request $request, Enigma $enigma): Response
     {
         $listEnigma = $this->getUser()->getListEnigma();
 
         if (!$listEnigma->contains($enigma)) throw $this->createNotFoundException("Cette enigme ne fait pas parti de votre session!");
 
+        $form = $this->createForm(AnswerType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $answer = $form->get('answer')->getData();
+            if ($answer == $enigma->getAnswer()) {
+                return $this->render('enigma/goodAnswer.html.twig', [
+                   'enigma' => $enigma,
+                ]);
+            }
+            else return $this->render('enigma/wrongAnswer.html.twig', [
+                'enigma' => $enigma,
+            ]);
+        }
+
         return $this->render('player/showEnigma.html.twig', [
                 'enigma' => $enigma,
+                'form' => $form->createView(),
             ]);
     }
 }
