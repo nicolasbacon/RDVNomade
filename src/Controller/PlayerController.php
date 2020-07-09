@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\Session;
 use App\Entity\Team;
@@ -9,6 +10,7 @@ use App\Form\PlayerType;
 use App\Repository\EnigmaRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,15 +27,8 @@ class PlayerController extends AbstractController
     /**
      * @Route("/login", name="login_player", methods={"GET","POST"})
      */
-    public function login(Request $request, PlayerRepository $playerRepository)
+    public function login(Request $request)
     {
-        /*if ($request->getMethod() == 'POST') {
-            $pseudo = $request->get('pseudo');
-            $player = $playerRepository->findOneBy(['pseudo' => $pseudo]);
-            $token = new UsernamePasswordToken($player, null, "main", ['ROLE_USER']);
-            $this->get("security.token_storage")->setToken($token);
-        }*/
-
         return $this->render('player/login.html.twig', []);
     }
 
@@ -176,7 +171,7 @@ class PlayerController extends AbstractController
     }
 
     /**
-     * @Route("/list", name="player_listEnigmas", methods={"GET"})
+     * @Route("/list", name="player_list_enigmas", methods={"GET"})
      */
     public function listEnigmas(): Response
     {
@@ -185,5 +180,19 @@ class PlayerController extends AbstractController
         return $this->render('player/listEnigmas.html.twig', [
             'enigmas' => $player->getListEnigma(),
         ]);
+    }
+
+    /**
+     * @Route("/enigma/{id}", name="player_show_enigma", methods={"GET"})
+     */
+    public function showEnigma(Enigma $enigma): Response
+    {
+        $listEnigma = $this->getUser()->getListEnigma();
+
+        if (!$listEnigma->contains($enigma)) throw $this->createNotFoundException("Cette enigme ne fait pas parti de votre session!");
+
+        return $this->render('player/showEnigma.html.twig', [
+                'enigma' => $enigma,
+            ]);
     }
 }
