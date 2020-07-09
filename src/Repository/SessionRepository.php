@@ -31,6 +31,7 @@ class SessionRepository extends ServiceEntityRepository
             ->addSelect('s.synchrone')
             ->addSelect('s.dateEndSession')
             ->addSelect('s.timeAlert')
+            ->orderBy('s.id', 'DESC')
             ->setMaxResults(10)
             ;
         return $qb->getQuery()->getResult();

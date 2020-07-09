@@ -7,6 +7,7 @@ use App\Entity\Session;
 use App\Entity\Team;
 use App\Form\AdminType;
 use App\Form\SessionType;
+use App\Form\TeamType;
 use App\Repository\AdminRepository;
 use App\Repository\SessionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,12 +59,13 @@ class AdminController extends AbstractController
     {
         $personne = $this->getUser();
 
-        return $this->render("admin/homeAdmin.html.twig", ['personne'=>$personne]);
+        return $this->render("admin/homeAdmin.html.twig", ['personne' => $personne]);
     }
 
     /**
      * @Route("/new", name="admin_new", methods={"GET","POST"})
      * @param Request $request
+     * @param UserPasswordEncoderInterface $encoder
      * @return Response
      */
     public function new(Request $request, UserPasswordEncoderInterface $encoder): Response
@@ -94,7 +96,7 @@ class AdminController extends AbstractController
      */
     public function delete(Request $request, Admin $admin): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$admin->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $admin->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($admin);
             $entityManager->flush();
@@ -109,7 +111,7 @@ class AdminController extends AbstractController
     public function gestionSession()
     {
         $personne = $this->getUser();
-        return $this->render('admin/gestionSession.html.twig',['personne'=>$personne]);
+        return $this->render('admin/gestionSession.html.twig', ['personne' => $personne]);
     }
 
 
@@ -120,11 +122,19 @@ class AdminController extends AbstractController
      */
     public function newSession(Request $request): Response
     {
+        // Double création de formulaire, un qui récupère les éléments liés à la session
+        // l'autre qui récupère les éléments liés à un groupe, en particulier le Temps de Jeu
         $session = new Session();
+        $team = new Team();
+
         $form = $this->createForm(SessionType::class, $session);
+        $formTeam = $this->createForm(TeamType::class, $team);
+
         $form->handleRequest($request);
+        $formTeam->handleRequest($request);
+
         $nbrTeam = $request->get('nbrTeam');
-        $timePlay = $request->get('timePlay');
+
         $session->setEnable(false);
         $personne = $this->getUser();
 
@@ -135,29 +145,29 @@ class AdminController extends AbstractController
 
             $scale = 1;
 
-
-            while($scale <= $nbrTeam)
-            {
+            // Ici on boucle par rapport au nombre de groupe pour en ajouter en fonction du nombre demandé par l'admin
+            while ($scale <= $nbrTeam) {
                 $groupe = new Team();
                 $groupe->setEnable(false);
                 $groupe->setNumber($scale);
                 $groupe->setSession($session);
-                if($session->getSynchrone() == true)
-                {
-                    $groupe->setTimeTeam();
+
+                if ($session->getSynchrone() == true) {
+                    $groupe->setTimeTeam($team->getTimeTeam());
                 }
-                $entityManager-> persist($groupe);
-                $scale = $scale+1;
+                $entityManager->persist($groupe);
+                $scale = $scale + 1;
             }
             $entityManager->flush();
 
-            return $this->redirectToRoute('gestion_session',['personne'=>$personne,]);
+            return $this->redirectToRoute('gestion_session', ['personne' => $personne,]);
         }
 
         return $this->render('admin/créerSession.html.twig', [
             'session' => $session,
             'form' => $form->createView(),
-            'personne'=>$personne,
+            'formTeam' => $formTeam->createView(),
+            'personne' => $personne,
         ]);
     }
 
@@ -168,18 +178,45 @@ class AdminController extends AbstractController
      */
     public function indexSessions(SessionRepository $sessionRepository): Response
     {
+        //Affichage des 10 dernieres sessions de la liste
         $personne = $this->getUser();
         return $this->render('admin/listeSessions.html.twig', [
             'sessions' => $sessionRepository->findTenSessions(),
-            'personne'=>$personne,
+            'personne' => $personne,
         ]);
     }
 
+    /**
+     * @Route("/session/{id}", name="session_show_admin", methods={"GET"})
+     * @param Session $session
+     * @return Response
+     */
+    public function showSession(Session $session): Response
+    {
+        $personne = $this->getUser();
+        $groupes = $session->getListTeam();
+        return $this->render('admin/showSession.html.twig', [
+            'session' => $session,
+            'groupes'=> $groupes,
+            'personne' => $personne,
+        ]);
+    }
 
+    /**
+     * @Route("/activeSession/{id}", name="admin_active_session", methods={"GET"})
+     * @param Session $session
+     * @return Response
+     */
+    public function activerSession(Session $session): Response
+    {
+        //Activer une session qui ne l'est pas
+        $session->setEnable(true);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($session);
+        $entityManager->flush();
+        return $this->redirectToRoute('liste_session');
 
-
-
-
+    }
 
 
 }

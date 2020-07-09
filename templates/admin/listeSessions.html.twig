@@ -9,25 +9,22 @@
     <table class="table">
         <thead>
         <tr>
-            <th>Id</th>
             <th>Nom</th>
             <th>Activée</th>
             <th>Synchrone</th>
             <th>Date de Fin</th>
-            <th>Afficher</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         {% for session in sessions %}
             <tr>
-                <td>{{ session.id }}</td>
                 <td>{{ session.name }}</td>
                 <td>{{ session.enable ? 'Oui' : 'Non' }}</td>
                 <td>{{ session.synchrone ? 'Oui' : 'Non' }}</td>
                 <td>{{ session.dateEndSession |format_datetime('full', 'none', locale='fr')}}</td>
                 <td>
-                    <a href="{{ path('session_show', {'id': session.id}) }}">Ouvrir</a>
-                    <a href="{{ path('session_edit', {'id': session.id}) }}">Activer</a>
+                    <a href="{{ path('session_show_admin', {'id': session.id}) }}">Ouvrir</a>
                 </td>
             </tr>
         {% else %}
