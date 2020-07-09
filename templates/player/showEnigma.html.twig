@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enigma{% endblock %}
+
+{% block body %}
+    <h1>Enigma</h1>
+
+
+{{ enigma.name }}
+    Description{{ enigma.description }}
+            
+            
+                Answer
+                {{ enigma.answer }}
+            
+            
+                Solved
+                {{ enigma.solved }}
+            
+            
+                Try
+                {{ enigma.try }}
+            
+            
+                Star
+                {{ enigma.star ? 'Yes' : 'No' }}
+
+
+    <a href="{{ path('player_list_enigmas') }}">back to list</a>
+
+{% endblock %}

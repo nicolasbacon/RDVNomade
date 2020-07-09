@@ -27,6 +27,16 @@ body{
     color: black;
 }
 
-* {
+html {
     font-size: 60px;
 }
+
+.container {
+    padding-top: 170px;
+}
+
+.row {
+    padding-top: 20px;
+}
+
+

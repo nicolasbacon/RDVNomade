@@ -1,4 +1,12 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<div class="row">
+    {{ form_start(form) }}
+    <div class="col">
+        {{ form_widget(form) }}
+    </div>
+
+    <div class="row justify-content-between">
+        <button class="btn border active">{{ button_label|default('Confirmer') }}</button>
+        <a class="btn btn-primary" href="{{ path('login_player') }}">Retour</a>
+    </div>
+    {{ form_end(form) }}
+</div>
