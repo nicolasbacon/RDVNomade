@@ -6,7 +6,7 @@
     {% include "admin/navAdmin.html.twig" %}
     <h1>Sessions</h1>
 
-    <table class="table">
+    <table class="table table-striped">
         <thead>
         <tr>
             <th>Nom</th>
@@ -18,7 +18,10 @@
         </thead>
         <tbody>
         {% for session in sessions %}
-            <tr>
+            <tr {% if session.enable == true %}
+                class="bg-success"
+            {% endif %}>
+
                 <td>{{ session.name }}</td>
                 <td>{{ session.enable ? 'Oui' : 'Non' }}</td>
                 <td>{{ session.synchrone ? 'Oui' : 'Non' }}</td>

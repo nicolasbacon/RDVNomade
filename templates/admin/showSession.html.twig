@@ -23,7 +23,9 @@
                 <td>{{ session.synchrone ? 'Oui' : 'Non' }}</td>
                 <td>{{ session.dateEndSession |format_datetime('full', 'none', locale='fr')}}</td>
                 <td>
+                    {% if session.enable == false %}
                     <a href="{{ path('admin_active_session', {'id': session.id}) }}">Activer</a>
+                    {% endif %}
                 </td>
             </tr>
         </tbody>
@@ -40,16 +42,16 @@
 
             <th>Numéro du groupe</th>
             <th>Activé</th>
-            <th>Actions</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         {% for groupe in groupes %}
             <tr>
                 <td>{{ groupe.number }}</td>
-                <td>{{ groupe.enable ? 'Yes' : 'No' }}</td>
+                <td>{{ groupe.enable ? 'Oui' : 'Non' }}</td>
                 <td>
-                    <a href="{{ path('team_show', {'id': groupe.id}) }}">Ouvrir</a>
+                    <a href="{{ path('team_show_admin', {'id': groupe.id}) }}">Ouvrir</a>
                 </td>
             </tr>
         {% else %}

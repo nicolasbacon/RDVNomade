@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Team{% endblock %}
+
+{% block body %}
+    {% include "admin/navAdmin.html.twig" %}
+    <h1 class="col-12 justify-content-center">Groupe : {{ team.number }}</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+
+            <th>Numéro du groupe</th>
+            <th>Activé</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ team.number }}</td>
+                <td>{{ team.enable ? 'Oui' : 'Non' }}</td>
+                <td>
+                    <a href="{{ path('admin_active_team', {'id': team.id}) }}">Activer</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+
+    <hr>
+
+    <br>
+
+    <h1>Joueurs du Groupe</h1>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Photo</th>
+            <th>Pseudo</th>
+            <th>Mail</th>
+            <th>Description</th>
+            <th>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for player in players %}
+            <tr>
+
+                <td><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="20%"></td>
+                <td>{{ player.pseudo }}</td>
+                <td>{{ player.mail }}</td>
+                <td>{{ player.descByAdmin }}</td>
+                <td>
+                    <a href="{{ path('player_show', {'id': player.id}) }}">show</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="15">Aucun Joueur dans ce groupe</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

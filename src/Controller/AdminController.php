@@ -148,10 +148,14 @@ class AdminController extends AbstractController
             // Ici on boucle par rapport au nombre de groupe pour en ajouter en fonction du nombre demandé par l'admin
             while ($scale <= $nbrTeam) {
                 $groupe = new Team();
+                //On met de base la session inactive
                 $groupe->setEnable(false);
+                //On créer un entier qui servira pour la création de groupe selon le nombre
                 $groupe->setNumber($scale);
+                //On attribue la session au groupe
                 $groupe->setSession($session);
 
+                //Si la session est synchrone on met le temps dans le groupe
                 if ($session->getSynchrone() == true) {
                     $groupe->setTimeTeam($team->getTimeTeam());
                 }
@@ -194,6 +198,7 @@ class AdminController extends AbstractController
     public function showSession(Session $session): Response
     {
         $personne = $this->getUser();
+        //On prend la liste qui est dans la session pour avoir tous les groupes
         $groupes = $session->getListTeam();
         return $this->render('admin/showSession.html.twig', [
             'session' => $session,
@@ -214,8 +219,40 @@ class AdminController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($session);
         $entityManager->flush();
-        return $this->redirectToRoute('liste_session');
+        $this->showSession($session);
+    }
 
+    /**
+     * @Route("/Session/Team/{id}", name="team_show_admin", methods={"GET"})
+     * @param Team $team
+     * @return Response
+     */
+    public function showTeam(Team $team): Response
+    {
+        $personne = $this->getUser();
+        $players =  $team->getListPlayer();
+
+        return $this->render('admin/gestionGroupe.html.twig', [
+            'team' => $team,
+            'personne' => $personne,
+            'players' => $players,
+        ]);
+    }
+
+
+    /**
+     * @Route("/activeTeam/{id}", name="admin_active_team", methods={"GET"})
+     * @param Team $team
+     * @return Response
+     */
+    public function activerGroupe(Team $team): Response
+    {
+        //Activer un groupe qui ne l'est pas
+        $team->setEnable(true);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($team);
+        $entityManager->flush();
+         return $this->showTeam($team);
     }
 
 
