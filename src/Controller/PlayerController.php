@@ -196,12 +196,15 @@ class PlayerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $answer = $form->get('answer');
+            $answer = $form->get('answer')->getData();
             if ($answer == $enigma->getAnswer()) {
-
+                return $this->render('enigma/goodAnswer.html.twig', [
+                   'enigma' => $enigma,
+                ]);
             }
-
-            return $this->redirectToRoute('player_index');
+            else return $this->render('enigma/wrongAnswer.html.twig', [
+                'enigma' => $enigma,
+            ]);
         }
 
         return $this->render('player/showEnigma.html.twig', [
