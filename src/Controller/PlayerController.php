@@ -4,20 +4,18 @@ namespace App\Controller;
 
 use App\Entity\Enigma;
 use App\Entity\Player;
-use App\Entity\Session;
-use App\Entity\Team;
+use App\Entity\PlayerEnigma;
 use App\Form\AnswerType;
 use App\Form\PlayerType;
-use App\Repository\EnigmaRepository;
+use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
@@ -54,18 +52,19 @@ class PlayerController extends AbstractController
     /**
      * @Route("/new", name="player_new", methods={"GET","POST"})
      */
-    public function new(Request $request, SessionRepository $sessionRepository, UserPasswordEncoderInterface $encoder): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SessionRepository $sessionRepository, UserPasswordEncoderInterface $encoder): Response
     {
-        ##TODO : recuperer la session active et le groupe actif
-
         $player = new Player();
+
         $form = $this->createForm(PlayerType::class, $player);
         $form->handleRequest($request);
+
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             // Recherche une session active
             $session = $sessionRepository->findOneBy(['enable' => true]);
+
             if ($session == null) {
                 $this->addFlash('error', 'Aucune session active');
                 return $this->redirectToRoute('player_new');
@@ -78,8 +77,7 @@ class PlayerController extends AbstractController
 
                     // Si trouve une team active alors attribut cette team au player
                     $player->setTeam($team);
-                    // Attribut les memes enigmes de la session au joueur
-                    $player->setListEnigma($session->getListEnigma());
+
                     // Encryption du mot de passse
                     $hashed = $encoder->encodePassword($player, '123');
                     $player->setPassword($hashed);
@@ -108,16 +106,26 @@ class PlayerController extends AbstractController
                         }
                         $player->setPhoto($newFilename);
                     }
+
+                    foreach ($session->getListEnigma() as $enigma) {
+                        $playerEnigma = new PlayerEnigma();
+                        $playerEnigma->setEnigma($enigma);
+                        $playerEnigma->setPlayer($player);
+                        $playerEnigma->setSolved(0);
+                        $playerEnigma->setTry(0);
+                        $entityManager->persist($playerEnigma);
+                    }
+
                 }
             }
-
-            $entityManager = $this->getDoctrine()->getManager();
 
             $entityManager->persist($player);
             $entityManager->flush();
 
             return $this->redirectToRoute('player_index');
         }
+
+
 
         return $this->render('player/new.html.twig', [
             'player' => $player,
@@ -174,12 +182,17 @@ class PlayerController extends AbstractController
     /**
      * @Route("/list", name="player_list_enigmas", methods={"GET"})
      */
-    public function listEnigmas(): Response
+    public function listEnigmas(PlayerEnigmaRepository $playerEnigmaRepository): Response
     {
         $player = $this->getUser();
 
+        if ($player instanceof Player) {
+            $listPlayerEnigma = $playerEnigmaRepository->findBy(['player' => $player]);
+        }
+
+
         return $this->render('player/listEnigmas.html.twig', [
-            'enigmas' => $player->getListEnigma(),
+            'enigmas' => $player,
         ]);
     }
 
@@ -188,16 +201,32 @@ class PlayerController extends AbstractController
      */
     public function showEnigma(Request $request, Enigma $enigma): Response
     {
-        $listEnigma = $this->getUser()->getListEnigma();
+        $player =$this->getUser();
+        if ($player instanceof Player) {
+            $listEnigma = $player->getListEnigma();
+            // On verifie qu'il a bien cette enigme dans son tableau
+            if (!$listEnigma->contains($enigma)) throw $this->createNotFoundException("Cette enigme ne fait pas parti de votre session!");
+        }
 
-        if (!$listEnigma->contains($enigma)) throw $this->createNotFoundException("Cette enigme ne fait pas parti de votre session!");
+        ##TODO : verifier qu'il n'as pas deja repondu a cette enigme
 
         $form = $this->createForm(AnswerType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // On recupere la reponse donnée
             $answer = $form->get('answer')->getData();
+            // On verifie si c'est la bonne reponse
+            ##TODO : verifier s'il y est presque ou pas
             if ($answer == $enigma->getAnswer()) {
+                $enigma->setSolved(3);
+
+
+
+
+
+
+
                 return $this->render('enigma/goodAnswer.html.twig', [
                    'enigma' => $enigma,
                 ]);

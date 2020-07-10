@@ -87,14 +87,14 @@ class Player extends User implements UserInterface
     private $listAsset;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Enigma::class)
+     * @ORM\OneToMany(targetEntity=PlayerEnigma::class, mappedBy="player")
      */
-    private $listEnigma;
+    private $playerEnigmas;
 
     public function __construct()
     {
         $this->listAsset = new ArrayCollection();
-        $this->listEnigma = new ArrayCollection();
+        $this->playerEnigmas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -273,33 +273,31 @@ class Player extends User implements UserInterface
     }
 
     /**
-     * @return Collection|Enigma[]
+     * @return Collection|PlayerEnigma[]
      */
-    public function getListEnigma(): Collection
+    public function getPlayerEnigmas(): Collection
     {
-        return $this->listEnigma;
+        return $this->playerEnigmas;
     }
 
-    public function setListEnigma(Collection $listEnigma): self
+    public function addPlayerEnigma(PlayerEnigma $playerEnigma): self
     {
-        $this->listEnigma = $listEnigma;
-
-        return $this;
-    }
-
-    public function addListEnigma(Enigma $listEnigma): self
-    {
-        if (!$this->listEnigma->contains($listEnigma)) {
-            $this->listEnigma[] = $listEnigma;
+        if (!$this->playerEnigmas->contains($playerEnigma)) {
+            $this->playerEnigmas[] = $playerEnigma;
+            $playerEnigma->setPlayer($this);
         }
 
         return $this;
     }
 
-    public function removeListEnigma(Enigma $listEnigma): self
+    public function removePlayerEnigma(PlayerEnigma $playerEnigma): self
     {
-        if ($this->listEnigma->contains($listEnigma)) {
-            $this->listEnigma->removeElement($listEnigma);
+        if ($this->playerEnigmas->contains($playerEnigma)) {
+            $this->playerEnigmas->removeElement($playerEnigma);
+            // set the owning side to null (unless already changed)
+            if ($playerEnigma->getPlayer() === $this) {
+                $playerEnigma->setPlayer(null);
+            }
         }
 
         return $this;

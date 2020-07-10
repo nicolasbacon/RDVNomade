@@ -35,16 +35,6 @@ class Enigma
     private $answer;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $solved;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $try;
-
-    /**
      * @ORM\Column(type="boolean")
      */
     private $star;
@@ -54,9 +44,15 @@ class Enigma
      */
     private $listSkill;
 
+    /**
+     * @ORM\OneToMany(targetEntity=PlayerEnigma::class, mappedBy="enigma")
+     */
+    private $playerEnigmas;
+
     public function __construct()
     {
         $this->listSkill = new ArrayCollection();
+        $this->playerEnigmas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -100,30 +96,6 @@ class Enigma
         return $this;
     }
 
-    public function getSolved(): ?int
-    {
-        return $this->solved;
-    }
-
-    public function setSolved(int $solved): self
-    {
-        $this->solved = $solved;
-
-        return $this;
-    }
-
-    public function getTry(): ?int
-    {
-        return $this->try;
-    }
-
-    public function setTry(int $try): self
-    {
-        $this->try = $try;
-
-        return $this;
-    }
-
     public function getStar(): ?bool
     {
         return $this->star;
@@ -157,6 +129,37 @@ class Enigma
     {
         if ($this->listSkill->contains($listSkill)) {
             $this->listSkill->removeElement($listSkill);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PlayerEnigma[]
+     */
+    public function getPlayerEnigmas(): Collection
+    {
+        return $this->playerEnigmas;
+    }
+
+    public function addPlayerEnigma(PlayerEnigma $playerEnigma): self
+    {
+        if (!$this->playerEnigmas->contains($playerEnigma)) {
+            $this->playerEnigmas[] = $playerEnigma;
+            $playerEnigma->setEnigma($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlayerEnigma(PlayerEnigma $playerEnigma): self
+    {
+        if ($this->playerEnigmas->contains($playerEnigma)) {
+            $this->playerEnigmas->removeElement($playerEnigma);
+            // set the owning side to null (unless already changed)
+            if ($playerEnigma->getEnigma() === $this) {
+                $playerEnigma->setEnigma(null);
+            }
         }
 
         return $this;
