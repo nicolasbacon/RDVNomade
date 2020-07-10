@@ -77,6 +77,11 @@ class Player extends User implements UserInterface
     private $team;
 
     /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $deadLine;
+
+    /**
      * @ORM\ManyToMany(targetEntity=Asset::class)
      */
     private $listAsset;
@@ -85,11 +90,6 @@ class Player extends User implements UserInterface
      * @ORM\ManyToMany(targetEntity=Enigma::class)
      */
     private $listEnigma;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $deadLine;
 
     public function __construct()
     {
@@ -234,6 +234,18 @@ class Player extends User implements UserInterface
         return $this;
     }
 
+    public function getDeadLine(): ?\DateTimeInterface
+    {
+        return $this->deadLine;
+    }
+
+    public function setDeadLine(?\DateTimeInterface $deadLine): self
+    {
+        $this->deadLine = $deadLine;
+
+        return $this;
+    }
+
     /**
      * @return Collection|Asset[]
      */
@@ -308,20 +320,6 @@ class Player extends User implements UserInterface
         return $this->getPseudo();
     }
 
-    public function eraseCredentials()
-    {
-        // TODO: Implement eraseCredentials() method.
-    }
+    public function eraseCredentials(){}
 
-    public function getDeadLine(): ?\DateTimeInterface
-    {
-        return $this->deadLine;
-    }
-
-    public function setDeadLine(?\DateTimeInterface $deadLine): self
-    {
-        $this->deadLine = $deadLine;
-
-        return $this;
-    }
 }

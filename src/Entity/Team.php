@@ -36,6 +36,16 @@ class Team
     private $timeTeam;
 
     /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $deadLine;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $beginGame;
+
+    /**
      * @ORM\OneToMany(targetEntity=Player::class, mappedBy="team")
      */
     private $listPlayer;
@@ -45,16 +55,6 @@ class Team
      * @ORM\JoinColumn(nullable=false)
      */
     private $session;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $deadLine;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $beginGame;
 
     public function __construct()
     {
@@ -102,6 +102,30 @@ class Team
         return $this;
     }
 
+    public function getDeadLine(): ?\DateTimeInterface
+    {
+        return $this->deadLine;
+    }
+
+    public function setDeadLine(?\DateTimeInterface $deadLine): self
+    {
+        $this->deadLine = $deadLine;
+
+        return $this;
+    }
+
+    public function getBeginGame(): ?bool
+    {
+        return $this->beginGame;
+    }
+
+    public function setBeginGame(bool $beginGame): self
+    {
+        $this->beginGame = $beginGame;
+
+        return $this;
+    }
+
     /**
      * @return Collection|Player[]
      */
@@ -141,30 +165,6 @@ class Team
     public function setSession(?Session $session): self
     {
         $this->session = $session;
-
-        return $this;
-    }
-
-    public function getDeadLine(): ?\DateTimeInterface
-    {
-        return $this->deadLine;
-    }
-
-    public function setDeadLine(?\DateTimeInterface $deadLine): self
-    {
-        $this->deadLine = $deadLine;
-
-        return $this;
-    }
-
-    public function getBeginGame(): ?bool
-    {
-        return $this->beginGame;
-    }
-
-    public function setBeginGame(bool $beginGame): self
-    {
-        $this->beginGame = $beginGame;
 
         return $this;
     }
