@@ -10,6 +10,7 @@ use App\Form\SessionType;
 use App\Form\TeamType;
 use App\Repository\AdminRepository;
 use App\Repository\SessionRepository;
+use App\Services\AdminServices;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -140,35 +141,10 @@ class AdminController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($session);
-            $entityManager->flush();
-
-            $scale = 1;
-
-            // Ici on boucle par rapport au nombre de groupe pour en ajouter en fonction du nombre demandé par l'admin
-            while ($scale <= $nbrTeam) {
-                $groupe = new Team();
-                //On met de base la session inactive
-                $groupe->setEnable(false);
-                //On créer un entier qui servira pour la création de groupe selon le nombre
-                $groupe->setNumber($scale);
-                //On attribue la session au groupe
-                $groupe->setSession($session);
-                //On met a false le debut du jeu
-                $groupe->setBeginGame(false);
-
-                //Si la session est synchrone on met le temps dans le groupe
-                if ($session->getSynchrone() == true) {
-                    $groupe->setTimeTeam($team->getTimeTeam());
-                }
-                $entityManager->persist($groupe);
-                $scale = $scale + 1;
-            }
-            $entityManager->flush();
-
+            $AdminService = new AdminServices();
+            $AdminService->creationSession($session, $entityManager, $nbrTeam, $team);
             return $this->redirectToRoute('gestion_session', ['personne' => $personne,]);
         }
-
         return $this->render('admin/créerSession.html.twig', [
             'session' => $session,
             'form' => $form->createView(),
@@ -204,7 +180,7 @@ class AdminController extends AbstractController
         $groupes = $session->getListTeam();
         return $this->render('admin/showSession.html.twig', [
             'session' => $session,
-            'groupes'=> $groupes,
+            'groupes' => $groupes,
             'personne' => $personne,
         ]);
     }
@@ -216,11 +192,9 @@ class AdminController extends AbstractController
      */
     public function activerSession(Session $session): Response
     {
-        //Activer une session qui ne l'est pas
-        $session->setEnable(true);
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($session);
-        $entityManager->flush();
+        $AdminService = new AdminServices();
+        $session = $AdminService->activerSession($session, $entityManager);
         return $this->showSession($session);
     }
 
@@ -232,7 +206,7 @@ class AdminController extends AbstractController
     public function showTeam(Team $team): Response
     {
         $personne = $this->getUser();
-        $players =  $team->getListPlayer();
+        $players = $team->getListPlayer();
 
         return $this->render('admin/gestionGroupe.html.twig', [
             'team' => $team,
@@ -249,12 +223,11 @@ class AdminController extends AbstractController
      */
     public function activerGroupe(Team $team): Response
     {
-        //Activer un groupe qui ne l'est pas
-        $team->setEnable(true);
+
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($team);
-        $entityManager->flush();
-         return $this->showTeam($team);
+        $AdminService = new AdminServices();
+        $team = $AdminService->ouvrirGroupe($team, $entityManager);
+        return $this->showTeam($team);
     }
 
     /**
@@ -264,22 +237,11 @@ class AdminController extends AbstractController
      */
     public function demarrerJeu(Team $team): Response
     {
-        //Débuter le Jeu d'un groupe, pour qu'ils puissent répondre aux énigmes
-        $team->setBeginGame(true);
-        //Prendre le datetime actuelle + le temps de jeu pour fixer la deadline
-        //Si et seulement si la session est SYNCHRONE car sinon le temps de jeu sera dans le joueur à sa connexion
-        if ($team->getSession()->getSynchrone() == true){
-            $now = new \DateTime();
-            //Décalage Horaire de +2h par rapport au 00:00
-            $now->add(new \DateInterval('PT2H'));
-
-
-            ##Todo Faire le deadLine = now + temps de jeu
-        }
+        $AdminService = new AdminServices();
 
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($team);
-        $entityManager->flush();
+
+        $team = $AdminService->commencerJeu($team, $entityManager);
         return $this->showTeam($team);
     }
 
