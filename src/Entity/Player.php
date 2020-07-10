@@ -86,6 +86,11 @@ class Player extends User implements UserInterface
      */
     private $listEnigma;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $deadLine;
+
     public function __construct()
     {
         $this->listAsset = new ArrayCollection();
@@ -306,5 +311,17 @@ class Player extends User implements UserInterface
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getDeadLine(): ?\DateTimeInterface
+    {
+        return $this->deadLine;
+    }
+
+    public function setDeadLine(?\DateTimeInterface $deadLine): self
+    {
+        $this->deadLine = $deadLine;
+
+        return $this;
     }
 }
