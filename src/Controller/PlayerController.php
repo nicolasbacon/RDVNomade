@@ -187,12 +187,11 @@ class PlayerController extends AbstractController
         $player = $this->getUser();
 
         if ($player instanceof Player) {
-            $listPlayerEnigma = $playerEnigmaRepository->findBy(['player' => $player]);
+            $listPlayerEnigma = $playerEnigmaRepository->findByIdPlayer($player);
         }
 
-
         return $this->render('player/listEnigmas.html.twig', [
-            'enigmas' => $player,
+            'listPlayerEnigma' => $listPlayerEnigma,
         ]);
     }
 
@@ -201,12 +200,7 @@ class PlayerController extends AbstractController
      */
     public function showEnigma(Request $request, Enigma $enigma): Response
     {
-        $player =$this->getUser();
-        if ($player instanceof Player) {
-            $listEnigma = $player->getListEnigma();
-            // On verifie qu'il a bien cette enigme dans son tableau
-            if (!$listEnigma->contains($enigma)) throw $this->createNotFoundException("Cette enigme ne fait pas parti de votre session!");
-        }
+        $player = $this->getUser();
 
         ##TODO : verifier qu'il n'as pas deja repondu a cette enigme
 
@@ -219,13 +213,6 @@ class PlayerController extends AbstractController
             // On verifie si c'est la bonne reponse
             ##TODO : verifier s'il y est presque ou pas
             if ($answer == $enigma->getAnswer()) {
-                $enigma->setSolved(3);
-
-
-
-
-
-
 
                 return $this->render('enigma/goodAnswer.html.twig', [
                    'enigma' => $enigma,

@@ -11,7 +11,8 @@
         <div class="row justify-content-between" style="padding: 100px 0 20px 0">
 
             <!-- Button trigger modal -->
-            <button class="btn" style="padding: 0 0 0 0" data-toggle="modal" data-target="#menuModal"><i class="fa fa-bars fa-3x"></i></button>
+            <button class="btn" style="padding: 0 0 0 0" data-toggle="modal" data-target="#menuModal"><i
+                        class="fa fa-bars fa-3x"></i></button>
 
             <img class="photoProfil" src="{{ asset('uploads/' ~ app.user.photo) }}" alt="Photo profil" width="150"
                  height="170">
@@ -22,10 +23,18 @@
         </div>
 
         <div class="row">
-            {% for enigma in enigmas %}
+            {% for playerEnigma in listPlayerEnigma %}
                 <div class="col-3" style="padding-bottom: 20px">
-                    <a class="btn btn-warning" style="border-radius: 20px"
-                       href="{{ path('player_show_enigma', {'id': enigma.id}) }}">{{ loop.index }}</a>
+                    <a
+                    {% if playerEnigma.solved == 0 %}
+                        class="btn btn-danger"
+                    {% elseif playerEnigma.solved == 1 %}
+                        class="btn btn-warning"
+                    {% else %}
+                        class="btn btn-success"
+                    {% endif %}
+                     style="border-radius: 20px"
+                       href="{{ path('player_show_enigma', {'id': playerEnigma.enigma.id}) }}">{{ loop.index }}</a>
                 </div>
             {% else %}
                 no records found
@@ -34,7 +43,8 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="menuModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="menuModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -43,7 +53,8 @@
                 <div class="modal-body">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Quitter le jeu</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Voir ma progression</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Voir la progression du groupe</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Voir la progression du groupe
+                    </button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Reprendre</button>
                 </div>
                 <div class="modal-footer">
