@@ -154,6 +154,8 @@ class AdminController extends AbstractController
                 $groupe->setNumber($scale);
                 //On attribue la session au groupe
                 $groupe->setSession($session);
+                //On met a false le debut du jeu
+                $groupe->setBeginGame(false);
 
                 //Si la session est synchrone on met le temps dans le groupe
                 if ($session->getSynchrone() == true) {
@@ -219,7 +221,7 @@ class AdminController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($session);
         $entityManager->flush();
-        $this->showSession($session);
+        return $this->showSession($session);
     }
 
     /**
@@ -255,5 +257,30 @@ class AdminController extends AbstractController
          return $this->showTeam($team);
     }
 
+    /**
+     * @Route("/BeginTheGame/{id}", name="admin_letsplay_team", methods={"GET"})
+     * @param Team $team
+     * @return Response
+     */
+    public function demarrerJeu(Team $team): Response
+    {
+        //Débuter le Jeu d'un groupe, pour qu'ils puissent répondre aux énigmes
+        $team->setBeginGame(true);
+        //Prendre le datetime actuelle + le temps de jeu pour fixer la deadline
+        //Si et seulement si la session est SYNCHRONE car sinon le temps de jeu sera dans le joueur à sa connexion
+        if ($team->getSession()->getSynchrone() == true){
+            $now = new \DateTime();
+            //Décalage Horaire de +2h par rapport au 00:00
+            $now->add(new \DateInterval('PT2H'));
+
+
+            ##Todo Faire le deadLine = now + temps de jeu
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($team);
+        $entityManager->flush();
+        return $this->showTeam($team);
+    }
 
 }

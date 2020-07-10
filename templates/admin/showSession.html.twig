@@ -24,7 +24,7 @@
                 <td>{{ session.dateEndSession |format_datetime('full', 'none', locale='fr')}}</td>
                 <td>
                     {% if session.enable == false %}
-                    <a href="{{ path('admin_active_session', {'id': session.id}) }}">Activer</a>
+                    <a class="btn btn-primary" href="{{ path('admin_active_session', {'id': session.id}) }}">Activer</a>
                     {% endif %}
                 </td>
             </tr>
@@ -51,7 +51,7 @@
                 <td>{{ groupe.number }}</td>
                 <td>{{ groupe.enable ? 'Oui' : 'Non' }}</td>
                 <td>
-                    <a href="{{ path('team_show_admin', {'id': groupe.id}) }}">Ouvrir</a>
+                    <a class="btn btn-primary" href="{{ path('team_show_admin', {'id': groupe.id}) }}">Ouvrir</a>
                 </td>
             </tr>
         {% else %}

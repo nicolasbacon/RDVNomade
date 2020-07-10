@@ -10,7 +10,8 @@
         <tr>
 
             <th>Numéro du groupe</th>
-            <th>Activé</th>
+            <th>Ouvert</th>
+            <th>Jeu Commencé</th>
             <th></th>
         </tr>
         </thead>
@@ -18,8 +19,14 @@
             <tr>
                 <td>{{ team.number }}</td>
                 <td>{{ team.enable ? 'Oui' : 'Non' }}</td>
+                <td>{{ team.beginGame ? 'Oui' : 'Non' }}</td>
                 <td>
-                    <a href="{{ path('admin_active_team', {'id': team.id}) }}">Activer</a>
+                    {% if team.enable == false %}
+                        <a class="btn btn-outline-success" href="{{ path('admin_active_team', {'id': team.id}) }}">Ouvrir Groupe</a>
+                    {% endif %}
+                    {% if team.beginGame == false %}
+                        <a class="btn btn-outline-success" href="{{ path('admin_letsplay_team', {'id': team.id}) }}">Commencer le Jeu</a>
+                    {% endif %}
                 </td>
             </tr>
         </tbody>

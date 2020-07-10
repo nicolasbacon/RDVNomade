@@ -27,7 +27,7 @@
                 <td>{{ session.synchrone ? 'Oui' : 'Non' }}</td>
                 <td>{{ session.dateEndSession |format_datetime('full', 'none', locale='fr')}}</td>
                 <td>
-                    <a href="{{ path('session_show_admin', {'id': session.id}) }}">Ouvrir</a>
+                    <a class="btn btn-primary" href="{{ path('session_show_admin', {'id': session.id}) }}">Ouvrir</a>
                 </td>
             </tr>
         {% else %}
