@@ -1,0 +1,23 @@
+{% extends "base.html.twig" %}
+{% block title %} Administrateur Compétences{% endblock %}
+
+{% block body %}
+
+    <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
+    {% include "admin/navAdmin.html.twig" %}
+    <div class="col-12 "></div>
+    <div class="buttonAdmin align">
+        <br>
+        <div>
+            <a class="btn-login btn border active" href="{{ path('skill_new_admin') }}" style="width: 100%; font-size: 75px">Créer Compétence</a>
+        </div>
+        <br>
+        <div>
+            <a class="btn-login btn border active" href="{{path('competence_liste_admin')}}" style="width: 100%; font-size: 75px">Lister Compétences</a>
+        </div>
+        <br>
+
+
+    </div>
+
+{%  endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Skill{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
+    {% include "admin/navAdmin.html.twig" %}
+    <h1>Créer Nouvelle Compétence</h1>
+
+    {{ include('skill/_form.html.twig') }}
+
+{% endblock %}

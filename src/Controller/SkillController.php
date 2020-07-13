@@ -26,29 +26,6 @@ class SkillController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="skill_new", methods={"GET","POST"})
-     */
-    public function new(Request $request): Response
-    {
-        $skill = new Skill();
-        $form = $this->createForm(SkillType::class, $skill);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($skill);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('skill_index');
-        }
-
-        return $this->render('skill/new.html.twig', [
-            'skill' => $skill,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
      * @Route("/{id}", name="skill_show", methods={"GET"})
      */
     public function show(Skill $skill): Response

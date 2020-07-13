@@ -26,29 +26,6 @@ class EnigmaController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="enigma_new", methods={"GET","POST"})
-     */
-    public function new(Request $request): Response
-    {
-        $enigma = new Enigma();
-        $form = $this->createForm(EnigmaType::class, $enigma);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($enigma);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('enigma_index');
-        }
-
-        return $this->render('enigma/new.html.twig', [
-            'enigma' => $enigma,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
      * @Route("/{id}", name="enigma_show", methods={"GET"})
      */
     public function show(Enigma $enigma): Response

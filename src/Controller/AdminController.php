@@ -3,13 +3,19 @@
 namespace App\Controller;
 
 use App\Entity\Admin;
+use App\Entity\Enigma;
 use App\Entity\Session;
+use App\Entity\Skill;
 use App\Entity\Team;
 use App\Form\AdminType;
+use App\Form\EnigmaType;
 use App\Form\SessionType;
+use App\Form\SkillType;
 use App\Form\TeamType;
 use App\Repository\AdminRepository;
+use App\Repository\EnigmaRepository;
 use App\Repository\SessionRepository;
+use App\Repository\SkillRepository;
 use App\Services\AdminServices;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -243,6 +249,107 @@ class AdminController extends AbstractController
 
         $team = $AdminService->commencerJeu($team, $entityManager);
         return $this->showTeam($team);
+    }
+
+
+    /**
+     * @Route("/newSkill", name="skill_new_admin", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function newSkill(Request $request): Response
+    {
+        $personne = $this->getUser();
+        $skill = new Skill();
+        $form = $this->createForm(SkillType::class, $skill);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($skill);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('gestion_competence');
+        }
+
+        return $this->render('admin/créerCompétence.html.twig', [
+            'skill' => $skill,
+            'form' => $form->createView(),
+            'personne' => $personne,
+        ]);
+    }
+
+    /**
+     * @Route("/gestionCompetence", name="gestion_competence")
+     */
+    public function gestionCompetences()
+    {
+        $personne = $this->getUser();
+        return $this->render('admin/gestionCompetence.html.twig', ['personne' => $personne]);
+    }
+
+    /**
+     * @Route("/listeCompetences", name="competence_liste_admin", methods={"GET"})
+     * @param SkillRepository $skillRepository
+     * @return Response
+     */
+    public function listerCompetences(SkillRepository $skillRepository): Response
+    {
+        $personne = $this->getUser();
+        return $this->render('admin/listerCompétences.html.twig', [
+            'skills' => $skillRepository->findAll(),
+            'personne' => $personne,
+        ]);
+    }
+
+    /**
+     * @Route("/gestionEnigme", name="gestion_enigme")
+     */
+    public function gestionEnigme()
+    {
+        $personne = $this->getUser();
+        return $this->render('admin/gestionEnigme.html.twig', ['personne' => $personne]);
+    }
+
+    /**
+     * @Route("/newEnigma", name="enigma_new_admin", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function creerEnigme(Request $request): Response
+    {
+        $personne = $this->getUser();
+        $enigma = new Enigma();
+        $form = $this->createForm(EnigmaType::class, $enigma);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($enigma);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('gestion_enigme');
+        }
+
+        return $this->render('admin/créerEnigme.html.twig', [
+            'enigma' => $enigma,
+            'form' => $form->createView(),
+            'personne' => $personne
+        ]);
+    }
+
+    /**
+     * @Route("/listeEnigme", name="enigma_liste_admin", methods={"GET"})
+     * @param EnigmaRepository $enigmaRepository
+     * @return Response
+     */
+    public function listeEnigmes(EnigmaRepository $enigmaRepository): Response
+    {
+        $personne = $this->getUser();
+        return $this->render('admin/listerEnigmes.html.twig', [
+            'enigmas' => $enigmaRepository->findAll(),
+            'personne' => $personne
+        ]);
     }
 
 }

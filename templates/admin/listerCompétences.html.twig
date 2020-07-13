@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Compétences{% endblock %}
+
+{% block body %}
+
+    <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
+    {% include "admin/navAdmin.html.twig" %}
+    <h1>Liste des Compétences</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Valeur de la compétence</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for skill in skills %}
+            <tr>
+                <td>{{ skill.name }}</td>
+                <td>{{ skill.value }}</td>
+
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucune Compétence dans la liste</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

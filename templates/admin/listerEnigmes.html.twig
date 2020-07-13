@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administrateur Enigmes{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
+    {% include "admin/navAdmin.html.twig" %}
+    <h1>Lister Enigmes</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Réponse</th>
+            <th>Enigme avec Etoile</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for enigma in enigmas %}
+            <tr>
+                <td>{{ enigma.name }}</td>
+                <td>{{ enigma.description }}</td>
+                <td>{{ enigma.answer }}</td>
+                <td>{{ enigma.star ? 'Oui' : 'Non' }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">Pas d'égnigmes</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

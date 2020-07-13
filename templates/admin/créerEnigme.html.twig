@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer Enigme{% endblock %}
+
+{% block body %}
+
+    <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
+    {% include "admin/navAdmin.html.twig" %}
+    <h1>Créer Nouvelle Enigme</h1>
+
+    {{ include('enigma/_form.html.twig') }}
+
+{% endblock %}
