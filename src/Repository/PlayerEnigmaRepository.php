@@ -37,11 +37,31 @@ class PlayerEnigmaRepository extends ServiceEntityRepository
     */
 
 
-    public function findByIdPlayer($player)
+    public function findPlayerEnigmaAndEnigmaByPlayer($player)
     {
         return $this->createQueryBuilder('pe')
             ->leftJoin('pe.enigma', 'enigma')
             ->addSelect('enigma')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function findEnigmasByPlayer($player) : array
+    {
+        /*return $this->createQueryBuilder('pe')
+            ->addSelect('enigma.id, enigma.name, enigma.description, enigma.answer, enigma.star')
+            ->leftJoin('pe.enigma', 'enigma')
+            ->addSelect('enigma')
+            ->getQuery()
+            ->getResult()
+            ;*/
+        return $this->createQueryBuilder('pe')
+            ->select('enigma.id, enigma.name, enigma.description, enigma.answer, enigma.star')
+            ->from('player_enigma', 'pe')
+            ->join('pe.enigma', 'enigma')
+            ->where('pe.player = :player')
+            ->setParameter(':player', $player)
             ->getQuery()
             ->getResult()
             ;

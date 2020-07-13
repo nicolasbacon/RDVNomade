@@ -10,6 +10,7 @@ use App\Form\PlayerType;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -182,13 +183,32 @@ class PlayerController extends AbstractController
     /**
      * @Route("/list", name="player_list_enigmas", methods={"GET"})
      */
-    public function listEnigmas(PlayerEnigmaRepository $playerEnigmaRepository): Response
+    public function listEnigmas(PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $entityManager): Response
     {
         $player = $this->getUser();
 
+
         if ($player instanceof Player) {
-            $listPlayerEnigma = $playerEnigmaRepository->findByIdPlayer($player);
+            $listPlayerEnigma = $playerEnigmaRepository->findPlayerEnigmaAndEnigmaByPlayer($player);
+
+            if ($player->getTeam()->getDeadLine() == null && $player->getDeadLine() == null) {
+                $now = new \DateTime();
+                //Décalage Horaire de +2h par rapport au 00:00
+                $now->add(new \DateInterval('PT2H'));
+
+                $timestmpTempsJeu = $player->getTeam()->getTimeTeam()->getTimestamp();
+                $timestmpNow = $now->getTimestamp();
+
+                $timestpdeadline = $timestmpNow + $timestmpTempsJeu;
+                $deadLine = new \DateTime();
+                $deadLine->setTimestamp($timestpdeadline);
+                $player->setDeadLine($deadLine);
+
+                $entityManager->persist($player);
+                $entityManager->flush();
+            }
         }
+
 
         return $this->render('player/listEnigmas.html.twig', [
             'listPlayerEnigma' => $listPlayerEnigma,
@@ -198,9 +218,23 @@ class PlayerController extends AbstractController
     /**
      * @Route("/enigma/{id}", name="player_show_enigma", methods={"GET","POST"})
      */
-    public function showEnigma(Request $request, Enigma $enigma): Response
+    public function showEnigma(Request $request, Enigma $enigma, PlayerEnigmaRepository $playerEnigmaRepository): Response
     {
+        // On recupere le user connecter
         $player = $this->getUser();
+
+        // Si le user connecter est une instance de player
+        if ($player instanceof Player) {
+            // On recupere le tableau d'enigme qui lui est lier
+            // On instancie un ArrayCollection en lui passant le tableau en parametre de son constructeur
+            $listPlayerEnigma = $playerEnigmaRepository->findEnigmasByPlayer($player);
+            dump($listPlayerEnigma);
+            die();
+
+            // Si l'ArrayCollection ne contient pas l'enigme on genere une exception
+            if (!$listPlayerEnigma->contains($enigma)) throw $this->createNotFoundException("Cette enigme ne fait pas partie de votre session!");
+
+        }
 
         ##TODO : verifier qu'il n'as pas deja repondu a cette enigme
 
