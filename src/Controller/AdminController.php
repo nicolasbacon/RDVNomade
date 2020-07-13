@@ -3,16 +3,19 @@
 namespace App\Controller;
 
 use App\Entity\Admin;
+use App\Entity\Asset;
 use App\Entity\Enigma;
 use App\Entity\Session;
 use App\Entity\Skill;
 use App\Entity\Team;
 use App\Form\AdminType;
+use App\Form\AssetType;
 use App\Form\EnigmaType;
 use App\Form\SessionType;
 use App\Form\SkillType;
 use App\Form\TeamType;
 use App\Repository\AdminRepository;
+use App\Repository\AssetRepository;
 use App\Repository\EnigmaRepository;
 use App\Repository\SessionRepository;
 use App\Repository\SkillRepository;
@@ -349,6 +352,59 @@ class AdminController extends AbstractController
         return $this->render('admin/listerEnigmes.html.twig', [
             'enigmas' => $enigmaRepository->findAll(),
             'personne' => $personne
+        ]);
+    }
+
+
+    /**
+     * @Route("/gestionAtout", name="gestion_atout")
+     */
+    public function gestionAtout()
+    {
+        $personne = $this->getUser();
+        return $this->render('admin/gestionAtout.html.twig', ['personne' => $personne]);
+    }
+
+
+    /**
+     * @Route("/newAtout", name="asset_new_admin", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function creerAtout(Request $request): Response
+    {
+        $personne = $this->getUser();
+        $asset = new Asset();
+        $form = $this->createForm(AssetType::class, $asset);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($asset);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('gestion_atout');
+        }
+
+        return $this->render('admin/créerAtout.html.twig', [
+            'asset' => $asset,
+            'form' => $form->createView(),
+            'personne' => $personne,
+        ]);
+
+    }
+
+    /**
+     * @Route("/listeAtouts", name="asset_liste_admin", methods={"GET"})
+     * @param AssetRepository $assetRepository
+     * @return Response
+     */
+    public function listeAtouts(AssetRepository $assetRepository): Response
+    {
+        $personne = $this->getUser();
+        return $this->render('admin/listeAtouts.html.twig', [
+            'assets' => $assetRepository->findAll(),
+            'personne' => $personne,
         ]);
     }
 

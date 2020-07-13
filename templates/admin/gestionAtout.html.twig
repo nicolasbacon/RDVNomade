@@ -1,0 +1,23 @@
+{% extends "base.html.twig" %}
+{% block title %} Administrateur Atouts{% endblock %}
+
+{% block body %}
+
+    <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
+    {% include "admin/navAdmin.html.twig" %}
+    <div class="col-12 "></div>
+    <div class="buttonAdmin align">
+        <br>
+        <div>
+            <a class="btn-login btn border active" href="{{path('asset_new_admin')}}" style="width: 100%; font-size: 75px">Créer Atout</a>
+        </div>
+        <br>
+        <div>
+            <a class="btn-login btn border active" href="{{path('asset_liste_admin')}}" style="width: 100%; font-size: 75px">Lister Atouts</a>
+        </div>
+        <br>
+
+
+    </div>
+
+{%  endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administrateur Atout{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
+    {% include "admin/navAdmin.html.twig" %}
+    <h1>Liste des Atouts</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Valeur</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for asset in assets %}
+            <tr>
+                <td>{{ asset.name }}</td>
+                <td>{{ asset.value }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucun Atout en base</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

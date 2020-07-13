@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administrateur Atout{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
+    {% include "admin/navAdmin.html.twig" %}
+    <h1>Nouvel Atout</h1>
+
+    {{ include('asset/_form.html.twig') }}
+
+{% endblock %}
