@@ -10,9 +10,10 @@ use App\Form\PlayerType;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Services\PlayerServices;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -56,13 +57,13 @@ class PlayerController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, SessionRepository $sessionRepository, UserPasswordEncoderInterface $encoder): Response
     {
         $player = new Player();
+        $playerServices = new PlayerServices($entityManager);
 
         $form = $this->createForm(PlayerType::class, $player);
         $form->handleRequest($request);
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             // Recherche une session active
             $session = $sessionRepository->findOneBy(['enable' => true]);
 
@@ -186,29 +187,13 @@ class PlayerController extends AbstractController
     public function listEnigmas(PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $entityManager): Response
     {
         $player = $this->getUser();
-
+        $playerServices = new PlayerServices();
 
         if ($player instanceof Player) {
-            $listPlayerEnigma = $playerEnigmaRepository->findPlayerEnigmaAndEnigmaByPlayer($player);
-
-            if ($player->getTeam()->getDeadLine() == null && $player->getDeadLine() == null) {
-                $now = new \DateTime();
-                //Décalage Horaire de +2h par rapport au 00:00
-                $now->add(new \DateInterval('PT2H'));
-
-                $timestmpTempsJeu = $player->getTeam()->getTimeTeam()->getTimestamp();
-                $timestmpNow = $now->getTimestamp();
-
-                $timestpdeadline = $timestmpNow + $timestmpTempsJeu;
-                $deadLine = new \DateTime();
-                $deadLine->setTimestamp($timestpdeadline);
-                $player->setDeadLine($deadLine);
-
-                $entityManager->persist($player);
-                $entityManager->flush();
-            }
+            $listPlayerEnigma = $playerServices->recupererLaListeDesEnigmes($player, $playerEnigmaRepository, $entityManager);
+        } else {
+            throw $this->createAccessDeniedException("Vous n'êtes pas un joueur lié a une liste d'énigme !");
         }
-
 
         return $this->render('player/listEnigmas.html.twig', [
             'listPlayerEnigma' => $listPlayerEnigma,
@@ -218,26 +203,19 @@ class PlayerController extends AbstractController
     /**
      * @Route("/enigma/{id}", name="player_show_enigma", methods={"GET","POST"})
      */
-    public function showEnigma(Request $request, Enigma $enigma, PlayerEnigmaRepository $playerEnigmaRepository): Response
+    public function showEnigma(Request $request, Enigma $enigma, PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $em): Response
     {
+        $playerServices = new PlayerServices();
+
         // On recupere le user connecter
         $player = $this->getUser();
 
-        // Si le user connecter est une instance de player
+        // Si le user connecté est une instance de player
         if ($player instanceof Player) {
-
-            // On recupere le tableau d'enigme qui lui est lier
-            // On instancie un ArrayCollection en lui passant le tableau en parametre de son constructeur
-            $listPlayerEnigma = $playerEnigmaRepository->findEnigmasByPlayer($player);
-            dump($listPlayerEnigma);
-            die();
-
-            // Si l'ArrayCollection ne contient pas l'enigme on genere une exception
-            if (!$listPlayerEnigma->contains($enigma)) throw $this->createNotFoundException("Cette enigme ne fait pas partie de votre session!");
-
+            // On verifie si le joueur accede bien a une enigme qui lui est lié et on la passe en ouverte si c'est le cas
+            $exception = $playerServices->checkBeforShowEnigma($player, $playerEnigmaRepository, $enigma, $em);
+            if ($exception != null) throw $exception;
         }
-
-        ##TODO : verifier qu'il n'as pas deja repondu a cette enigme
 
         $form = $this->createForm(AnswerType::class);
         $form->handleRequest($request);
@@ -247,15 +225,27 @@ class PlayerController extends AbstractController
             $answer = $form->get('answer')->getData();
             // On verifie si c'est la bonne reponse
             ##TODO : verifier s'il y est presque ou pas
-            if ($answer == $enigma->getAnswer()) {
 
-                return $this->render('enigma/goodAnswer.html.twig', [
-                   'enigma' => $enigma,
-                ]);
+            switch ($playerServices->checkAnswer($player, $enigma, $answer, $em, $playerEnigmaRepository)) {
+
+                case 1 :
+                    return $this->render('enigma/wrongAnswer.html.twig', [
+                        'enigma' => $enigma,
+                    ]);
+                    break;
+
+                case 2 :
+                    return $this->render('enigma/nearGoodAnswer.html.twig', [
+                        'enigma' => $enigma,
+                    ]);
+                    break;
+
+                case 3 :
+                    return $this->render('enigma/goodAnswer.html.twig', [
+                        'enigma' => $enigma,
+                    ]);
+                    break;
             }
-            else return $this->render('enigma/wrongAnswer.html.twig', [
-                'enigma' => $enigma,
-            ]);
         }
 
         return $this->render('player/showEnigma.html.twig', [
