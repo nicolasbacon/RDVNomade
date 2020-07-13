@@ -225,6 +225,7 @@ class PlayerController extends AbstractController
 
         // Si le user connecter est une instance de player
         if ($player instanceof Player) {
+
             // On recupere le tableau d'enigme qui lui est lier
             // On instancie un ArrayCollection en lui passant le tableau en parametre de son constructeur
             $listPlayerEnigma = $playerEnigmaRepository->findEnigmasByPlayer($player);

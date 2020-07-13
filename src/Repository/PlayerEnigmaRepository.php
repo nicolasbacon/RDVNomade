@@ -40,6 +40,8 @@ class PlayerEnigmaRepository extends ServiceEntityRepository
     public function findPlayerEnigmaAndEnigmaByPlayer($player)
     {
         return $this->createQueryBuilder('pe')
+            ->where('pe.player = :player')
+            ->setParameter(':player', $player)
             ->leftJoin('pe.enigma', 'enigma')
             ->addSelect('enigma')
             ->getQuery()
