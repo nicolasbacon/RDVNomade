@@ -33,7 +33,7 @@ class AdminServices
     {
         //Débuter le Jeu d'un groupe, pour qu'ils puissent répondre aux énigmes
         $team->setBeginGame(true);
-        //Prendre le datetime actuelle + le temps de jeu pour fixer la deadline
+        //Prendre la datetime actuelle + le temps de jeu pour fixer la deadline
         //Si et seulement si la session est SYNCHRONE car sinon le temps de jeu sera dans le joueur à sa connexion
         if ($team->getSession()->getSynchrone() == true){
             $now = new \DateTime();
@@ -78,6 +78,10 @@ class AdminServices
         $entityManager->flush();
 
         $scale = 1;
+        if($session->getSynchrone() == false)
+        {
+            $nbrTeam = 1;
+        }
 
         // Ici on boucle par rapport au nombre de groupe pour en ajouter en fonction du nombre demandé par l'admin
         while ($scale <= $nbrTeam) {
