@@ -11,6 +11,7 @@ use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
 use App\Services\PlayerServices;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
@@ -57,7 +58,6 @@ class PlayerController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, SessionRepository $sessionRepository, UserPasswordEncoderInterface $encoder): Response
     {
         $player = new Player();
-        $playerServices = new PlayerServices($entityManager);
 
         $form = $this->createForm(PlayerType::class, $player);
         $form->handleRequest($request);
@@ -124,7 +124,7 @@ class PlayerController extends AbstractController
             $entityManager->persist($player);
             $entityManager->flush();
 
-            return $this->redirectToRoute('player_index');
+            return $this->redirectToRoute('login_player');
         }
 
 
@@ -252,5 +252,24 @@ class PlayerController extends AbstractController
                 'enigma' => $enigma,
                 'form' => $form->createView(),
             ]);
+    }
+
+    /**
+     * @Route("/showProgress", name="player_show_progress", methods={"GET"})
+     */
+    public function showProgress(PlayerEnigmaRepository $playerEnigmaRepository)
+    {
+        $player = $this->getUser();
+        $listSkills = array();
+        $playerServices = new PlayerServices();
+
+        if ($player instanceof Player) {
+            $listSkills = $playerServices->createTableSkill($player, $playerEnigmaRepository);
+        }
+
+        return $this->render('player/showProgress.html.twig', [
+            'tab' => $listSkills,
+            'player' => $player,
+        ]);
     }
 }

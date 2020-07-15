@@ -81,34 +81,42 @@ class PlayerServices
 
     public function checkAnswer(Player $player, Enigma $enigma, string $answer, EntityManagerInterface $em, PlayerEnigmaRepository $playerEnigmaRepository)
     {
-        // Incremente le nombre de tentative
+        // On recupere le user et son enigme
         $playerEnigma = $playerEnigmaRepository->findOneBy(['player' => $player, 'enigma' => $enigma]);
 
+        // Si le joueur est bien une instance de Player
         if ($playerEnigma instanceof PlayerEnigma) {
+            // On incremente le nombre de tentative
             $playerEnigma->setTry($playerEnigma->getTry() + 1);
         }
 
+        // On initialse le nombre de bon charactere a 0
         $goodChara = 0;
+        dump($answer);
+        dump($enigma->getAnswer());
 
         try {
+            // On parcour chaque charactere de la reponse données par l'utilisateur
             for ($i = 0; $i < strlen($answer); $i++) {
+                // Si le charactere de la bonne reponse corespond au charactere données un incremente goodChara de 1
                 if ($enigma->getAnswer()[$i] == $answer[$i]) $goodChara += 1;
             }
+            dump($goodChara);
         } catch (\ErrorException $e) {
             return 1;
         }
 
         $average = ($goodChara / strlen($enigma->getAnswer())) * 100;
 
-        switch ($average) {
+        switch (true) {
 
-            case $average == 100 :
+            case ($average == 100) :
                 $playerEnigma->setSolved(3);
                 $em->persist($playerEnigma);
                 $em->flush();
                 return 3;
 
-            case $average >= 50 :
+            case ($average >= 50) :
                 $playerEnigma->setSolved(2);
                 $em->persist($playerEnigma);
                 $em->flush();
@@ -117,5 +125,36 @@ class PlayerServices
             default :
                 return 1;
         }
+    }
+
+    public function createTableSkill(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
+    {
+        $listSkillsTmp = array();
+        $listSkillsDef = array();
+
+        $listPlayerEnigma = $playerEnigmaRepository->findBy(['player' => $player, 'solved' => 3]);
+
+        foreach ($listPlayerEnigma as $playerEnigma) {
+            foreach ($playerEnigma->getEnigma()->getListSkill() as $skill) {
+                $listSkillsTmp[] = $skill;
+            }
+        }
+
+        foreach ($listSkillsTmp as $skillTmp) {
+
+            if (empty($listSkillsDef)) {
+                $listSkillsDef[] = $skillTmp;
+            } else {
+                $length = count($listSkillsDef);
+                for ($i = 0; $i < $length; $i++) {
+                    if ($listSkillsDef[$i]->getId() == $skillTmp->getId()) {
+                        $listSkillsDef[$i]->setValue($listSkillsDef[$i]->getValue() + $skillTmp->getValue());
+                        break;
+                    } elseif ($i == $length - 1) $listSkillsDef[] = $skillTmp;
+                }
+            }
+        }
+
+        return $listSkillsDef;
     }
 }
