@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques Joueur{% endblock %}
+
+{% block body %}
+
+    {% include "admin/navAdmin.html.twig" %}
+
+
+    <h1>Statistiques Joueur</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Pseudo</th>
+            <td>{{ player.pseudo }}</td>
+        </tr>
+        <tr>
+            <th>Photo</th>
+            <td><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="20%"></td>
+        </tr>
+        <tr>
+            <th>Description de l'Administrateur</th>
+            <td>{{ player.descByAdmin }}</td>
+        </tr>
+        <tr>
+            <th>Énigmes Réussies</th>
+            <td>{{ statistiques.get("succes") }} / {{ statistiques.get("maxEnigmes") }}</td>
+        </tr>
+        <tr>
+            <th>Avec Etoiles</th>
+            <td>{{ statistiques.get("starSucces") }} / {{ statistiques.get("starMax") }}</td>
+        </tr>
+
+        <tr>
+            <th>Taux de Précision</th>
+            <td>{{ taux.get("rPrecision") }}%</td>
+        </tr>
+
+        <tr>
+            <th>Taux de Réussite</th>
+            <td>{{ taux.get("rReussite") }}%</td>
+        </tr>
+
+        <tr>
+            <th>Taux d'Efficacité</th>
+            <td>{{ taux.get("rEfficacite") }}%</td>
+        </tr>
+
+        <tr>
+            <th>Aide Demandée</th>
+            <td>{{ player.nbrAskHelp }}</td>
+        </tr>
+        <tr>
+            <th>Aide reçue</th>
+            <td>{{ player.nbrAskReceivedHelp }}</td>
+        </tr>
+        <tr>
+            <th>Aide donnée</th>
+            <td>{{ player.nbrAcceptHelp }}</td>
+        </tr>
+
+        </tbody>
+    </table>
+
+{% endblock %}

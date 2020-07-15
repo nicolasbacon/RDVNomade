@@ -5,6 +5,8 @@ namespace App\Services;
 
 use App\Controller\AdminController;
 use App\Entity\Admin;
+use App\Entity\Enigma;
+use App\Entity\Player;
 use App\Entity\Session;
 use App\Entity\Team;
 use App\Form\AdminType;
@@ -12,6 +14,7 @@ use App\Form\SessionType;
 use App\Form\TeamType;
 use App\Repository\AdminRepository;
 use App\Repository\SessionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -103,6 +106,62 @@ class AdminServices
             $scale = $scale + 1;
         }
         $entityManager->flush();
+    }
+
+    public function creerStatistiques(Player $player)
+    {
+        $listeEnigmes = $player->getPlayerEnigmas();
+
+        $statistiques = new ArrayCollection();
+        $tempSucces = 0;
+        $tempStarSucces = 0;
+        $tempStarMax = 0;
+        $tempTry = 0;
+        $tempOpenned =  0;
+
+        foreach ($listeEnigmes as $enigme)
+        {
+            //Check si l'enigme est résolue
+            if($enigme->getSolved() == 3){
+                $tempSucces = $tempSucces+1;
+                //Check si l'enigme était dure
+                //Incrémentation du compteur
+                if($enigme->getEnigma()->getStar())
+                {
+                    $tempStarSucces = $tempStarSucces+1;
+                }
+            }
+            if ($enigme->getEnigma()->getStar()){
+                $tempStarMax = $tempStarMax+1;
+            }
+            if ($enigme->getSolved() != 0){
+                $tempOpenned = $tempOpenned+1;
+                $tempTry = $tempTry+$enigme->getTry();
+            }
+        }
+        $statistiques->set("succes", $tempSucces);
+        $statistiques->set("starSucces", $tempStarSucces);
+        $statistiques->set("openned", $tempOpenned);
+        $statistiques->set("try", $tempTry);
+        $statistiques->set("starMax", $tempStarMax);
+        $statistiques->set("maxEnigmes", $listeEnigmes->count());
+
+
+        return $statistiques;
+
+    }
+
+    public function creerTaux(ArrayCollection $statistiques)
+    {
+        $taux = new ArrayCollection();
+        $precision = ($statistiques->get("succes")/$statistiques->get("try"))*100;
+        $reussite = ($statistiques->get("succes")/$statistiques->get("maxEnigmes"))*100;
+        $efficacite = ($statistiques->get("succes")/$statistiques->get("openned"))*100;
+        $taux->set("rPrecision", $precision);
+        $taux->set("rReussite", $reussite);
+        $taux->set("rEfficacite",$efficacite);
+
+        return $taux;
     }
 
 }

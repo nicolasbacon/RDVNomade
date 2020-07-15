@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Admin;
 use App\Entity\Asset;
 use App\Entity\Enigma;
+use App\Entity\Player;
 use App\Entity\Session;
 use App\Entity\Skill;
 use App\Entity\Team;
@@ -307,6 +308,7 @@ class AdminController extends AbstractController
 
     /**
      * @Route("/gestionEnigme", name="gestion_enigme")
+     * Menu de choix pour les enigmes : Création ou Listing
      */
     public function gestionEnigme()
     {
@@ -318,6 +320,7 @@ class AdminController extends AbstractController
      * @Route("/newEnigma", name="enigma_new_admin", methods={"GET","POST"})
      * @param Request $request
      * @return Response
+     * Création d'une nouvelle enigme
      */
     public function creerEnigme(Request $request): Response
     {
@@ -345,6 +348,7 @@ class AdminController extends AbstractController
      * @Route("/listeEnigme", name="enigma_liste_admin", methods={"GET"})
      * @param EnigmaRepository $enigmaRepository
      * @return Response
+     * Listing des Enigmes existantes en base de données
      */
     public function listeEnigmes(EnigmaRepository $enigmaRepository): Response
     {
@@ -358,6 +362,7 @@ class AdminController extends AbstractController
 
     /**
      * @Route("/gestionAtout", name="gestion_atout")
+     * Menu de choix entre Créer un atout et les lister
      */
     public function gestionAtout()
     {
@@ -370,6 +375,7 @@ class AdminController extends AbstractController
      * @Route("/newAtout", name="asset_new_admin", methods={"GET","POST"})
      * @param Request $request
      * @return Response
+     * Ajout d'un atout en base de données
      */
     public function creerAtout(Request $request): Response
     {
@@ -398,6 +404,7 @@ class AdminController extends AbstractController
      * @Route("/listeAtouts", name="asset_liste_admin", methods={"GET"})
      * @param AssetRepository $assetRepository
      * @return Response
+     * Listing des Atouts existants en base de données
      */
     public function listeAtouts(AssetRepository $assetRepository): Response
     {
@@ -405,6 +412,31 @@ class AdminController extends AbstractController
         return $this->render('admin/listeAtouts.html.twig', [
             'assets' => $assetRepository->findAll(),
             'personne' => $personne,
+        ]);
+    }
+
+
+    /**
+     * @Route("/showJoueur/{id}", name="player_show_admin", methods={"GET"})
+     * @param Player $player
+     * @return Response
+     */
+    public function show(Player $player)
+    {
+        $personne = $this->getUser();
+
+        $AdminService = new AdminServices();
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $statistiques = $AdminService->creerStatistiques($player);
+        $taux = $AdminService->creerTaux($statistiques);
+
+
+        return $this->render('admin/showJoueur.html.twig', [
+            'player' => $player,
+            'personne' => $personne,
+            'statistiques' => $statistiques,
+            'taux' => $taux,
         ]);
     }
 

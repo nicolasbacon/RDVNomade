@@ -13,7 +13,7 @@ class TeamType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('timeTeam',TimeType::class, ['label' => "Temps de Jeu :"])
+            ->add('timeTeam',TimeType::class, ['label' => "Temps de Jeu :", 'required'=>true])
         ;
     }
 
