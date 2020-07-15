@@ -81,20 +81,21 @@ class Player extends User implements UserInterface
      */
     private $deadLine;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Asset::class)
-     */
-    private $listAsset;
 
     /**
      * @ORM\OneToMany(targetEntity=PlayerEnigma::class, mappedBy="player")
      */
     private $playerEnigmas;
 
+    /**
+     * @ORM\OneToMany(targetEntity=PlayerAsset::class, mappedBy="listPlayer", orphanRemoval=true)
+     */
+    private $listPlayerAsset;
+
     public function __construct()
     {
-        $this->listAsset = new ArrayCollection();
         $this->playerEnigmas = new ArrayCollection();
+        $this->listPlayerAsset = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -247,32 +248,6 @@ class Player extends User implements UserInterface
     }
 
     /**
-     * @return Collection|Asset[]
-     */
-    public function getListAsset(): Collection
-    {
-        return $this->listAsset;
-    }
-
-    public function addListAsset(Asset $listAsset): self
-    {
-        if (!$this->listAsset->contains($listAsset)) {
-            $this->listAsset[] = $listAsset;
-        }
-
-        return $this;
-    }
-
-    public function removeListAsset(Asset $listAsset): self
-    {
-        if ($this->listAsset->contains($listAsset)) {
-            $this->listAsset->removeElement($listAsset);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection|PlayerEnigma[]
      */
     public function getPlayerEnigmas(): Collection
@@ -319,5 +294,36 @@ class Player extends User implements UserInterface
     }
 
     public function eraseCredentials(){}
+
+    /**
+     * @return Collection|PlayerAsset[]
+     */
+    public function getListPlayerAsset(): Collection
+    {
+        return $this->listPlayerAsset;
+    }
+
+    public function addListPlayerAsset(PlayerAsset $listPlayerAsset): self
+    {
+        if (!$this->listPlayerAsset->contains($listPlayerAsset)) {
+            $this->listPlayerAsset[] = $listPlayerAsset;
+            $listPlayerAsset->setListPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeListPlayerAsset(PlayerAsset $listPlayerAsset): self
+    {
+        if ($this->listPlayerAsset->contains($listPlayerAsset)) {
+            $this->listPlayerAsset->removeElement($listPlayerAsset);
+            // set the owning side to null (unless already changed)
+            if ($listPlayerAsset->getListPlayer() === $this) {
+                $listPlayerAsset->setListPlayer(null);
+            }
+        }
+
+        return $this;
+    }
 
 }
