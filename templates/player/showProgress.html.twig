@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Player{% endblock %}
+
+{% block body %}
+    <canvas id="diagramSkill"></canvas>
+    <canvas id="diagramAsset"></canvas>
+
+    <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
+    <script>
+        //radar
+        var ctxR = document.getElementById("diagramSkill").getContext('2d');
+        var myRadarChart = new Chart(ctxR, {
+            type: 'radar',
+            data: {
+                labels: [
+                    {% for skill in tab %}
+                    "{{ skill.name }}",
+                    {% endfor %}
+                ],
+
+                datasets: [{
+                    label: "Tableau de vos compétences",
+                    data: [
+                        {% for skill in tab %}
+                        {{ skill.value }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                    ],
+                    borderWidth: 2
+                },
+
+                ]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    </script>
+    <script>
+        //radar
+        var ctxR = document.getElementById("diagramAsset").getContext('2d');
+        var myRadarChart = new Chart(ctxR, {
+            type: 'radar',
+            data: {
+                labels: [
+                    {% for skill in tab %}
+                    "{{ skill.name }}",
+                    {% endfor %}
+                ],
+
+                datasets: [{
+                    label: "Tableau de vos compétences",
+                    data: [
+                        {% for skill in tab %}
+                        {{ skill.value }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                    ],
+                    borderWidth: 2
+                },
+
+                ]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    </script>
+{% endblock %}
