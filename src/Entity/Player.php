@@ -88,7 +88,7 @@ class Player extends User implements UserInterface
     private $playerEnigmas;
 
     /**
-     * @ORM\OneToMany(targetEntity=PlayerAsset::class, mappedBy="listPlayer", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=PlayerAsset::class, mappedBy="player", orphanRemoval=true)
      */
     private $listPlayerAsset;
 

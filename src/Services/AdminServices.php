@@ -154,9 +154,22 @@ class AdminServices
     public function creerTaux(ArrayCollection $statistiques)
     {
         $taux = new ArrayCollection();
-        $precision = ($statistiques->get("succes")/$statistiques->get("try"))*100;
+        if($statistiques->get("try") != 0) {
+            $precision = ($statistiques->get("succes") / $statistiques->get("try")) * 100;
+        }
+        else
+        {
+            $precision = 0;
+        }
+        if($statistiques->get("openned") != 0)
+        {
+            $efficacite = ($statistiques->get("succes") / $statistiques->get("openned")) * 100;
+        }
+        else{
+            $efficacite = 0;
+        }
+
         $reussite = ($statistiques->get("succes")/$statistiques->get("maxEnigmes"))*100;
-        $efficacite = ($statistiques->get("succes")/$statistiques->get("openned"))*100;
         $taux->set("rPrecision", $precision);
         $taux->set("rReussite", $reussite);
         $taux->set("rEfficacite",$efficacite);
