@@ -298,28 +298,28 @@ class Player extends User implements UserInterface
     /**
      * @return Collection|PlayerAsset[]
      */
-    public function getListPlayerAsset(): Collection
+    public function getPlayerAssets(): Collection
     {
         return $this->listPlayerAsset;
     }
 
-    public function addListPlayerAsset(PlayerAsset $listPlayerAsset): self
+    public function addPlayerAsset(PlayerAsset $listPlayerAsset): self
     {
         if (!$this->listPlayerAsset->contains($listPlayerAsset)) {
             $this->listPlayerAsset[] = $listPlayerAsset;
-            $listPlayerAsset->setListPlayer($this);
+            $listPlayerAsset->setPlayer($this);
         }
 
         return $this;
     }
 
-    public function removeListPlayerAsset(PlayerAsset $listPlayerAsset): self
+    public function removePlayerAssets(PlayerAsset $listPlayerAsset): self
     {
         if ($this->listPlayerAsset->contains($listPlayerAsset)) {
             $this->listPlayerAsset->removeElement($listPlayerAsset);
             // set the owning side to null (unless already changed)
-            if ($listPlayerAsset->getListPlayer() === $this) {
-                $listPlayerAsset->setListPlayer(null);
+            if ($listPlayerAsset->getPlayer() === $this) {
+                $listPlayerAsset->setPlayer(null);
             }
         }
 

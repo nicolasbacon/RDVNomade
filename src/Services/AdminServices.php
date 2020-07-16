@@ -13,6 +13,7 @@ use App\Form\AdminType;
 use App\Form\SessionType;
 use App\Form\TeamType;
 use App\Repository\AdminRepository;
+use App\Repository\PlayerEnigmaRepository;
 use App\Repository\SessionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -146,7 +147,6 @@ class AdminServices
         $statistiques->set("starMax", $tempStarMax);
         $statistiques->set("maxEnigmes", $listeEnigmes->count());
 
-
         return $statistiques;
 
     }
@@ -176,5 +176,45 @@ class AdminServices
 
         return $taux;
     }
+    public function createListSkillMax(Player $player)
+    {
+        $listSkillsTmp = array();
+        $listSkillsMax = array();
 
+        $liste = $player->getPlayerEnigmas();
+
+
+        foreach ($liste as $playerEnigma) {
+            foreach ($playerEnigma->getEnigma()->getListSkill() as $skill) {
+                $listSkillsTmp[] = $skill;
+            }
+        }
+        foreach ($listSkillsTmp as $skillTmp) {
+
+            if (empty($listSkillsMax)) {
+                $listSkillsMax[] = $skillTmp;
+            } else {
+                $length = count($listSkillsMax);
+                for ($i = 0; $i < $length; $i++) {
+                    if ($listSkillsMax[$i]->getId() == $skillTmp->getId()) {
+                        $listSkillsMax[$i]->setValue($listSkillsMax[$i]->getValue() + $skillTmp->getValue());
+                        break;
+                    } elseif ($i == $length - 1) $listSkillsMax[] = $skillTmp;
+                }
+            }
+        }
+
+        return $listSkillsMax;
+    }
+
+    public function creerListeCompetence(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
+    {
+        $playerService = new PlayerServices();
+        $listeSkill = $playerService->createTableSkill($player, $playerEnigmaRepository);
+        $listeSkillMax = $this->createListSkillMax($player);
+
+        return [$listeSkill,$listeSkillMax];
+
+
+    }
 }

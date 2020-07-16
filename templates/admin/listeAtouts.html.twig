@@ -11,14 +11,12 @@
         <thead>
         <tr>
             <th>Nom</th>
-            <th>Valeur</th>
         </tr>
         </thead>
         <tbody>
         {% for asset in assets %}
             <tr>
                 <td>{{ asset.name }}</td>
-                <td>{{ asset.value }}</td>
             </tr>
         {% else %}
             <tr>

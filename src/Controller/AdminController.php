@@ -13,6 +13,7 @@ use App\Entity\Team;
 use App\Form\AdminType;
 use App\Form\AssetType;
 use App\Form\EnigmaType;
+use App\Form\PlayerAssetType;
 use App\Form\SessionType;
 use App\Form\SkillType;
 use App\Form\TeamType;
@@ -20,9 +21,11 @@ use App\Repository\AdminRepository;
 use App\Repository\AssetRepository;
 use App\Repository\EnigmaRepository;
 use App\Repository\PlayerAssetRepository;
+use App\Repository\PlayerEnigmaRepository;
 use App\Repository\SessionRepository;
 use App\Repository\SkillRepository;
 use App\Services\AdminServices;
+use Doctrine\DBAL\Types\IntegerType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -421,17 +424,21 @@ class AdminController extends AbstractController
     /**
      * @Route("/showJoueur/{id}", name="player_show_admin", methods={"GET"})
      * @param Player $player
+     * @param PlayerEnigmaRepository $playerEnigmaRepository
      * @return Response
      */
-    public function show(Player $player)
+    public function show(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
     {
         $personne = $this->getUser();
-
         $AdminService = new AdminServices();
-        $entityManager = $this->getDoctrine()->getManager();
 
         $statistiques = $AdminService->creerStatistiques($player);
         $taux = $AdminService->creerTaux($statistiques);
+
+        $listes = $AdminService->creerListeCompetence($player, $playerEnigmaRepository);
+        $listePlayerSkill = $listes[0];
+        $listeSkillMax = $listes[1];
+
 
 
         return $this->render('admin/showJoueur.html.twig', [
@@ -439,6 +446,8 @@ class AdminController extends AbstractController
             'personne' => $personne,
             'statistiques' => $statistiques,
             'taux' => $taux,
+            'playerSkills' => $listePlayerSkill,
+            'skillsMax' => $listeSkillMax,
         ]);
     }
 
@@ -447,6 +456,7 @@ class AdminController extends AbstractController
      * @Route("/atoutsJoueur/{id}", name="player_setAsset_joueur", methods={"GET"})
      * @param Player $player
      * @param AssetRepository $repo
+     * @param Request $request
      * @return Response
      */
     public function ajouterAtouts(Player $player, AssetRepository $repo)
@@ -454,23 +464,49 @@ class AdminController extends AbstractController
         $personne = $this->getUser();
 
         $listeAtoutsRepo = $repo->findAll();
+        $entityManager = $this->getDoctrine()->getManager();
 
-        foreach ($listeAtoutsRepo as $atout)
+
+        if($player->getPlayerAssets()->isEmpty())
         {
-            $assetPlayer = new PlayerAsset();
-            $assetPlayer->setValue(0);
-            $player->addListPlayerAsset($assetPlayer);
+            foreach($listeAtoutsRepo as $atout)
+            {
+                $playerAtout = new PlayerAsset();
+                $playerAtout->setValue(0);
+                $playerAtout->setPlayer($player);
+                $playerAtout->setAsset($atout);
+                $entityManager->persist($playerAtout);
+            }
+            $entityManager->flush();
         }
 
-        $player->addListPlayerAsset();
 
-
-        return $this->render('', [
+        return $this->render('admin/attributionAtouts.html.twig', [
             'player' => $player,
             'personne' => $personne,
+            'listeAtouts' =>$player->getPlayerAssets(),
         ]);
     }
 
+    /**
+     * @Route("/validerAtout/{id}", name="validation_asset_admin", methods={"POST"})
+     * @param Player $player
+     * @param Request $request
+     * @param PlayerEnigmaRepository $playerEnigmaRepository
+     */
+    public function validerAtouts(Player $player, Request $request, PlayerEnigmaRepository $playerEnigmaRepository)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $listeAssets = $player->getPlayerAssets();
 
-
+        foreach ($listeAssets as $atoutPlayer)
+        {
+            $txt = "atout".strval($atoutPlayer->getId());
+            $valueReceived = $_POST[$txt];
+            $atoutPlayer->setValue($valueReceived);
+            $entityManager->persist($atoutPlayer);
+        }
+        $entityManager->flush();
+        return $this->show($player, $playerEnigmaRepository);
+    }
 }

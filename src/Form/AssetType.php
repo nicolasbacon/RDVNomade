@@ -15,7 +15,6 @@ class AssetType extends AbstractType
     {
         $builder
             ->add('name',TextType::class, ['label' => "Nom de l'Atout :  "])
-            ->add('value', IntegerType::class, ['label' => "Valeur de l'Atout :  "])
         ;
     }
 

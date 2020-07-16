@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Attribution Atouts{% endblock %}
+
+{% block body %}
+
+    {% include "admin/navAdmin.html.twig" %}
+
+    <h1>Atouts</h1>
+
+    <form action="{{ path('validation_asset_admin', {'id': player.id}) }}" method="post">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Valeur de l'atout</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for atout in listeAtouts %}
+            <tr>
+                <td>{{ atout.asset.name }}</td>
+                <td><input type="number" id="atout{{ atout.id }}" name="atout{{ atout.id }}" value="{{ atout.value }}"></td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucun Atout dans la liste</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+        <button class="btn-primary col-12" type="submit">Valider</button>
+    </form>
+{% endblock %}

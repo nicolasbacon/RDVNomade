@@ -3,11 +3,25 @@
 {% block title %}Statistiques Joueur{% endblock %}
 
 {% block body %}
-
+    <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
     {% include "admin/navAdmin.html.twig" %}
 
 
-    <h1>Statistiques Joueur</h1>
+    <h1 class="col-12">Statistiques Joueur</h1>
+
+    <h2>
+        <div class="row">
+            <a class="btn btn-primary col-6" href="{{ path('player_setAsset_joueur', {'id': player.id}) }}">Attribuer Atouts</a>
+            <button class="btn btn-primary col-6" type="button" data-toggle="collapse" data-target="#collapseAtouts" aria-expanded="false" aria-controls="collapseAtouts">
+                Afficher Diagramme
+            </button>
+        </div>
+    </h2>
+    <div class="collapse" id="collapseAtouts">
+        <div class="card card-body">
+            <canvas id="diagramAsset"></canvas>
+        </div>
+    </div>
 
     <table class="table">
         <tbody>
@@ -22,6 +36,29 @@
         <tr>
             <th>Description de l'Administrateur</th>
             <td>{{ player.descByAdmin }}</td>
+        </tr>
+        <tr>
+            <th>Compétences</th>
+            <td>  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseCompetences" aria-expanded="false" aria-controls="collapseCompetences">
+                    Afficher
+                </button>
+                <div class="collapse" id="collapseCompetences">
+                    <div class="card card-body">
+
+                        {% for skill in playerSkills %}
+                            <a>{{ skill.name }} : {{ skill.value }}
+                                {% for skillmax in skillsMax%}
+                                    {% if skillmax.id == skill.id %}
+                                        / {{ skillmax.value }}
+                                    {% endif %}
+                                {% endfor %}
+                            </a>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+            </td>
         </tr>
         <tr>
             <th>Énigmes Réussies</th>
@@ -62,5 +99,53 @@
 
         </tbody>
     </table>
+
+    <script>
+        //radar
+        var ctxR = document.getElementById("diagramAsset").getContext('2d');
+        var myRadarChart = new Chart(ctxR, {
+            type: 'radar',
+            data: {
+                labels: [
+                    {% for asset in player.playerAssets %}
+                    {% if asset.value != 0 %}
+                        "{{ asset.asset.name }}",
+                    {% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: "Tableau d'atouts",
+                    data: [
+                        {% for asset in player.playerAssets%}
+                        {% if asset.value != 0 %}
+                            {{ asset.value }},
+                        {% endif %}
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                    ],
+                    borderWidth: 1,
+                    pointBackgroundColor:'rgba(213, 39, 236, 0.5)'
+                },
+                ]
+            },
+            options: {
+                responsive: true,
+                scale: {
+                    angleLines: {
+                        display: true
+                    },
+                    ticks: {
+                        suggestedMin: 0,
+                        suggestedMax: 10
+                    }
+                }
+            }
+        });
+    </script>
 
 {% endblock %}
