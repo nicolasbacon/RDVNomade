@@ -18,7 +18,7 @@ class PlayerAsset
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Asset::class)
+     * @ORM\ManyToOne(targetEntity=Asset::class, inversedBy="listPlayerAsset")
      * @ORM\JoinColumn(nullable=false)
      */
     private $asset;

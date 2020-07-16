@@ -6,6 +6,7 @@ use App\Entity\Admin;
 use App\Entity\Asset;
 use App\Entity\Enigma;
 use App\Entity\Player;
+use App\Entity\PlayerAsset;
 use App\Entity\Session;
 use App\Entity\Skill;
 use App\Entity\Team;
@@ -18,6 +19,7 @@ use App\Form\TeamType;
 use App\Repository\AdminRepository;
 use App\Repository\AssetRepository;
 use App\Repository\EnigmaRepository;
+use App\Repository\PlayerAssetRepository;
 use App\Repository\SessionRepository;
 use App\Repository\SkillRepository;
 use App\Services\AdminServices;
@@ -439,5 +441,36 @@ class AdminController extends AbstractController
             'taux' => $taux,
         ]);
     }
+
+
+    /**
+     * @Route("/atoutsJoueur/{id}", name="player_setAsset_joueur", methods={"GET"})
+     * @param Player $player
+     * @param AssetRepository $repo
+     * @return Response
+     */
+    public function ajouterAtouts(Player $player, AssetRepository $repo)
+    {
+        $personne = $this->getUser();
+
+        $listeAtoutsRepo = $repo->findAll();
+
+        foreach ($listeAtoutsRepo as $atout)
+        {
+            $assetPlayer = new PlayerAsset();
+            $assetPlayer->setValue(0);
+            $player->addListPlayerAsset($assetPlayer);
+        }
+
+        $player->addListPlayerAsset();
+
+
+        return $this->render('', [
+            'player' => $player,
+            'personne' => $personne,
+        ]);
+    }
+
+
 
 }
