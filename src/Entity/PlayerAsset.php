@@ -39,24 +39,24 @@ class PlayerAsset
         return $this->id;
     }
 
-    public function getListAsset(): ?Asset
+    public function getAsset(): ?Asset
     {
         return $this->asset;
     }
 
-    public function setListAsset(?Asset $asset): self
+    public function setAsset(?Asset $asset): self
     {
         $this->asset = $asset;
 
         return $this;
     }
 
-    public function getListPlayer(): ?Player
+    public function getPlayer(): ?Player
     {
         return $this->player;
     }
 
-    public function setListPlayer(?Player $player): self
+    public function setPlayer(?Player $player): self
     {
         $this->player = $player;
 
