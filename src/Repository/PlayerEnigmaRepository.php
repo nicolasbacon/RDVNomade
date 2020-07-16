@@ -60,5 +60,4 @@ class PlayerEnigmaRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
-
 }

@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Player;
+use App\Entity\PlayerEnigma;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,6 +19,20 @@ class PlayerRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Player::class);
+    }
+
+    public function findSuccessfulPlayers($enigme, $team)
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.playerEnigmas', 'pe')
+            ->where('pe.enigma = :enigma')
+            ->setParameter(':enigma', $enigme)
+            ->andWhere('pe.solved = 3')
+            ->andWhere('p.team = :team')
+            ->setParameter(':team', $team)
+            ->getQuery()
+            ->getResult()
+            ;
     }
 
     // /**

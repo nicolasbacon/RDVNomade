@@ -307,7 +307,7 @@ class Player extends User implements UserInterface
     {
         if (!$this->listPlayerAsset->contains($listPlayerAsset)) {
             $this->listPlayerAsset[] = $listPlayerAsset;
-            $listPlayerAsset->setListPlayer($this);
+            $listPlayerAsset->setPlayer($this);
         }
 
         return $this;
@@ -318,8 +318,8 @@ class Player extends User implements UserInterface
         if ($this->listPlayerAsset->contains($listPlayerAsset)) {
             $this->listPlayerAsset->removeElement($listPlayerAsset);
             // set the owning side to null (unless already changed)
-            if ($listPlayerAsset->getListPlayer() === $this) {
-                $listPlayerAsset->setListPlayer(null);
+            if ($listPlayerAsset->getPlayer() === $this) {
+                $listPlayerAsset->setPlayer(null);
             }
         }
 

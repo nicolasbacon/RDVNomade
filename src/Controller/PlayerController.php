@@ -10,6 +10,7 @@ use App\Form\PlayerType;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
+use App\Repository\TeamRepository;
 use App\Services\PlayerServices;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -203,23 +204,34 @@ class PlayerController extends AbstractController
     /**
      * @Route("/enigma/{id}", name="player_show_enigma", methods={"GET","POST"})
      */
-    public function showEnigma(Request $request, Enigma $enigma, PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $em): Response
+    public function showEnigma(Request $request, Enigma $enigma, PlayerEnigmaRepository $playerEnigmaRepository, PlayerRepository $playerRepository, EntityManagerInterface $em): Response
     {
         $playerServices = new PlayerServices();
 
         // On recupere le user connecter
         $player = $this->getUser();
 
+        // On instancie la liste des autres joueur pour l'aide
+        $listOtherPlayer = null;
+
         // Si le user connecté est une instance de player
         if ($player instanceof Player) {
             // On verifie si le joueur accede bien a une enigme qui lui est lié et on la passe en ouverte si c'est le cas
             $exception = $playerServices->checkBeforShowEnigma($player, $playerEnigmaRepository, $enigma, $em);
             if ($exception != null) throw $exception;
+
+            ##TODO: mettre dans le service
+            ##TODO: Ajouter les admin dans la liste
+            // On recupere son groupe pour la demande d'aide
+            $team = $player->getTeam();
+            // Sur le groupe on recupere la liste des autres joueur qui ont reussi l'enigme
+            $listOtherPlayer = $playerRepository->findSuccessfulPlayers($enigma, $team);
         }
 
         $form = $this->createForm(AnswerType::class);
         $form->handleRequest($request);
 
+        // Traitement du formulaire de reponses
         if ($form->isSubmitted() && $form->isValid()) {
             // On recupere la reponse donnée
             $answer = $form->get('answer')->getData();
@@ -251,6 +263,7 @@ class PlayerController extends AbstractController
         return $this->render('player/showEnigma.html.twig', [
                 'enigma' => $enigma,
                 'form' => $form->createView(),
+                'listOtherPlayer' => $listOtherPlayer,
             ]);
     }
 

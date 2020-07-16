@@ -22,8 +22,19 @@
                  height="170">
         </div>
 
+
+        <div class="row">
+            <div class="col-4">
+                <button class="btn" style="padding: 0 50px 0 0" data-toggle="modal"
+                        data-target="#helpModal"><i class="fa fa-question-circle fa-3x" aria-hidden="true"></i></button>
+            </div>
+            <div class="col-8">
+                <h1 style="font-size: 80px">{{ enigma.name }}</h1>
+            </div>
+        </div>
+
         <div class="row justify-content-center" style="padding-bottom: 20px">
-            <h1 style="font-size: 80px">{{ enigma.name }}</h1>
+
         </div>
 
         <div class="row justify-content-center">
@@ -38,18 +49,21 @@
                 {{ form_widget(form.answer) }}
             </div>
 
-            {{ form_end(form) }}
         </div>
+        <div class="row justify-content-center">
+            <button type="submit" class="btn border">Tester</button>
+        </div>
+        {{ form_end(form) }}
 
     </div>
 
-    <!-- Modal -->
+    <!-- Modal Menu -->
     <div class="modal fade" id="menuModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
-         aria-labelledby="exampleModalLabel" aria-hidden="true">
+         aria-labelledby="menuModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Menu</h5>
+                    <h5 class="modal-title" id="menuModalLabel">Menu</h5>
                 </div>
                 <div class="modal-body">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Quitter le jeu</button>
@@ -57,6 +71,41 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Voir la progression du groupe
                     </button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Reprendre</button>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Help-->
+    <div class="modal fade" id="helpModal" data-keyboard="false" tabindex="-1" role="dialog"
+         aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="helpModalLabel">Demander de l'aide</h5>
+                </div>
+                <div class="modal-body">
+
+                    <table>
+                        <tbody>
+                        {% for player in listOtherPlayer %}
+                            <tr>
+                                <td>
+                                    <img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="150"
+                                         height="170">
+                                </td>
+                                <td>
+                                    {{ player.pseudo }}
+                                    <a href="" class="btn border">Help !</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+
                 </div>
                 <div class="modal-footer">
                 </div>
