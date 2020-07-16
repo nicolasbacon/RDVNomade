@@ -22,9 +22,11 @@ use App\Repository\AssetRepository;
 use App\Repository\EnigmaRepository;
 use App\Repository\PlayerAssetRepository;
 use App\Repository\PlayerEnigmaRepository;
+use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
 use App\Repository\SkillRepository;
 use App\Services\AdminServices;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\IntegerType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -456,10 +458,10 @@ class AdminController extends AbstractController
      * @Route("/atoutsJoueur/{id}", name="player_setAsset_joueur", methods={"GET"})
      * @param Player $player
      * @param AssetRepository $repo
-     * @param Request $request
+     * @param PlayerRepository $playerRepo
      * @return Response
      */
-    public function ajouterAtouts(Player $player, AssetRepository $repo)
+    public function ajouterAtouts(Player $player, AssetRepository $repo, PlayerRepository $playerRepo)
     {
         $personne = $this->getUser();
 
@@ -476,6 +478,7 @@ class AdminController extends AbstractController
                 $playerAtout->setPlayer($player);
                 $playerAtout->setAsset($atout);
                 $entityManager->persist($playerAtout);
+                $player->addPlayerAsset($playerAtout);
             }
             $entityManager->flush();
         }
