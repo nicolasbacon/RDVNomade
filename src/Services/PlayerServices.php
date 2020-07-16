@@ -129,27 +129,39 @@ class PlayerServices
 
     public function createTableSkill(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
     {
+        // On instancie deux tableau, un temporaire et un definitif
         $listSkillsTmp = array();
         $listSkillsDef = array();
 
+        // On recherche toutes les enigmes que le player a reussi
         $listPlayerEnigma = $playerEnigmaRepository->findBy(['player' => $player, 'solved' => 3]);
 
+        // On recupere toutes les competences des enigmes qu'il as reussi et on les stocke dans le tableau temporaire
         foreach ($listPlayerEnigma as $playerEnigma) {
             foreach ($playerEnigma->getEnigma()->getListSkill() as $skill) {
                 $listSkillsTmp[] = $skill;
             }
         }
 
+        // On parcour toutes les competences du tableau temporaire
         foreach ($listSkillsTmp as $skillTmp) {
 
+            // Si le tableau definitif est vide on met la premiere competences dedans
             if (empty($listSkillsDef)) {
                 $listSkillsDef[] = $skillTmp;
             } else {
+                // Sinon on stocke la taille du tableau definitif
                 $length = count($listSkillsDef);
+                // On le parcour
                 for ($i = 0; $i < $length; $i++) {
+                    // Si l'id de la competence sur la quelle on est dans le tableau temporaire
+                    // est la meme que celle du tableau definitif
                     if ($listSkillsDef[$i]->getId() == $skillTmp->getId()) {
+                        // On additionne les deux valeur
                         $listSkillsDef[$i]->setValue($listSkillsDef[$i]->getValue() + $skillTmp->getValue());
+                        // Et on quitte la boucle pour qu'il arrete de rechercher
                         break;
+                        // Sinon on ajoute la competence dans le tableau definitif
                     } elseif ($i == $length - 1) $listSkillsDef[] = $skillTmp;
                 }
             }
