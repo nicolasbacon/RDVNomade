@@ -8,8 +8,12 @@ use App\Controller\PlayerController;
 use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\PlayerEnigma;
+use App\Entity\Skill;
+use App\Repository\AdminRepository;
 use App\Repository\PlayerEnigmaRepository;
+use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use ErrorException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class PlayerServices
@@ -102,7 +106,7 @@ class PlayerServices
                 if ($enigma->getAnswer()[$i] == $answer[$i]) $goodChara += 1;
             }
             dump($goodChara);
-        } catch (\ErrorException $e) {
+        } catch (ErrorException $e) {
             return 1;
         }
 
@@ -115,15 +119,18 @@ class PlayerServices
                 $em->persist($playerEnigma);
                 $em->flush();
                 return 3;
+                break;
 
             case ($average >= 50) :
                 $playerEnigma->setSolved(2);
                 $em->persist($playerEnigma);
                 $em->flush();
                 return 2;
+                break;
 
             default :
                 return 1;
+                break;
         }
     }
 
@@ -168,5 +175,75 @@ class PlayerServices
         }
 
         return $listSkillsDef;
+    }
+
+    public function createTableAsset(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
+    {
+        // On instancie deux tableau, un temporaire et un definitif
+        $listSkillsTmp = array();
+        $listSkillsDef = array();
+
+        // On recherche toutes les enigmes que le player a reussi
+        $listPlayerEnigma = $playerEnigmaRepository->findBy(['player' => $player, 'solved' => 3]);
+
+        // On recupere toutes les competences des enigmes qu'il as reussi et on les stocke dans le tableau temporaire
+        foreach ($listPlayerEnigma as $playerEnigma) {
+            foreach ($playerEnigma->getEnigma()->getListSkill() as $skill) {
+                $listSkillsTmp[] = $skill;
+            }
+        }
+
+        // On parcour toutes les competences du tableau temporaire
+        foreach ($listSkillsTmp as $skillTmp) {
+
+            // Si le tableau definitif est vide on met la premiere competences dedans
+            if (empty($listSkillsDef)) {
+                $listSkillsDef[] = $skillTmp;
+            } else {
+                // Sinon on stocke la taille du tableau definitif
+                $length = count($listSkillsDef);
+                // On le parcour
+                for ($i = 0; $i < $length; $i++) {
+                    // Si l'id de la competence sur la quelle on est dans le tableau temporaire
+                    // est la meme que celle du tableau definitif
+                    if ($listSkillsDef[$i]->getId() == $skillTmp->getId()) {
+                        // On additionne les deux valeur
+                        $listSkillsDef[$i]->setValue($listSkillsDef[$i]->getValue() + $skillTmp->getValue());
+                        // Et on quitte la boucle pour qu'il arrete de rechercher
+                        break;
+                        // Sinon on ajoute la competence dans le tableau definitif
+                    } elseif ($i == $length - 1) $listSkillsDef[] = $skillTmp;
+                }
+            }
+        }
+
+        return $listSkillsDef;
+    }
+
+    public function findHigherSkill(Player $player): Skill {
+        $adminService = new AdminServices();
+
+        $skillMax = null;
+
+        $listSkillMax = $adminService->createListSkillMax($player);
+
+        foreach ($listSkillMax as $skill) {
+            if ($skillMax == null) $skillMax = $skill;
+            elseif ($skill->getValue() > $skillMax->getValue()) $skillMax = $skill;
+        }
+        return $skillMax;
+    }
+
+    public function createListOtherPlayerForHelp(Player $player, Enigma $enigma, PlayerRepository $playerRepository, AdminRepository $adminRepository) {
+        ##TODO: Ajouter les admin dans la liste
+        // On recupere son groupe pour la demande d'aide
+        $team = $player->getTeam();
+        // Sur le groupe on recupere la liste des autres joueur qui ont reussi l'enigme
+        $listOtherPlayer = $playerRepository->findSuccessfulPlayers($enigma, $team);
+        $listAdmin = $adminRepository->findAll();
+        foreach ($listAdmin as $admin) {
+            $listOtherPlayer[] = $admin;
+        }
+        return $listOtherPlayer;
     }
 }

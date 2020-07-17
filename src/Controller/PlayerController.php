@@ -5,17 +5,16 @@ namespace App\Controller;
 use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\PlayerEnigma;
+use App\Entity\Skill;
 use App\Form\AnswerType;
 use App\Form\PlayerType;
+use App\Repository\AdminRepository;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
-use App\Repository\TeamRepository;
 use App\Services\PlayerServices;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +29,7 @@ class PlayerController extends AbstractController
     /**
      * @Route("/login", name="login_player", methods={"GET","POST"})
      */
-    public function login(Request $request)
+    public function login()
     {
         return $this->render('player/login.html.twig', []);
     }
@@ -45,6 +44,8 @@ class PlayerController extends AbstractController
 
     /**
      * @Route("/", name="player_index", methods={"GET"})
+     * @param PlayerRepository $playerRepository
+     * @return Response
      */
     public function index(PlayerRepository $playerRepository): Response
     {
@@ -55,6 +56,11 @@ class PlayerController extends AbstractController
 
     /**
      * @Route("/new", name="player_new", methods={"GET","POST"})
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param SessionRepository $sessionRepository
+     * @param UserPasswordEncoderInterface $encoder
+     * @return Response
      */
     public function new(Request $request, EntityManagerInterface $entityManager, SessionRepository $sessionRepository, UserPasswordEncoderInterface $encoder): Response
     {
@@ -150,6 +156,9 @@ class PlayerController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="player_edit", methods={"GET","POST"})
+     * @param Request $request
+     * @param Player $player
+     * @return Response
      */
     public function edit(Request $request, Player $player): Response
     {
@@ -170,6 +179,9 @@ class PlayerController extends AbstractController
 
     /**
      * @Route("/{id}", name="player_delete", methods={"DELETE"})
+     * @param Request $request
+     * @param Player $player
+     * @return Response
      */
     public function delete(Request $request, Player $player): Response
     {
@@ -184,6 +196,9 @@ class PlayerController extends AbstractController
 
     /**
      * @Route("/list", name="player_list_enigmas", methods={"GET"})
+     * @param PlayerEnigmaRepository $playerEnigmaRepository
+     * @param EntityManagerInterface $entityManager
+     * @return Response
      */
     public function listEnigmas(PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $entityManager): Response
     {
@@ -191,6 +206,12 @@ class PlayerController extends AbstractController
         $playerServices = new PlayerServices();
 
         if ($player instanceof Player) {
+            if ($player->getDeadLine() != null) {
+                $time = $player->getDeadLine();
+
+            } else {
+                $time = $player->getTeam()->getDeadLine();
+            }
             $listPlayerEnigma = $playerServices->recupererLaListeDesEnigmes($player, $playerEnigmaRepository, $entityManager);
         } else {
             throw $this->createAccessDeniedException("Vous n'êtes pas un joueur lié a une liste d'énigme !");
@@ -198,13 +219,21 @@ class PlayerController extends AbstractController
 
         return $this->render('player/listEnigmas.html.twig', [
             'listPlayerEnigma' => $listPlayerEnigma,
+            'time' => $time,
         ]);
     }
 
     /**
      * @Route("/enigma/{id}", name="player_show_enigma", methods={"GET","POST"})
+     * @param Request $request
+     * @param Enigma $enigma
+     * @param PlayerEnigmaRepository $playerEnigmaRepository
+     * @param PlayerRepository $playerRepository
+     * @param AdminRepository $adminRepository
+     * @param EntityManagerInterface $em
+     * @return Response
      */
-    public function showEnigma(Request $request, Enigma $enigma, PlayerEnigmaRepository $playerEnigmaRepository, PlayerRepository $playerRepository, EntityManagerInterface $em): Response
+    public function showEnigma(Request $request, Enigma $enigma, PlayerEnigmaRepository $playerEnigmaRepository, PlayerRepository $playerRepository, AdminRepository $adminRepository, EntityManagerInterface $em): Response
     {
         $playerServices = new PlayerServices();
 
@@ -220,12 +249,7 @@ class PlayerController extends AbstractController
             $exception = $playerServices->checkBeforShowEnigma($player, $playerEnigmaRepository, $enigma, $em);
             if ($exception != null) throw $exception;
 
-            ##TODO: mettre dans le service
-            ##TODO: Ajouter les admin dans la liste
-            // On recupere son groupe pour la demande d'aide
-            $team = $player->getTeam();
-            // Sur le groupe on recupere la liste des autres joueur qui ont reussi l'enigme
-            $listOtherPlayer = $playerRepository->findSuccessfulPlayers($enigma, $team);
+            $listOtherPlayer = $playerServices->createListOtherPlayerForHelp($player, $enigma, $playerRepository, $adminRepository);
         }
 
         $form = $this->createForm(AnswerType::class);
@@ -269,19 +293,24 @@ class PlayerController extends AbstractController
 
     /**
      * @Route("/showProgress", name="player_show_progress", methods={"GET"})
+     * @param PlayerEnigmaRepository $playerEnigmaRepository
+     * @return Response
      */
     public function showProgress(PlayerEnigmaRepository $playerEnigmaRepository)
     {
         $player = $this->getUser();
         $listSkills = array();
         $playerServices = new PlayerServices();
+        $skillMax = new Skill();
 
         if ($player instanceof Player) {
             $listSkills = $playerServices->createTableSkill($player, $playerEnigmaRepository);
+            $skillMax = $playerServices->findHigherSkill($player);
         }
 
         return $this->render('player/showProgress.html.twig', [
             'tab' => $listSkills,
+            'skillMax' => $skillMax,
             'player' => $player,
         ]);
     }
