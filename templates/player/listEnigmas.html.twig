@@ -3,7 +3,6 @@
 {% block title %}Les Enigmes{% endblock %}
 
 {% block body %}
-
     <link rel="stylesheet" href="{{ asset ("css/appPlayer.css") }}">
     <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
 
@@ -11,10 +10,10 @@
 
         <div class="row justify-content-between" style="padding: 100px 0 20px 0">
 
-            <!-- Button trigger modal -->
-            <button class="btn" style="padding: 0 0 0 0" data-toggle="modal" data-target="#menuModal"><i
-                        class="fa fa-bars fa-3x"></i></button>
+            {% include 'inc/menu.html.twig' %}
+
             {% include "testTimer.html.twig" %}
+
             <img class="photoProfil" src="{{ asset('uploads/' ~ app.user.photo) }}" alt="Photo profil" width="150"
                  height="170">
         </div>
@@ -27,42 +26,19 @@
             {% for playerEnigma in listPlayerEnigma %}
                 <div class="col-3" style="padding-bottom: 20px">
                     <a
-                    {% if playerEnigma.solved == 0 %}
-                        class="btn btn-danger"
-                    {% elseif playerEnigma.solved == 1 %}
-                        class="btn btn-warning"
-                    {% else %}
-                        class="btn btn-success"
-                    {% endif %}
-                     style="border-radius: 20px"
-                       href="{{ path('player_show_enigma', {'id': playerEnigma.enigma.id}) }}">{{ loop.index }}</a>
+                            {% if playerEnigma.solved == 0 %}
+                                class="btn btn-danger"
+                            {% elseif playerEnigma.solved == 1 or playerEnigma.solved == 2 %}
+                                class="btn btn-warning"
+                            {% elseif playerEnigma.solved == 3 %}
+                                class="btn btn-success"
+                            {% endif %}
+                            style="border-radius: 20px"
+                            href="{{ path('player_show_enigma', {'id': playerEnigma.enigma.id}) }}">{{ loop.index }}</a>
                 </div>
             {% else %}
                 no records found
             {% endfor %}
         </div>
     </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="menuModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
-         aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Menu</h5>
-                </div>
-                <div class="modal-body">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Quitter le jeu</button>
-                    <a class="btn btn-secondary" href="{{ path('player_show_progress') }}">Voir ma progression</a>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Voir la progression du groupe
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Reprendre</button>
-                </div>
-                <div class="modal-footer">
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock %}
-
-

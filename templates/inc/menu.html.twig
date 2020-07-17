@@ -1,0 +1,27 @@
+<!-- Button trigger modal -->
+<button class="btn" style="padding: 0 0 0 0" data-toggle="modal" data-target="#menuModal"><i
+            class="fa fa-bars fa-3x"></i></button>
+
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="menuModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Menu</h5>
+            </div>
+            <div class="modal-body">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Quitter le jeu</button>
+                <a class="btn btn-secondary" href="{{ path('player_show_progress') }}">Voir ma progression</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Voir la progression du groupe
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Reprendre</button>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

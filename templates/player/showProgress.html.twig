@@ -38,7 +38,16 @@
                 ]
             },
             options: {
-                responsive: true
+                responsive: true,
+                scale: {
+                    angleLines: {
+                        display: true
+                    },
+                    ticks: {
+                        suggestedMin: 0,
+                        suggestedMax: 10
+                    }
+                }
             }
         });
     </script>
@@ -49,16 +58,19 @@
             type: 'radar',
             data: {
                 labels: [
-                    {% for skill in tab %}
-                    "{{ skill.name }}",
+                    {% for asset in player.playerAssets %}
+                    {% if asset.value != 0 %}
+                    "{{ asset.asset.name }}",
+                    {% endif %}
                     {% endfor %}
                 ],
-
                 datasets: [{
-                    label: "Tableau de vos compétences",
+                    label: "Tableau d'atouts",
                     data: [
-                        {% for skill in tab %}
-                        {{ skill.value }},
+                        {% for asset in player.playerAssets%}
+                        {% if asset.value != 0 %}
+                        {{ asset.value }},
+                        {% endif %}
                         {% endfor %}
                     ],
                     backgroundColor: [
@@ -67,13 +79,22 @@
                     borderColor: [
                         'rgba(54, 162, 235, 1)',
                     ],
-                    borderWidth: 2
+                    borderWidth: 1,
+                    pointBackgroundColor:'rgba(213, 39, 236, 0.5)'
                 },
-
                 ]
             },
             options: {
-                responsive: true
+                responsive: true,
+                scale: {
+                    angleLines: {
+                        display: true
+                    },
+                    ticks: {
+                        suggestedMin: 0,
+                        suggestedMax: 10
+                    }
+                }
             }
         });
     </script>
