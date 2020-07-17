@@ -6,28 +6,22 @@ use App\Entity\Admin;
 use App\Entity\Asset;
 use App\Entity\Enigma;
 use App\Entity\Player;
-use App\Entity\PlayerAsset;
 use App\Entity\Session;
 use App\Entity\Skill;
 use App\Entity\Team;
 use App\Form\AdminType;
 use App\Form\AssetType;
 use App\Form\EnigmaType;
-use App\Form\PlayerAssetType;
 use App\Form\SessionType;
 use App\Form\SkillType;
 use App\Form\TeamType;
 use App\Repository\AdminRepository;
 use App\Repository\AssetRepository;
 use App\Repository\EnigmaRepository;
-use App\Repository\PlayerAssetRepository;
 use App\Repository\PlayerEnigmaRepository;
-use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
 use App\Repository\SkillRepository;
 use App\Services\AdminServices;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Types\IntegerType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,10 +48,9 @@ class AdminController extends AbstractController
 
     /**
      * @Route("/login", name="login_admin")
-     * @param AdminRepository $ar
      * @return RedirectResponse|Response
      */
-    public function login(AdminRepository $ar)
+    public function login()
     {
         return $this->render("admin/login.html.twig", []);
     }
@@ -240,7 +233,6 @@ class AdminController extends AbstractController
      */
     public function activerGroupe(Team $team): Response
     {
-
         $entityManager = $this->getDoctrine()->getManager();
         $AdminService = new AdminServices();
         $team = $AdminService->ouvrirGroupe($team, $entityManager);
@@ -255,10 +247,9 @@ class AdminController extends AbstractController
     public function demarrerJeu(Team $team): Response
     {
         $AdminService = new AdminServices();
-
         $entityManager = $this->getDoctrine()->getManager();
-
         $team = $AdminService->commencerJeu($team, $entityManager);
+
         return $this->showTeam($team);
     }
 
@@ -366,7 +357,6 @@ class AdminController extends AbstractController
         ]);
     }
 
-
     /**
      * @Route("/gestionAtout", name="gestion_atout")
      * Menu de choix entre Créer un atout et les lister
@@ -376,7 +366,6 @@ class AdminController extends AbstractController
         $personne = $this->getUser();
         return $this->render('admin/gestionAtout.html.twig', ['personne' => $personne]);
     }
-
 
     /**
      * @Route("/newAtout", name="asset_new_admin", methods={"GET","POST"})
@@ -429,8 +418,9 @@ class AdminController extends AbstractController
      * @param PlayerEnigmaRepository $playerEnigmaRepository
      * @return Response
      */
-    public function show(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
+    public function showPlayer(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
     {
+        //Grace
         $personne = $this->getUser();
         $AdminService = new AdminServices();
 
@@ -440,8 +430,6 @@ class AdminController extends AbstractController
         $listes = $AdminService->creerListeCompetence($player, $playerEnigmaRepository);
         $listePlayerSkill = $listes[0];
         $listeSkillMax = $listes[1];
-
-
 
         return $this->render('admin/showJoueur.html.twig', [
             'player' => $player,
@@ -458,32 +446,15 @@ class AdminController extends AbstractController
      * @Route("/atoutsJoueur/{id}", name="player_setAsset_joueur", methods={"GET"})
      * @param Player $player
      * @param AssetRepository $repo
-     * @param PlayerRepository $playerRepo
      * @return Response
      */
-    public function ajouterAtouts(Player $player, AssetRepository $repo, PlayerRepository $playerRepo)
+    public function ajouterAtouts(Player $player, AssetRepository $repo)
     {
         $personne = $this->getUser();
-
-        $listeAtoutsRepo = $repo->findAll();
+        $AdminService = new AdminServices();
         $entityManager = $this->getDoctrine()->getManager();
-
-
-        if($player->getPlayerAssets()->isEmpty())
-        {
-            foreach($listeAtoutsRepo as $atout)
-            {
-                $playerAtout = new PlayerAsset();
-                $playerAtout->setValue(0);
-                $playerAtout->setPlayer($player);
-                $playerAtout->setAsset($atout);
-                $entityManager->persist($playerAtout);
-                $player->addPlayerAsset($playerAtout);
-            }
-            $entityManager->flush();
-        }
-
-
+        //Renvoie un joueur, avec la liste d'atouts existant en base de données
+        $player = $AdminService->ajouterAtout($player, $repo, $entityManager);
         return $this->render('admin/attributionAtouts.html.twig', [
             'player' => $player,
             'personne' => $personne,
@@ -494,22 +465,14 @@ class AdminController extends AbstractController
     /**
      * @Route("/validerAtout/{id}", name="validation_asset_admin", methods={"POST"})
      * @param Player $player
-     * @param Request $request
      * @param PlayerEnigmaRepository $playerEnigmaRepository
      */
-    public function validerAtouts(Player $player, Request $request, PlayerEnigmaRepository $playerEnigmaRepository)
+    public function validerAtouts(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
     {
+        //Fonction de l'Admin service qui récupère les données que l'utilisateur a envoyé pour les attribuer au Joueur
+        $AdminService = new AdminServices();
         $entityManager = $this->getDoctrine()->getManager();
-        $listeAssets = $player->getPlayerAssets();
-
-        foreach ($listeAssets as $atoutPlayer)
-        {
-            $txt = "atout".strval($atoutPlayer->getId());
-            $valueReceived = $_POST[$txt];
-            $atoutPlayer->setValue($valueReceived);
-            $entityManager->persist($atoutPlayer);
-        }
-        $entityManager->flush();
-        return $this->show($player, $playerEnigmaRepository);
+        $AdminService->validerAtout($player, $entityManager);
+        return $this->showPlayer($player, $playerEnigmaRepository);
     }
 }
