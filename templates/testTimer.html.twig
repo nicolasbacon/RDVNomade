@@ -1,46 +1,42 @@
 <script>
     // Mise en place de la deadline en JavaScript
-    var stp = {{ app.user.deadLine.timestamp }};
+    var stp = {{ time.timestamp }};
     var stamp = (stp * 1000);
     var deadline = new Date(stamp);
 
-    console.log({{ app.user.lastChance }});
+    // On créer la fonction d'interval de 1 seconde pour actualiser le compteur
+    var x = setInterval(function () {
 
-    if ("{{ app.user.lastChance }}" == true) {
-        document.getElementById("timer").innerHTML = "Jeu Terminé";
-    }
-    else {
-        // On créer la fonction d'interval de 1 seconde pour actualiser le compteur
-        var x = setInterval(function () {
+        // On récupère la date du jour (+2h pour le décalage par rapport au 00:00)
+        var now = new Date();
+        now.setHours(now.getHours() + 2);
 
-            // On récupère la date du jour (+2h pour le décalage par rapport au 00:00)
-            var now = new Date();
-            now.setHours(now.getHours() + 2);
+        // On calcule la différence entre nos deux temps
+        var distance = deadline - now;
 
-            // On calcule la différence entre nos deux temps
-            var distance = deadline - now;
+        // Pour les heures les minutes et les secondes on les récupère dans la différence
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        hours = pad2(hours);
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        minutes = pad2(minutes);
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        seconds = pad2(seconds);
 
-            // Pour les heures les minutes et les secondes on les récupère dans la différence
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            hours = pad2(hours);
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            minutes = pad2(minutes);
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            seconds = pad2(seconds);
+        //On actualise la balise de notre Timer id=timer pour notre affichage
+        document.getElementById("timer").innerHTML = hours + "h "
+            + minutes + "m " + seconds + "s ";
 
-            //On actualise la balise de notre Timer id=timer pour notre affichage
-            document.getElementById("timer").innerHTML = hours + "h "
-                + minutes + "m " + seconds + "s ";
-
-            // Si jamais notre compteur arrive a ZERO on arrete le chrono + fonction a faire
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById("timer").innerHTML = "Jeu Terminé";
+        // Si jamais notre compteur arrive a ZERO on arrete le chrono + fonction a faire
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("timer").innerHTML = "Jeu Terminé";
+            // Si le groupe est toujours actif on redirige sinon on est toujours rediriger
+            if ("{{ team.enable }}" == true) {
                 // On redirige vers le controleur de jeux terminer
-                document.location.href="{{ path('player_terminated') }}";
+                document.location.href = "{{ path('player_terminated') }}";
             }
-        }, 1000);
-    }
+        }
+    }, 1000);
 
 
     //Fonction qui change un 1 en 01

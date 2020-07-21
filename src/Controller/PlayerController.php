@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Flex\Configurator\AbstractConfigurator;
 
 /**
  * @Route("/player")
@@ -92,7 +91,7 @@ class PlayerController extends AbstractController
                     $hashed = $encoder->encodePassword($player, '123');
                     $player->setPassword($hashed);
                     // Initialise sa derniere chance a faux
-                    $player->setLastChance(false);
+                    $player->setLastChance(true);
                     // Initialise son nombre de demande d'aide a 0
                     $player->setNbrAskHelp(0);
                     // Initialise son nombre d'aide acceptter a 0
@@ -206,20 +205,23 @@ class PlayerController extends AbstractController
         $playerServices = new PlayerServices();
 
         if ($player instanceof Player) {
+            // On recupere le deadline soit dans le joueur
             if ($player->getDeadLine() != null) {
                 $time = $player->getDeadLine();
-
             } else {
+                // Soit dans le groupe
                 $time = $player->getTeam()->getDeadLine();
             }
+            // On recupere la liste des enigmes du player
             $listPlayerEnigma = $playerServices->recupererLaListeDesEnigmes($player, $playerEnigmaRepository, $entityManager);
         } else {
-            throw $this->createAccessDeniedException("Vous n'êtes pas un joueur lié a une liste d'énigme !");
+            throw $this->createAccessDeniedException("Vous devez etre un joueur pour acceder a cette page !");
         }
 
         return $this->render('player/listEnigmas.html.twig', [
             'listPlayerEnigma' => $listPlayerEnigma,
             'time' => $time,
+            'team' => $player->getTeam(),
         ]);
     }
 
@@ -245,7 +247,9 @@ class PlayerController extends AbstractController
 
         // Si le user connecté est une instance de player
         if ($player instanceof Player) {
-            // On verifie si le joueur accede bien a une enigme qui lui est lié et on la passe en ouverte si c'est le cas
+            // On verifie si le joueur accede bien a une enigme qui lui est lié
+            // On la passe en ouverte si c'est le cas
+            // On verifie egalement que le temps de jeux n'est pas depasser ou qu'il utilise sa derniere chance
             $exception = $playerServices->checkBeforShowEnigma($player, $playerEnigmaRepository, $enigma, $em);
             if ($exception != null) throw $exception;
 
@@ -263,25 +267,27 @@ class PlayerController extends AbstractController
             // On recupere la reponse donnée
             $answer = $form->get('answer')->getData();
             // On verifie si c'est la bonne reponse
-            ##TODO : verifier s'il y est presque ou pas
 
             switch ($playerServices->checkAnswer($player, $enigma, $answer, $em, $playerEnigmaRepository)) {
 
                 case 1 :
                     return $this->render('enigma/wrongAnswer.html.twig', [
                         'enigma' => $enigma,
+                        'lastChance' => $player->getLastChance(),
                     ]);
                     break;
 
                 case 2 :
                     return $this->render('enigma/nearGoodAnswer.html.twig', [
                         'enigma' => $enigma,
+                        'lastChance' => $player->getLastChance(),
                     ]);
                     break;
 
                 case 3 :
                     return $this->render('enigma/goodAnswer.html.twig', [
                         'enigma' => $enigma,
+                        'lastChance' => $player->getLastChance(),
                     ]);
                     break;
             }

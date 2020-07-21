@@ -6,9 +6,7 @@ namespace App\Services;
 use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\PlayerEnigma;
-use App\Entity\Session;
 use App\Entity\Skill;
-use App\Entity\Team;
 use App\Repository\AdminRepository;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
@@ -49,38 +47,46 @@ class PlayerServices
         return $listPlayerEnigma;
     }
 
-    public function checkBeforShowEnigma(Player $player, PlayerEnigmaRepository $playerEnigmaRepository, Enigma $enigma, EntityManagerInterface $em)
+    public function isPlayerEnigma(Player $player, PlayerEnigmaRepository $playerEnigmaRepository, Enigma $enigma)
     {
         // On recupere le tableau de playerEnigma qui lui est lier
         $listPlayerEnigma = $playerEnigmaRepository->findBy(['player' => $player]);
-        // On initialise a boolean a false partant du principe qu'il n'as pas cette enigme
-        $bool = false;
+
         // On parcour la liste des playerEnigma
         foreach ($listPlayerEnigma as $playerEnigma) {
             // Si a un moment une des enigmes equivaut l'enigme a la quelle il veut acceder
             if ($playerEnigma->getEnigma() === $enigma) {
                 // On passe le boolean a true
-                $bool = true;
-                // On passe l'enigme en ouverte si elle ne l'etait pas
-                // Si elle est deja resolue on genere une exception
-                switch ($playerEnigma->getSolved()) {
-
-                    case 0 :
-                        $playerEnigma->setSolved(1);
-                        $em->persist($playerEnigma);
-                        $em->flush();
-                        break;
-
-                    case 3 :
-                        return new AccessDeniedException("Vous avez deja resolu cette enigme !");
-                        break;
-                }
-                // On stop la boucle
+                return $playerEnigma;
                 break;
             }
         }
-        // Si le boolean est toujours false, on genere une exeception
-        if (!$bool) return new AccessDeniedException("Cette enigme ne fait pas partie de votre session");
+        return null;
+    }
+
+    public function checkBeforShowEnigma(Player $player, PlayerEnigmaRepository $playerEnigmaRepository, Enigma $enigma, EntityManagerInterface $em)
+    {
+        if ($this->isEndOfGame($player) && !$player->getLastChance()) return new AccessDeniedException("Vous ne pouvez plus repondre à cette enigme !");
+
+        // Soit on recupere la ligne de PlayerEnigma soit on recupere null si c'est pas son enigme
+        $playerEnigma = $this->isPlayerEnigma($player, $playerEnigmaRepository, $enigma);
+        // Si on as recuperer null c'est que l'enigme ne lui appartient pas
+        if ($playerEnigma == null) return new AccessDeniedException("Cette enigme ne fait pas partie de votre session");
+
+        switch ($playerEnigma->getSolved()) {
+
+            // On passe l'enigme en ouverte si elle ne l'etait pas
+            case 0 :
+                $playerEnigma->setSolved(1);
+                $em->persist($playerEnigma);
+                $em->flush();
+                break;
+
+            // Si elle est deja resolue on genere une exception
+            case 3 :
+                return new AccessDeniedException("Vous avez deja resolu cette enigme !");
+                break;
+        }
         return null;
     }
 
@@ -93,12 +99,16 @@ class PlayerServices
         if ($playerEnigma instanceof PlayerEnigma) {
             // On incremente le nombre de tentative
             $playerEnigma->setTry($playerEnigma->getTry() + 1);
+            // Si c'etait sa derniere chance on passe sa derniere chance a false
+            if ($this->isEndOfGame($player) && $player->getLastChance()) {
+                $player->setLastChance(false);
+                $em->persist($player);
+                $em->flush();
+            }
         }
 
         // On initialse le nombre de bon charactere a 0
         $goodChara = 0;
-        dump($answer);
-        dump($enigma->getAnswer());
 
         try {
             // On parcour chaque charactere de la reponse données par l'utilisateur
@@ -106,7 +116,6 @@ class PlayerServices
                 // Si le charactere de la bonne reponse corespond au charactere données un incremente goodChara de 1
                 if ($enigma->getAnswer()[$i] == $answer[$i]) $goodChara += 1;
             }
-            dump($goodChara);
         } catch (ErrorException $e) {
             return 1;
         }
@@ -238,7 +247,6 @@ class PlayerServices
 
     public function createListOtherPlayerForHelp(Player $player, Enigma $enigma, PlayerRepository $playerRepository, AdminRepository $adminRepository)
     {
-        ##TODO: Ajouter les admin dans la liste
         // On recupere son groupe pour la demande d'aide
         $team = $player->getTeam();
         // Sur le groupe on recupere la liste des autres joueur qui ont reussi l'enigme
@@ -250,78 +258,62 @@ class PlayerServices
         return $listOtherPlayer;
     }
 
-    public function isEndOfGame($object): bool
+    public function isEndOfGame(Player $object)
     {
-        if ($object->getDeadLine() < new \DateTime()) {
-            return true;
-        } else return false;
-    }
+        $date = new \DateTime();
+        $date->add(new \DateInterval("PT2H"));
 
-    public function isSessionSynchrone($object) {
-        if ($object instanceof Player) {
-            return $object->getTeam()->getSession()->getSynchrone();
-        } elseif ($object instanceof Team) {
-            return $object->getSession()->getSynchrone();
-        } elseif ($object instanceof  Session) {
-            return $object->getSynchrone();
-        } else {
-            return null;
-        }
-    }
-
-    public function setLastChanceTrueAndTeamEnableFalse(Player $player, Team $team, EntityManagerInterface $em) {
-        // Si la derniere chance du joueur est a false
-        if (!$player->getLastChance()) {
-            // On le passe a true
-            $player->setLastChance(1);
-            // On verifie si le groupe est deja desactiver
-            if ($team->isEnable()) {
-                $team->setEnable(false);
+        if ($object->getDeadLine() != null) {
+            try {
+                if ($object->getDeadLine() < $date) {
+                    return true;
+                } else return false;
+            } catch (\Exception $e) {
             }
-            $em->persist($player);
-            $em->persist($team);
-            $em->flush();
-            return true;
-        } else {
-            return false;
+        } else if ($object->getTeam()->getDeadLine() != null) {
+            if ($object->getDeadLine() < new \DateTime()) {
+                return true;
+            } else return false;
         }
+
+        return null;
     }
 
     public function EndOfGame(Player $player, FlashBagInterface $flashBag, EntityManagerInterface $em)
     {
-        // On recupere son groupe
-        $team = $player->getTeam();
+        switch ($this->isEndOfGame($player)) {
 
-        switch ($this->isSessionSynchrone($team)) {
-
-            // Si la session est une session synchrone
+            // Si le temps du jeux est bien depasser
             case true :
-                // Si le temps du jeux du groupe est bien depasser
-                if ($this->isEndOfGame($team)) {
-                    return $this->setLastChanceTrueAndTeamEnableFalse($player, $team, $em);
-                } else {
-                    $flashBag->add('error', "Votre temps de jeu n'est pas encore terminé");
-                    return null;
+                // Si le deadLine du joueur est null c'est que c'est une session synchrone
+                if ($player->getDeadLine() == null) {
+                    // On met donc le groupe en enable false
+                    $team = $player->getTeam();
+                    if ($team->isEnable()) {
+                        $team->setEnable(false);
+                        $em->persist($team);
+                        $em->flush();
+                    }
                 }
+                // Si le lastChance du joueur est a true alors on renvoie true pour qu'il soit rrediriger vers la page
+                // derniere chance
+                if ($player->getLastChance()) return true;
+                else return false;
                 break;
 
-            // Si la session n'est pas synchrone
+            // Si le temps du jeux du joueur n'est pas depasser
             case false :
-                // Si le temps du jeux du joueur est bien depasser
-                if ($this->isEndOfGame($player)) {
-                    return $this->setLastChanceTrueAndTeamEnableFalse($player, $team, $em);
-                } else {
-                    // C'est que le temps de jeux n'est pas depasser et donc on redirige vers
-                    // la liste des enigmes
-                    $flashBag->add('error', "Votre temps de jeu n'est pas encore terminé");
-                    return null;
-                }
+                // On redirige vers la liste des enigmes
+                $flashBag->add('error', "Votre temps de jeu n'est pas encore terminé");
+                return null;
                 break;
 
+            // Si la fonction isEndOfGame renvoie null c'est qu'il y a une erreur
             case null :
                 $flashBag->add('error', "Il y a une erreur avec votre session !");
                 return null;
                 break;
         }
+        return null;
     }
 }
