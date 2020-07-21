@@ -146,28 +146,30 @@ class AdminServices
     public function creerTaux(ArrayCollection $statistiques)
     {
         $taux = new ArrayCollection();
-        // Calcul du taux de précision, avec le nombre de succes sur le nombre d'essais
+        // Calcul du taux de fiabilité, avec le nombre de succes sur le nombre d'essais
         if($statistiques->get("try") != 0) {
-            $precision = ($statistiques->get("succes") / $statistiques->get("try")) * 100;
+            $fiabilite = ($statistiques->get("succes") / $statistiques->get("try")) * 100;
         }
         // Pour ne pas avoir un taux null en affichage, on initialise a 0
         else
         {
-            $precision = 0;
+            $fiabilite = 0;
         }
         //On calcule le nombre de succes sur le nombre d'essais, tout en sachant que dans les "ouverts" ne sont comptés
-        //que les enigmes ouvertes+1 essai minimum (Demande du client)
-        if($statistiques->get("openned") != 0)
+        //que les enigmes ouvertes avec 1 essai minimum (Demande du client)
+/*        if($statistiques->get("openned") != 0)
         {
             $efficacite = ($statistiques->get("succes") / $statistiques->get("openned")) * 100;
         }
         else{
             $efficacite = 0;
-        }
+        }*/
+        //calcul du taux d'efficacité
+        $efficacite = ($statistiques->get("succes")/$statistiques->get("maxEnigmes"))*100;
+
         //On attribue les valeurs reçues dans notre Array Collection
-        $reussite = ($statistiques->get("succes")/$statistiques->get("maxEnigmes"))*100;
-        $taux->set("rPrecision", $precision);
-        $taux->set("rReussite", $reussite);
+        $taux->set("rFiabilite", $fiabilite);
+        //$taux->set("rReussite", $reussite);
         $taux->set("rEfficacite",$efficacite);
 
         return $taux;

@@ -19,15 +19,20 @@ use App\Repository\AdminRepository;
 use App\Repository\AssetRepository;
 use App\Repository\EnigmaRepository;
 use App\Repository\PlayerEnigmaRepository;
+use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
 use App\Repository\SkillRepository;
 use App\Services\AdminServices;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * @Route("/admin")

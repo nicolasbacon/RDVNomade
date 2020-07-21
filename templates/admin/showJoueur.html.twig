@@ -7,7 +7,9 @@
     {% include "admin/navAdmin.html.twig" %}
 
 
-    <h1 class="col-12">Statistiques Joueur</h1>
+    <h1 class="col-6">Statistiques Joueur : {{ player.pseudo }}</h1>
+
+
 
     <h2>
         <div class="row">
@@ -24,11 +26,7 @@
     </div>
 
     <table class="table">
-        <tbody>
-        <tr>
-            <th>Pseudo</th>
-            <td>{{ player.pseudo }}</td>
-        </tr>
+
         <tr>
             <th>Photo</th>
             <td><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="20%"></td>
@@ -70,13 +68,8 @@
         </tr>
 
         <tr>
-            <th>Taux de Précision</th>
-            <td>{{ taux.get("rPrecision") }}%</td>
-        </tr>
-
-        <tr>
-            <th>Taux de Réussite</th>
-            <td>{{ taux.get("rReussite") }}%</td>
+            <th>Taux de fiabilité (Bonne réponses/Essais)</th>
+            <td>{{ taux.get("rFiabilite") }}%</td>
         </tr>
 
         <tr>
@@ -97,8 +90,8 @@
             <td>{{ player.nbrAcceptHelp }}</td>
         </tr>
 
-        </tbody>
     </table>
+    <a class="btn btn-success col-12" href="{{ path('team_show_admin', {'id': player.team.id}) }}">Retour au Groupe</a>
 
     <script>
         //radar
