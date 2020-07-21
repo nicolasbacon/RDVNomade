@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block meta %}
+<meta http-equiv="refresh" content="3;{{ path('player_list_enigmas') }}" />
+{% endblock %}
+
+{% block title %}Terminer{% endblock %}
+
+{% block body %}
+    <h1>Le jeux est terminé</h1>
+
+Il vous reste une derniere chance de repondre a l'enigme que vous souhaitez,
+    reflechissez bien car apres celle ci tout est fini !
+    ;)
+{% endblock %}

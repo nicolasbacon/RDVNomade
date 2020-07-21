@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Flex\Configurator\AbstractConfigurator;
 
 /**
  * @Route("/player")
@@ -135,7 +136,6 @@ class PlayerController extends AbstractController
         }
 
 
-
         return $this->render('player/new.html.twig', [
             'player' => $player,
             'form' => $form->createView(),
@@ -185,7 +185,7 @@ class PlayerController extends AbstractController
      */
     public function delete(Request $request, Player $player): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$player->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $player->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($player);
             $entityManager->flush();
@@ -249,7 +249,10 @@ class PlayerController extends AbstractController
             $exception = $playerServices->checkBeforShowEnigma($player, $playerEnigmaRepository, $enigma, $em);
             if ($exception != null) throw $exception;
 
+            // On rempli la liste des joueurs qui ont reussi l'enigme + admin
             $listOtherPlayer = $playerServices->createListOtherPlayerForHelp($player, $enigma, $playerRepository, $adminRepository);
+        } else {
+            throw $this->createAccessDeniedException("Vous devez etre un joueur !");
         }
 
         $form = $this->createForm(AnswerType::class);
@@ -285,10 +288,10 @@ class PlayerController extends AbstractController
         }
 
         return $this->render('player/showEnigma.html.twig', [
-                'enigma' => $enigma,
-                'form' => $form->createView(),
-                'listOtherPlayer' => $listOtherPlayer,
-            ]);
+            'enigma' => $enigma,
+            'form' => $form->createView(),
+            'listOtherPlayer' => $listOtherPlayer,
+        ]);
     }
 
     /**
@@ -306,6 +309,8 @@ class PlayerController extends AbstractController
         if ($player instanceof Player) {
             $listSkills = $playerServices->createTableSkill($player, $playerEnigmaRepository);
             $skillMax = $playerServices->findHigherSkill($player);
+        } else {
+            throw $this->createAccessDeniedException("Vous devez etre un joueur !");
         }
 
         return $this->render('player/showProgress.html.twig', [
@@ -314,4 +319,28 @@ class PlayerController extends AbstractController
             'player' => $player,
         ]);
     }
+
+    /**
+     * @Route("/terminated", name="player_terminated", methods={"GET"})
+     * @param EntityManagerInterface $em
+     * @return Response
+     */
+    public function terminated(EntityManagerInterface $em)
+    {
+        $player = $this->getUser();
+        $playerServices = new PlayerServices();
+
+        if ($player instanceof Player) {
+
+            $resultEOG = $playerServices->EndOfGame($player, $this->get('session')->getFlashBag(), $em);
+
+            if ($resultEOG === true) return $this->render('player/lastChance.html.twig');
+            elseif ($resultEOG === false) return $this->render('player/terminated.html.twig');
+            else return $this->redirectToRoute('player_list_enigmas');
+
+        } else {
+            throw $this->createAccessDeniedException("Vous devez etre un joueur !");
+        }
+    }
 }
+

@@ -6,6 +6,7 @@
     <canvas id="diagramSkill"></canvas>
     <canvas id="diagramAsset"></canvas>
 
+    <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
     <script>
         //radar
@@ -20,7 +21,7 @@
                 ],
 
                 datasets: [{
-                    label: "Tableau de vos Atouts",
+                    label: "Tableau de vos Competences",
                     data: [
                         {% for skill in tab %}
                         {{ skill.value }},

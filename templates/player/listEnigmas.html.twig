@@ -12,7 +12,7 @@
 
             {% include 'inc/menu.html.twig' %}
 
-            {% include "testTimer.html.twig" %}
+            <span id="timer"></span>
 
             <img class="photoProfil" src="{{ asset('uploads/' ~ app.user.photo) }}" alt="Photo profil" width="150"
                  height="170">
@@ -41,4 +41,8 @@
             {% endfor %}
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {% include "testTimer.html.twig" %}
 {% endblock %}
