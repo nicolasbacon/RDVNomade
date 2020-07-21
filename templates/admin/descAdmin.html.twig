@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block title %} Description De {{ player.pseudo }}{% endblock %}
+
+{% block body %}
+
+    <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
+    {% include "admin/navAdmin.html.twig" %}
+
+    <h1 class="row justify-content-center">Description</h1>
+
+<form action="{{ path('validation_description_admin', {'id': player.id}) }}" method="post">
+
+    <label for="descId" class="row justify-content-center"> De {{ player.pseudo }}</label>
+    <br>
+    <div class="row justify-content-center">
+    <textarea id="descId" name="descId" class="row justify-content-center" rows="5" cols="100" maxlength="255">{{ player.descByAdmin }}</textarea>
+    </div>
+    <div class="row justify-content-center">
+        <button type="submit" class="btn btn-success">Valider</button>
+    </div>
+</form>
+    <br>
+
+
+{%  endblock %}

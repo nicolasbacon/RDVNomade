@@ -480,4 +480,32 @@ class AdminController extends AbstractController
         $AdminService->validerAtout($player, $entityManager);
         return $this->showPlayer($player, $playerEnigmaRepository);
     }
+
+    /**
+     * @Route("/descriptionAdmin/{id}", name="admin_set_description", methods={"GET"})
+     * @param Player $player
+     * @return Response
+     */
+    public function describeAdmin(Player $player)
+    {
+        $personne = $this->getUser();
+        return $this->render('admin/descAdmin.html.twig', [
+            'player' => $player,
+            'personne' => $personne,
+        ]);
+    }
+
+    /**
+     * @Route("/validerDescription/{id}", name="validation_description_admin", methods={"POST"})
+     * @param Player $player
+     * @param PlayerEnigmaRepository $playerEnigmaRepository
+     */
+    public function validerDescription(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
+    {
+        //Fonction qui Récupère la description que l'administrateur a envoyé pour les attribuer au Joueur
+        $AdminService = new AdminServices();
+        $entityManager = $this->getDoctrine()->getManager();
+        $AdminService->validerDescription($player, $entityManager);
+        return $this->showPlayer($player, $playerEnigmaRepository);
+    }
 }

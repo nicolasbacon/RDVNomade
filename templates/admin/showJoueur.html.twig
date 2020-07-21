@@ -13,8 +13,8 @@
 
     <h2>
         <div class="row">
-            <a class="btn btn-primary col-6" href="{{ path('player_setAsset_joueur', {'id': player.id}) }}">Attribuer Atouts</a>
-            <button class="btn btn-primary col-6" type="button" data-toggle="collapse" data-target="#collapseAtouts" aria-expanded="false" aria-controls="collapseAtouts">
+            <a class="btn btn-warning col-6" href="{{ path('player_setAsset_joueur', {'id': player.id}) }}">Attribuer Atouts</a>
+            <button class="btn btn-warning col-6" type="button" data-toggle="collapse" data-target="#collapseAtouts" aria-expanded="false" aria-controls="collapseAtouts">
                 Afficher Diagramme
             </button>
         </div>
@@ -26,13 +26,12 @@
     </div>
 
     <table class="table">
-
         <tr>
             <th>Photo</th>
             <td><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="20%"></td>
         </tr>
         <tr>
-            <th>Description de l'Administrateur</th>
+            <th><a class="btn btn-info" href="{{ path('admin_set_description', {'id': player.id}) }}">Description de l'Administrateur</a></th>
             <td>{{ player.descByAdmin }}</td>
         </tr>
         <tr>

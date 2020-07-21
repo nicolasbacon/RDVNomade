@@ -252,4 +252,13 @@ class AdminServices
         }
         return $player;
     }
+
+    public function validerDescription(Player $player, ObjectManager $entityManager)
+    {
+        $valueReceived = $_POST['descId'];
+        $player->setDescByAdmin($valueReceived);
+        $entityManager->persist($player);
+        $entityManager->flush();
+        return $player;
+    }
 }
