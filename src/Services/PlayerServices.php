@@ -3,17 +3,18 @@
 
 namespace App\Services;
 
-
-use App\Controller\PlayerController;
 use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\PlayerEnigma;
+use App\Entity\Session;
 use App\Entity\Skill;
+use App\Entity\Team;
 use App\Repository\AdminRepository;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use ErrorException;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class PlayerServices
@@ -220,7 +221,8 @@ class PlayerServices
         return $listSkillsDef;
     }
 
-    public function findHigherSkill(Player $player): Skill {
+    public function findHigherSkill(Player $player): Skill
+    {
         $adminService = new AdminServices();
 
         $skillMax = null;
@@ -234,7 +236,8 @@ class PlayerServices
         return $skillMax;
     }
 
-    public function createListOtherPlayerForHelp(Player $player, Enigma $enigma, PlayerRepository $playerRepository, AdminRepository $adminRepository) {
+    public function createListOtherPlayerForHelp(Player $player, Enigma $enigma, PlayerRepository $playerRepository, AdminRepository $adminRepository)
+    {
         ##TODO: Ajouter les admin dans la liste
         // On recupere son groupe pour la demande d'aide
         $team = $player->getTeam();
@@ -245,5 +248,80 @@ class PlayerServices
             $listOtherPlayer[] = $admin;
         }
         return $listOtherPlayer;
+    }
+
+    public function isEndOfGame($object): bool
+    {
+        if ($object->getDeadLine() < new \DateTime()) {
+            return true;
+        } else return false;
+    }
+
+    public function isSessionSynchrone($object) {
+        if ($object instanceof Player) {
+            return $object->getTeam()->getSession()->getSynchrone();
+        } elseif ($object instanceof Team) {
+            return $object->getSession()->getSynchrone();
+        } elseif ($object instanceof  Session) {
+            return $object->getSynchrone();
+        } else {
+            return null;
+        }
+    }
+
+    public function setLastChanceTrueAndTeamEnableFalse(Player $player, Team $team, EntityManagerInterface $em) {
+        // Si la derniere chance du joueur est a false
+        if (!$player->getLastChance()) {
+            // On le passe a true
+            $player->setLastChance(1);
+            // On verifie si le groupe est deja desactiver
+            if ($team->isEnable()) {
+                $team->setEnable(false);
+            }
+            $em->persist($player);
+            $em->persist($team);
+            $em->flush();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function EndOfGame(Player $player, FlashBagInterface $flashBag, EntityManagerInterface $em)
+    {
+        // On recupere son groupe
+        $team = $player->getTeam();
+
+        switch ($this->isSessionSynchrone($team)) {
+
+            // Si la session est une session synchrone
+            case true :
+                // Si le temps du jeux du groupe est bien depasser
+                if ($this->isEndOfGame($team)) {
+                    return $this->setLastChanceTrueAndTeamEnableFalse($player, $team, $em);
+                } else {
+                    $flashBag->add('error', "Votre temps de jeu n'est pas encore terminé");
+                    return null;
+                }
+                break;
+
+            // Si la session n'est pas synchrone
+            case false :
+                // Si le temps du jeux du joueur est bien depasser
+                if ($this->isEndOfGame($player)) {
+                    return $this->setLastChanceTrueAndTeamEnableFalse($player, $team, $em);
+                } else {
+                    // C'est que le temps de jeux n'est pas depasser et donc on redirige vers
+                    // la liste des enigmes
+                    $flashBag->add('error', "Votre temps de jeu n'est pas encore terminé");
+                    return null;
+                }
+                break;
+
+            case null :
+                $flashBag->add('error', "Il y a une erreur avec votre session !");
+                return null;
+                break;
+        }
     }
 }
