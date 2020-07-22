@@ -70,7 +70,13 @@ class PlayerController extends AbstractController
         $form->handleRequest($request);
 
 
+
         if ($form->isSubmitted() && $form->isValid()) {
+            if(!filter_var($player->getMail(), FILTER_VALIDATE_EMAIL))
+            {
+                $this->addFlash('error', 'Adresse mail Incorrecte');
+                return $this->redirectToRoute('player_new');
+            }
             // Recherche une session active
             $session = $sessionRepository->findOneBy(['enable' => true]);
 
