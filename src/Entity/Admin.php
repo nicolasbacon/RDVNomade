@@ -21,7 +21,7 @@ class Admin extends User implements UserInterface
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->getIdUser();
     }
 
 

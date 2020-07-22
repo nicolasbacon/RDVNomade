@@ -100,6 +100,8 @@ class PlayerController extends AbstractController
                     $player->setNbrAcceptHelp(0);
                     // Initialise son nombre de demande d'aide recu a 0
                     $player->setNbrAskReceivedHelp(0);
+                    // Initialise son nombre de reponse pertinante a 0
+                    $player->setNbrRelevanceHelp(0);
 
                     //gestion de l'image
                     $brochureFile = $form->get('photo')->getData();
@@ -204,18 +206,23 @@ class PlayerController extends AbstractController
     public function listEnigmas(PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $entityManager): Response
     {
         $player = $this->getUser();
-        $playerServices = new PlayerServices();
 
         if ($player instanceof Player) {
+            // Si c'est la premiere fois qu'il se connecte
+            // on lui met donc sont deadline
+            if ($player->getDeadLine() == null && $player->getTeam()->getDeadLine() == null) {
+                $playerServices = new PlayerServices();
+                $time = $playerServices->calculDeadLine($player, $entityManager);
+            }
             // On recupere le deadline soit dans le joueur
-            if ($player->getDeadLine() != null) {
+            else if ($player->getDeadLine() != null) {
                 $time = $player->getDeadLine();
-            } else {
+            } else if ($player->getTeam()->getDeadLine() != null) {
                 // Soit dans le groupe
                 $time = $player->getTeam()->getDeadLine();
             }
             // On recupere la liste des enigmes du player
-            $listPlayerEnigma = $playerServices->recupererLaListeDesEnigmes($player, $playerEnigmaRepository, $entityManager);
+            $listPlayerEnigma = $playerEnigmaRepository->findPlayerEnigmaAndEnigmaByPlayer($player);
         } else {
             throw $this->createAccessDeniedException("Vous devez etre un joueur pour acceder a cette page !");
         }
@@ -257,9 +264,9 @@ class PlayerController extends AbstractController
 
             // On rempli la liste des joueurs qui ont reussi l'enigme + admin
             $listOtherPlayer = $playerServices->createListOtherPlayerForHelp($player, $enigma, $playerRepository, $adminRepository);
-        } else {
-            throw $this->createAccessDeniedException("Vous devez etre un joueur !");
-        }
+
+        } else throw $this->createAccessDeniedException("Vous devez etre un joueur !");
+
 
         $form = $this->createForm(AnswerType::class);
         $form->handleRequest($request);
@@ -300,6 +307,27 @@ class PlayerController extends AbstractController
             'form' => $form->createView(),
             'listOtherPlayer' => $listOtherPlayer,
         ]);
+    }
+
+    /**
+     * @Route("/help/{id}/{acceptHelp}/{relevanceHelp}", name="player_calcul_help", methods={"GET"})
+     * @param Player $playerAskRecevedHelp
+     * @param int $acceptHelp
+     * @param int $relevanceHelp
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function Help(Player $playerAskRecevedHelp, int $acceptHelp, int $relevanceHelp, EntityManagerInterface $entityManager)
+    {
+        $connectedPlayer = $this->getUser();
+        $playerServices = new PlayerServices();
+
+        // Si la personne qui demande de l'aide est bien un joueur
+        if ($connectedPlayer instanceof Player) {
+            $playerServices->calculHelp($connectedPlayer, $playerAskRecevedHelp, $acceptHelp, $relevanceHelp, $entityManager);
+        } else throw $this->createAccessDeniedException("Vous devez etre un joueur !");
+
+        return new Response();
     }
 
     /**

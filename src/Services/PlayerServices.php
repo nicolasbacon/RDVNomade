@@ -22,29 +22,29 @@ class PlayerServices
     {
     }
 
-    public function recupererLaListeDesEnigmes(Player $player, PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $entityManager)
+    public function calculDeadLine(Player $player, EntityManagerInterface $entityManager): \DateTime
     {
-        $listPlayerEnigma = $playerEnigmaRepository->findPlayerEnigmaAndEnigmaByPlayer($player);
+        $team = $player->getTeam();
+        $now = new \DateTime();
+        //Décalage Horaire de +2h par rapport au 00:00
+        $now->add(new \DateInterval('PT2H'));
 
-        if ($player->getTeam()->getDeadLine() == null && $player->getDeadLine() == null) {
-            $now = new \DateTime();
-            //Décalage Horaire de +2h par rapport au 00:00
-            $now->add(new \DateInterval('PT2H'));
+        $timestmpTempsJeu = $team->getTimeTeam()->getTimestamp();
+        $timestmpNow = $now->getTimestamp();
 
-            $timestmpTempsJeu = $player->getTeam()->getTimeTeam()->getTimestamp();
-            $timestmpNow = $now->getTimestamp();
-
-            $timestpdeadline = $timestmpNow + $timestmpTempsJeu;
-            $deadLine = new \DateTime();
-            $deadLine->setTimestamp($timestpdeadline);
+        $timestpdeadline = $timestmpNow + $timestmpTempsJeu;
+        $deadLine = new \DateTime();
+        $deadLine->setTimestamp($timestpdeadline);
+        if ($team->getSession()->getSynchrone()) {
+            $team->setDeadLine($deadLine);
+            $entityManager->persist($team);
+        } else {
             $player->setDeadLine($deadLine);
-
-
             $entityManager->persist($player);
-            $entityManager->flush();
         }
 
-        return $listPlayerEnigma;
+        $entityManager->flush();
+        return $deadLine;
     }
 
     public function isPlayerEnigma(Player $player, PlayerEnigmaRepository $playerEnigmaRepository, Enigma $enigma)
@@ -315,5 +315,28 @@ class PlayerServices
                 break;
         }
         return null;
+    }
+
+    public function calculHelp(Player $connectedPlayer, Player $playerAskRecevedHelp, int $acceptHelp, int $relevanceHelp, EntityManagerInterface $entityManager)
+    {
+        $connectedPlayer->setNbrAskHelp($connectedPlayer->getNbrAskHelp() + 1);
+        $entityManager->persist($connectedPlayer);
+        // Si la personne a qui il a demander de l'aide est bien un joueur
+        if ($playerAskRecevedHelp instanceof Player) {
+            $playerAskRecevedHelp->setNbrAskReceivedHelp($playerAskRecevedHelp->getNbrAskReceivedHelp() + 1);
+            $entityManager->persist($playerAskRecevedHelp);
+            // Si il a accepter de donné de l'aide
+            if ($acceptHelp > 0) {
+                $playerAskRecevedHelp->setNbrAcceptHelp($playerAskRecevedHelp->getNbrAcceptHelp() + 1);
+                $entityManager->persist($playerAskRecevedHelp);
+                // Si sa reponse etait pertinante
+                if ($relevanceHelp > 0) {
+                    $playerAskRecevedHelp->setNbrRelevanceHelp($playerAskRecevedHelp->getNbrRelevanceHelp() + 1);
+                    $entityManager->persist($playerAskRecevedHelp);
+                }
+            }
+        }
+        $entityManager->flush();
+
     }
 }

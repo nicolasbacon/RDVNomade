@@ -96,6 +96,11 @@ class Player extends User implements UserInterface
      */
     private $listPlayerAsset;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $nbrRelevanceHelp;
+
     public function __construct()
     {
         $this->playerEnigmas = new ArrayCollection();
@@ -338,6 +343,18 @@ class Player extends User implements UserInterface
     public function setChallenger(bool $challenger): self
     {
         $this->challenger = $challenger;
+
+        return $this;
+    }
+
+    public function getNbrRelevanceHelp(): ?int
+    {
+        return $this->nbrRelevanceHelp;
+    }
+
+    public function setNbrRelevanceHelp(int $nbrRelevanceHelp): self
+    {
+        $this->nbrRelevanceHelp = $nbrRelevanceHelp;
 
         return $this;
     }

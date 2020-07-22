@@ -68,21 +68,25 @@
                         <tbody>
                         {% for player in listOtherPlayer %}
                             <tr>
-                                <td>
-                                    {% if player.photo is defined %}
+                                {% if player.photo is defined %}
+                                    <td>
                                         <img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}"
                                              alt="Photo profil" width="150"
                                              height="170">
-                                    {% else %}
+                                    </td>
+                                {% else %}
+                                    <td>
                                         <img class="photoProfil" src="{{ asset('uploads/admin/Pandawasta.png') }}"
                                              alt="Photo profil" width="150"
                                              height="170">
-                                    {% endif %}
-                                </td>
+                                    </td>
+                                {% endif %}
                                 <td>
                                     {{ player.pseudo }}
-                                    <button class="btn border" style="padding: 0 50px 0 0" data-toggle="modal"
-                                            data-target="#askHelpModal" data-dismiss="modal">Help !</button>
+                                    <button class="btn border" style="padding: 0 50px 0 0"
+                                            onclick="recoverPlayer({{ player.id }})" data-toggle="modal"
+                                            data-target="#askHelpModal" data-dismiss="modal">Help !
+                                    </button>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -101,12 +105,38 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="helpModalLabel">Demander de l'aide</h5>
+                    <h5 class="modal-title" id="askHelpModalLabel">Demander de l'aide</h5>
                 </div>
                 <div class="modal-body">
                     La personne vous a-t'elle aidé ?
-                    <button>oui</button>
-                    <button>non</button>
+                    <button class="btn border" style="padding: 0 50px 0 0" onclick="increaseAcceptHelp()"
+                            data-toggle="modal"
+                            data-target="#relevanceHelpModal" data-dismiss="modal">Oui
+                    </button>
+                    <button onclick="sendRequest()" data-dismiss="modal">Non</button>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Relevance Help-->
+    <div class="modal fade bd-example-modal-lg" id="relevanceHelpModal" data-keyboard="false" tabindex="-1"
+         role="dialog"
+         aria-labelledby="relevanceHelpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="relevanceHelpModalLabel">Demander de l'aide</h5>
+                </div>
+                <div class="modal-body">
+                    Sa réponse était elle pertinente ?
+                    <button class="btn border" style="padding: 0 50px 0 0" onclick="increaseRelevanceHelp()"
+                            data-toggle="modal"
+                            data-dismiss="modal">Oui
+                    </button>
+                    <button onclick="sendRequest()" data-dismiss="modal">Non</button>
                 </div>
                 <div class="modal-footer">
                 </div>
@@ -117,6 +147,49 @@
 
 {% block javascripts %}
     <script>
-        $('')
+
+        let playerAskRecevedHelp = -1;
+        let acceptHelp = 0;
+        let relevanceHelp = 0;
+        let route;
+        // Pour supporter les anciennes version de navigateur
+        let xmlhttp;
+        if (window.XMLHttpRequest) {
+            // code for modern browsers
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for old IE browsers
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        function recoverPlayer(id) {
+            playerAskRecevedHelp = id;
+            updateRequest();
+        }
+
+        function increaseAcceptHelp() {
+            acceptHelp++;
+            updateRequest();
+        }
+
+        function increaseRelevanceHelp() {
+            relevanceHelp++;
+            updateRequest();
+            sendRequest();
+        }
+
+        function sendRequest() {
+            console.log(route);
+            xmlhttp.open("GET", route, true);
+            xmlhttp.send();
+        }
+
+        function updateRequest() {
+            route = "{{ path('player_calcul_help', {'id': "PLAYER", 'acceptHelp': "ACCEPTHELP", 'relevanceHelp': "RELEVANCEHELP"}) }}";
+            route = route.replace("PLAYER", playerAskRecevedHelp);
+            route = route.replace("ACCEPTHELP", acceptHelp);
+            route = route.replace("RELEVANCEHELP", relevanceHelp);
+        }
+
     </script>
 {% endblock %}
