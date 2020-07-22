@@ -1,9 +1,8 @@
 <script>
     if(document.readyState) {
             // Mise en place de la deadline en JavaScript
-            var stp = {{ time.timestamp }};
-            var stamp = (stp * 1000);
-            var deadline = new Date(stamp);
+            var deadline = new Date({{ time.timestamp }} * 1000);
+            var challenge = new Date({{ challenge.timestamp }} * 1000);
 
             // On créer la fonction d'interval de 1 seconde pour actualiser le compteur
             var x = setInterval(function () {

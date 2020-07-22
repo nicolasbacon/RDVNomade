@@ -208,6 +208,7 @@ class PlayerController extends AbstractController
         $player = $this->getUser();
 
         if ($player instanceof Player) {
+            $challenge = $player->getTeam()->getSession()->getTimeAlert();
             // Si c'est la premiere fois qu'il se connecte
             // on lui met donc sont deadline
             if ($player->getDeadLine() == null && $player->getTeam()->getDeadLine() == null) {
@@ -231,6 +232,7 @@ class PlayerController extends AbstractController
             'listPlayerEnigma' => $listPlayerEnigma,
             'time' => $time,
             'team' => $player->getTeam(),
+            'challenge' => $challenge,
         ]);
     }
 
