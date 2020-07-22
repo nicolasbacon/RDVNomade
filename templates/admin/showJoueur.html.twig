@@ -6,9 +6,9 @@
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
     {% include "admin/navAdmin.html.twig" %}
 
-
-    <h1 class="col-6">Statistiques Joueur : {{ player.pseudo }}</h1>
-
+    <div class="row justify-content-center">
+        <h1>{{ player.pseudo }}</h1>
+    </div>
 
 
     <h2>
@@ -31,7 +31,15 @@
             <td><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="20%"></td>
         </tr>
         <tr>
-            <th><a class="btn btn-info" href="{{ path('admin_set_description', {'id': player.id}) }}">Description de l'Administrateur</a></th>
+            <th><a class="btn btn-info" href="{{ path('admin_set_description', {'id': player.id}) }}">Description de l'Administrateur</a>
+                <div class="row justify-content-center">
+                    <div>
+                        {% if player.challenger %}
+                            <a><img src="{{ asset('uploads/admin/muscle.png') }}" width="4%"> Ce Joueur a le goût du risque !</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </th>
             <td>{{ player.descByAdmin }}</td>
         </tr>
         <tr>
@@ -41,7 +49,6 @@
                 </button>
                 <div class="collapse" id="collapseCompetences">
                     <div class="card card-body">
-
                         {% for skill in playerSkills %}
                             <a>{{ skill.name }} : {{ skill.value }}
                                 {% for skillmax in skillsMax%}
