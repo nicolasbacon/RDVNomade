@@ -71,16 +71,20 @@ class Player extends User implements UserInterface
     private $nbrAcceptHelp;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="listPlayer")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $team;
-
-    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $deadLine;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $challenger;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="listPlayer")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $team;
 
     /**
      * @ORM\OneToMany(targetEntity=PlayerEnigma::class, mappedBy="player")
@@ -322,6 +326,18 @@ class Player extends User implements UserInterface
                 $listPlayerAsset->setPlayer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isChallenger(): ?bool
+    {
+        return $this->challenger;
+    }
+
+    public function setChallenger(bool $challenger): self
+    {
+        $this->challenger = $challenger;
 
         return $this;
     }

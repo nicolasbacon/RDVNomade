@@ -92,6 +92,8 @@ class PlayerController extends AbstractController
                     $player->setPassword($hashed);
                     // Initialise sa derniere chance a faux
                     $player->setLastChance(true);
+                    // Initialise le gout du challenge a faux
+                    $player->setChallenger(false);
                     // Initialise son nombre de demande d'aide a 0
                     $player->setNbrAskHelp(0);
                     // Initialise son nombre d'aide acceptter a 0
