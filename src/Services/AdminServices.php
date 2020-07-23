@@ -68,7 +68,6 @@ class AdminServices
     public function creationSession(Session $session, ObjectManager $entityManager, int $nbrTeam, Team $team)
     {
         $entityManager->persist($session);
-        $entityManager->flush();
 
         $scale = 1;
         if($session->getSynchrone() == false)
@@ -88,10 +87,6 @@ class AdminServices
             //On met a false le debut du jeu
             $groupe->setBeginGame(false);
 
-            //Si la session est synchrone on met le temps dans le groupe
-            if ($session->getSynchrone() == true) {
-                $groupe->setTimeTeam($team->getTimeTeam());
-            }
             $entityManager->persist($groupe);
             $scale = $scale + 1;
         }

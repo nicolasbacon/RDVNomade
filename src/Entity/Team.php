@@ -3,12 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\TeamRepository;
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ *
  * @ORM\Entity(repositoryClass=TeamRepository::class)
  * @ORM\Table(name="`Team`")
  */
@@ -30,12 +30,6 @@ class Team
      * @ORM\Column(type="boolean")
      */
     private $enable;
-
-    /**
-     * @ORM\Column(type="time", nullable=true)
-     * @var DateTime
-     */
-    private $timeTeam;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -88,18 +82,6 @@ class Team
     public function setEnable(bool $enable): self
     {
         $this->enable = $enable;
-
-        return $this;
-    }
-
-    public function getTimeTeam()
-    {
-        return $this->timeTeam;
-    }
-
-    public function setTimeTeam($timeTeam): self
-    {
-        $this->timeTeam = $timeTeam;
 
         return $this;
     }

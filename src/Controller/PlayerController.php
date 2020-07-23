@@ -134,8 +134,11 @@ class PlayerController extends AbstractController
                         $playerEnigma->setTry(0);
                         $entityManager->persist($playerEnigma);
                     }
-
                 }
+            }
+            if ($player->getTeam() == null) {
+                $this->addFlash('error', 'Aucun groupe actif');
+                return $this->redirectToRoute('player_new');
             }
 
             $entityManager->persist($player);
@@ -239,6 +242,7 @@ class PlayerController extends AbstractController
             'time' => $time,
             'team' => $player->getTeam(),
             'challenge' => $challenge,
+            'lastPage' => $_SERVER['HTTP_REFERER'],
         ]);
     }
 

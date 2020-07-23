@@ -24,21 +24,23 @@ class PlayerServices
 
     public function calculDeadLine(Player $player, EntityManagerInterface $entityManager): \DateTime
     {
-        $team = $player->getTeam();
-        $now = new \DateTime();
-        //Décalage Horaire de +2h par rapport au 00:00
-        $now->add(new \DateInterval('PT2H'));
+        // On recupere la session et le groupe
+        $team =  $player->getTeam();
+        $session = $team->getSession();
 
-        $timestmpTempsJeu = $team->getTimeTeam()->getTimestamp();
-        $timestmpNow = $now->getTimestamp();
+        // Le timestamp de now avec decalage horaire
+        $timestmpNow = (new \DateTime())->add(new \DateInterval('PT2H'))->getTimestamp();
+        // Le timestamp de la durée du jeux
+        $timestpdeadline = $timestmpNow + $session->getGameTime()->getTimestamp();
 
-        $timestpdeadline = $timestmpNow + $timestmpTempsJeu;
-        $deadLine = new \DateTime();
-        $deadLine->setTimestamp($timestpdeadline);
-        if ($team->getSession()->getSynchrone()) {
+        if ($session->getSynchrone()) {
+            // On fait un objet DateTime avec le timestamp de fin de jeux
+            $deadLine = (new \DateTime())->setTimestamp($timestpdeadline);
             $team->setDeadLine($deadLine);
             $entityManager->persist($team);
         } else {
+            // On fait un objet DateTime avec le timestamp de fin de jeux
+            $deadLine = (new \DateTime())->setTimestamp($timestpdeadline);
             $player->setDeadLine($deadLine);
             $entityManager->persist($player);
         }
@@ -295,7 +297,7 @@ class PlayerServices
                         $em->flush();
                     }
                 }
-                // Si le lastChance du joueur est a true alors on renvoie true pour qu'il soit rrediriger vers la page
+                // Si le lastChance du joueur est a true alors on renvoie true pour qu'il soit rediriger vers la page
                 // derniere chance
                 if ($player->getLastChance()) return true;
                 else return false;
