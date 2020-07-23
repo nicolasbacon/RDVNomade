@@ -54,6 +54,12 @@ class Session
      */
     private $listEnigma;
 
+    /**
+     * @ORM\Column(type="time")
+     * @var \DateTime
+     */
+    private $gameTime;
+
     public function __construct()
     {
         $this->listTeam = new ArrayCollection();
@@ -178,6 +184,18 @@ class Session
         if ($this->listEnigma->contains($listEnigma)) {
             $this->listEnigma->removeElement($listEnigma);
         }
+
+        return $this;
+    }
+
+    public function getGameTime(): ?\DateTimeInterface
+    {
+        return $this->gameTime;
+    }
+
+    public function setGameTime(\DateTimeInterface $gameTime): self
+    {
+        $this->gameTime = $gameTime;
 
         return $this;
     }

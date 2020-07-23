@@ -31,11 +31,6 @@ class Player extends User implements UserInterface
     private $descByAdmin;
 
     /**
-     * @ORM\Column(type="time", nullable=true)
-     */
-    private $timePlayer;
-
-    /**
      * @ORM\Column(type="boolean")
      */
     private $lastChance;
@@ -132,18 +127,6 @@ class Player extends User implements UserInterface
     public function setDescByAdmin(?string $descByAdmin): self
     {
         $this->descByAdmin = $descByAdmin;
-
-        return $this;
-    }
-
-    public function getTimePlayer()
-    {
-        return $this->timePlayer;
-    }
-
-    public function setTimePlayer($timePlayer): self
-    {
-        $this->timePlayer = $timePlayer;
 
         return $this;
     }

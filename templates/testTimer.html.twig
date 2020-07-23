@@ -1,5 +1,6 @@
 <script>
     if(document.readyState) {
+
             // Mise en place de la deadline en JavaScript
             var deadline = new Date({{ time.timestamp }} * 1000);
             var challenge = new Date({{ challenge.timestamp }} * 1000);
@@ -31,7 +32,9 @@
                     clearInterval(x);
                     document.getElementById("timer").innerHTML = "Jeu Terminé";
                     // Si le groupe est toujours actif on redirige sinon on est toujours rediriger
-                    if ("{{ team.enable }}" == true) {
+                    if ("{{ lastPage }}" != "{{ url('player_terminated') }}") {
+                        console.log("{{ lastPage }}");
+                        console.log("{{ url('player_terminated') }}");
                         // On redirige vers le controleur de jeux terminer
                         document.location.href = "{{ path('player_terminated') }}";
                     }

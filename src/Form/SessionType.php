@@ -27,6 +27,7 @@ class SessionType extends AbstractType
                 'choice_label' => "name",
                     'multiple' => true])
             ->add('timeAlert', TimeType::class, ['label' => "Temps challenge (Avant la fin, ex : 5min) :"])
+            ->add('gameTime', TimeType::class, ['label' => "Temps de Jeu :", 'required'=>true])
         ;
     }
 
