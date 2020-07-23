@@ -508,4 +508,60 @@ class AdminController extends AbstractController
         $AdminService->validerDescription($player, $entityManager);
         return $this->showPlayer($player, $playerEnigmaRepository);
     }
+
+    /**
+     * @Route("/JoueurPDF/{id}", name="player_PDF_admin", methods={"GET"})
+     * @param Player $player
+     * @param PlayerEnigmaRepository $playerEnigmaRepository
+     * @return Response
+     */
+    public function playerPDF(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
+    {
+        //Grace
+        $personne = $this->getUser();
+        $AdminService = new AdminServices();
+
+        $statistiques = $AdminService->creerStatistiques($player);
+        $taux = $AdminService->creerTaux($statistiques);
+
+        $listes = $AdminService->creerListeCompetence($player, $playerEnigmaRepository);
+        $listePlayerSkill = $listes[0];
+        $listeSkillMax = $listes[1];
+
+        return $this->render('admin/adminPDF.html.twig', [
+            'player' => $player,
+            'personne' => $personne,
+            'statistiques' => $statistiques,
+            'taux' => $taux,
+            'playerSkills' => $listePlayerSkill,
+            'skillsMax' => $listeSkillMax,
+        ]);
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf($pdfOptions);
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('default/mypdf.html.twig', [
+            'title' => "Welcome to our PDF Test"
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser (force download)
+        $dompdf->stream("mypdf.pdf", [
+            "Attachment" => true
+        ]);
+    }
+
+
 }

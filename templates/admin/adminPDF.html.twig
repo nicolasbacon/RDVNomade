@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques Joueur{% endblock %}
+
+{% block body %}
+    <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
+    {% include "admin/navAdmin.html.twig" %}
+
+    <div class="row justify-content-center">
+        <h1>{{ player.pseudo }}</h1>
+    </div>
+
+
+    <h2>
+        <div class="row">
+            <a class="btn btn-warning col-6" href="{{ path('player_setAsset_joueur', {'id': player.id}) }}">Attribuer Atouts</a>
+            <button class="btn btn-warning col-6" type="button" data-toggle="collapse" data-target="#collapseAtouts" aria-expanded="true" aria-controls="collapseAtouts">
+                Afficher Diagramme
+            </button>
+        </div>
+    </h2>
+    <div class="collapse" id="collapseAtouts">
+        <div class="card card-body">
+            <canvas id="diagramAsset"></canvas>
+        </div>
+    </div>
+
+    <table class="table">
+        <tr>
+            <th>Photo</th>
+            <td><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="20%"></td>
+        </tr>
+        <tr>
+            <th><a class="btn btn-info" href="{{ path('admin_set_description', {'id': player.id}) }}">Description de l'Administrateur</a>
+                <div class="row justify-content-center">
+                    <div>
+                        {% if player.challenger %}
+                            <a><img src="{{ asset('uploads/admin/muscle.png') }}" width="4%"> Ce Joueur a le goût du risque !</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </th>
+            <td>{{ player.descByAdmin }}</td>
+        </tr>
+        <tr>
+            <th>Compétences</th>
+            <td>  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseCompetences" aria-expanded="true" aria-controls="collapseCompetences">
+                    Afficher
+                </button>
+                <div class="collapse" id="collapseCompetences">
+                    <div class="card card-body">
+                        {% for skill in playerSkills %}
+                            <a>{{ skill.name }} : {{ skill.value }}
+                                {% for skillmax in skillsMax%}
+                                    {% if skillmax.id == skill.id %}
+                                        / {{ skillmax.value }}
+                                    {% endif %}
+                                {% endfor %}
+                            </a>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+        <tr>
+            <th>Énigmes Réussies</th>
+            <td>{{ statistiques.get("succes") }} / {{ statistiques.get("maxEnigmes") }}</td>
+        </tr>
+        <tr>
+            <th>Avec Etoiles</th>
+            <td>{{ statistiques.get("starSucces") }} / {{ statistiques.get("starMax") }}</td>
+        </tr>
+
+        <tr>
+            <th>Taux de fiabilité (Bonne réponses/Essais)</th>
+            <td>{{ taux.get("rFiabilite") }}%</td>
+        </tr>
+
+        <tr>
+            <th>Taux d'Efficacité</th>
+            <td>{{ taux.get("rEfficacite") }}%</td>
+        </tr>
+
+        <tr>
+            <th>Aide Demandée</th>
+            <td>{{ player.nbrAskHelp }}</td>
+        </tr>
+        <tr>
+            <th>Aide reçue</th>
+            <td>{{ player.nbrAskReceivedHelp }}</td>
+        </tr>
+        <tr>
+            <th>Aide donnée</th>
+            <td>{{ player.nbrAcceptHelp }}</td>
+        </tr>
+
+    </table>
+    <a class="btn btn-success col-12" href="{{ path('team_show_admin', {'id': player.team.id}) }}">Retour au Groupe</a>
+
+    <script>
+        //radar
+        var ctxR = document.getElementById("diagramAsset").getContext('2d');
+        var myRadarChart = new Chart(ctxR, {
+            type: 'radar',
+            data: {
+                labels: [
+                    {% for asset in player.playerAssets %}
+                    {% if asset.value != 0 %}
+                    "{{ asset.asset.name }}",
+                    {% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: "Tableau d'atouts",
+                    data: [
+                        {% for asset in player.playerAssets%}
+                        {% if asset.value != 0 %}
+                        {{ asset.value }},
+                        {% endif %}
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                    ],
+                    borderWidth: 1,
+                    pointBackgroundColor:'rgba(213, 39, 236, 0.5)'
+                },
+                ]
+            },
+            options: {
+                responsive: true,
+                scale: {
+                    angleLines: {
+                        display: true
+                    },
+                    ticks: {
+                        suggestedMin: 0,
+                        suggestedMax: 10
+                    }
+                }
+            }
+        });
+    </script>
+
+{% endblock %}
