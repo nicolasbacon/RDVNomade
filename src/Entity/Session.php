@@ -113,7 +113,7 @@ class Session
         return $this;
     }
 
-    public function getTimeAlert(): \DateTime
+    public function getTimeAlert(): ?\DateTime
     {
         return $this->timeAlert;
     }

@@ -1,3 +1,4 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Statistiques Joueur{% endblock %}
@@ -5,11 +6,9 @@
 {% block body %}
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
     {% include "admin/navAdmin.html.twig" %}
-
     <div class="row justify-content-center">
         <h1>{{ player.pseudo }}</h1>
     </div>
-
 
     <h2>
         <div class="row">
@@ -98,6 +97,7 @@
 
     </table>
     <a class="btn btn-success col-12" href="{{ path('team_show_admin', {'id': player.team.id}) }}">Retour au Groupe</a>
+
 
     <script>
         //radar
