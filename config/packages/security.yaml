@@ -32,6 +32,7 @@ security:
 
         player:
             provider: provider_player
+            user_checker: App\Security\UserChecker
             pattern: ^/player
             anonymous: ~
             form_login:

@@ -42,7 +42,7 @@ class Team
     private $beginGame;
 
     /**
-     * @ORM\OneToMany(targetEntity=Player::class, mappedBy="team")
+     * @ORM\OneToMany(targetEntity=Player::class, mappedBy="team", orphanRemoval=true)
      */
     private $listPlayer;
 
