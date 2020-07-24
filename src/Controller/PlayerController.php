@@ -53,10 +53,7 @@ class PlayerController extends AbstractController
     /**
      * @Route("/logout", name="logout_player")
      */
-    public function logout()
-    {
-        $this->addFlash('sucess', 'Mauvais mot de passe !');
-    }
+    public function logout(){}
 
     /**
      * @Route("/", name="player_index", methods={"GET"})
@@ -90,14 +87,14 @@ class PlayerController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             if(!filter_var($player->getMail(), FILTER_VALIDATE_EMAIL))
             {
-                $this->addFlash('error', 'Adresse mail Incorrecte');
+                $this->addFlash('danger', 'Adresse mail Incorrecte');
                 return $this->redirectToRoute('player_new');
             }
             // Recherche une session active
             $session = $sessionRepository->findOneBy(['enable' => true]);
 
             if ($session == null) {
-                $this->addFlash('error', 'Aucune session active');
+                $this->addFlash('danger', 'Aucune session active');
                 return $this->redirectToRoute('player_new');
             }
             $teams = $session->getListTeam();
@@ -153,7 +150,7 @@ class PlayerController extends AbstractController
                 }
             }
             if ($player->getTeam() == null) {
-                $this->addFlash('error', 'Aucun groupe actif');
+                $this->addFlash('danger', 'Aucun groupe actif');
                 return $this->redirectToRoute('player_new');
             }
 
@@ -234,6 +231,7 @@ class PlayerController extends AbstractController
         $player = $this->getUser();
 
         if ($player instanceof Player) {
+            // Moment du challenge
             $challenge = $player->getTeam()->getSession()->getTimeAlert();
             // Si c'est la premiere fois qu'il se connecte
             // on lui met donc sont deadline
