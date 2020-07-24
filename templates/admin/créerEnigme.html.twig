@@ -6,8 +6,11 @@
 
     <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
     {% include "admin/navAdmin.html.twig" %}
+    <div class="row">
+    <a href="{{ path('gestion_enigme') }}" class="btn" style="padding: 0 5px 0 0"><i
+                class="fa fa-arrow-left fa-3x" aria-hidden="true"></i></a>
     <h1>Créer Nouvelle Enigme</h1>
-
+    </div>
     {{ include('enigma/_form.html.twig') }}
 
 {% endblock %}

@@ -4,7 +4,11 @@
 
 {% block body %}
     {% include "admin/navAdmin.html.twig" %}
+    <div class="row">
+    <a href="{{ path('gestion_session') }}" class="btn" style="padding: 0 5px 0 0"><i
+                class="fa fa-arrow-left fa-3x" aria-hidden="true"></i></a>
     <h1>Sessions</h1>
+    </div>
 
     <table class="table table-striped">
         <thead>
@@ -37,5 +41,4 @@
         {% endfor %}
         </tbody>
     </table>
-    <a class="btn btn-success" href="{{ path('gestion_session') }}">Retour Gestion</a>
 {% endblock %}

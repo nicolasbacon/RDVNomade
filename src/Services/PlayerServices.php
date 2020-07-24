@@ -155,37 +155,38 @@ class PlayerServices
         // On recherche toutes les enigmes que le player a reussi
         $listPlayerEnigma = $playerEnigmaRepository->findBy(['player' => $player, 'solved' => 3]);
 
-        // On recupere toutes les competences des enigmes qu'il as reussi et on les stocke dans le tableau temporaire
+        // On recupere toutes les competences des enigmes qu'il as reussi et on les stock dans le tableau temporaire
         foreach ($listPlayerEnigma as $playerEnigma) {
             foreach ($playerEnigma->getEnigma()->getListSkill() as $skill) {
-                $listSkillsTmp[] = $skill;
+                //Il faut ABSOLUMENT Cloner la liste et pas la copier car sinon les objets seront les memes,
+                //Et ce ne sera pas bon
+                $listSkillsTmp[] = clone $skill;
             }
         }
-
-        // On parcour toutes les competences du tableau temporaire
+        // On parcourt toutes les competences du tableau temporaire
         foreach ($listSkillsTmp as $skillTmp) {
 
-            // Si le tableau definitif est vide on met la premiere competences dedans
+            // Si le tableau definitif est vide on met la premiere competence dedans
             if (empty($listSkillsDef)) {
                 $listSkillsDef[] = $skillTmp;
             } else {
-                // Sinon on stocke la taille du tableau definitif
+                // Sinon on stock la taille du tableau definitif
                 $length = count($listSkillsDef);
-                // On le parcour
+                // On le parcourt
                 for ($i = 0; $i < $length; $i++) {
                     // Si l'id de la competence sur la quelle on est dans le tableau temporaire
                     // est la meme que celle du tableau definitif
-                    if ($listSkillsDef[$i]->getId() == $skillTmp->getId()) {
-                        // On additionne les deux valeur
+                    if ($listSkillsDef[$i]->getName() === $skillTmp->getName()) {
                         $listSkillsDef[$i]->setValue($listSkillsDef[$i]->getValue() + $skillTmp->getValue());
                         // Et on quitte la boucle pour qu'il arrete de rechercher
                         break;
                         // Sinon on ajoute la competence dans le tableau definitif
-                    } elseif ($i == $length - 1) $listSkillsDef[] = $skillTmp;
+                    } elseif ($i == $length - 1) {
+                        $listSkillsDef[] = $skillTmp;
+                    }
                 }
             }
         }
-
         return $listSkillsDef;
     }
 

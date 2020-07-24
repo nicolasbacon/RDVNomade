@@ -180,21 +180,23 @@ class AdminServices
         // (Non additionnées, les doublons restent)
         foreach ($liste as $playerEnigma) {
             foreach ($playerEnigma->getEnigma()->getListSkill() as $skill) {
-                $listSkillsTmp[] = $skill;
+                //Il faut ABSOLUMENT Cloner la liste et pas la copier car sinon les objets seront les memes,
+                //Et ce ne sera pas bon
+                $listSkillsTmp[] = clone $skill;
             }
         }
         //On parcourt la liste des compétences temporaire du dessus
         foreach ($listSkillsTmp as $skillTmp) {
             // Si la liste de Compétences Max que l'on peut avoir n'a pas été initialisée, on le fait ici
             if (empty($listSkillsMax)) {
-                $listSkillsMax[] = $skillTmp;
+                $listSkillsMax[] = clone $skillTmp;
             }
             //On verifie que dans la liste de compétence max, la compétence n'existe pas deja, si elle existe on incrémente la valeur
             //Si la ligne n'existe pas, on créer la ligne.
             else {
                 $length = count($listSkillsMax);
                 for ($i = 0; $i < $length; $i++) {
-                    if ($listSkillsMax[$i]->getId() == $skillTmp->getId()) {
+                    if ($listSkillsMax[$i]->getName() === $skillTmp->getName()) {
                         $listSkillsMax[$i]->setValue($listSkillsMax[$i]->getValue() + $skillTmp->getValue());
                         break;
                     } elseif ($i == $length - 1) $listSkillsMax[] = $skillTmp;

@@ -4,8 +4,11 @@
 {% block body %}
     <link rel="stylesheet" href="{{ asset ("css/appAdmin.css") }}">
     {% include "admin/navAdmin.html.twig" %}
-
+    <div class="row">
+    <a href="{{ path('gestion_session') }}" class="btn" style="padding: 0 5px 0 0"><i
+                class="fa fa-arrow-left fa-3x" aria-hidden="true"></i></a>
     <h1>Créer Nouvelle Session</h1>
+    </div>
 <div class="col-12 align-content-center" style="margin-left: 100px">
 
     {{ include('session/_form.html.twig') }}

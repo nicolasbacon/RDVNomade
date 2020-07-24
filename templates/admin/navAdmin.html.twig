@@ -1,7 +1,11 @@
+<link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
 <nav class="navbar navbar-light bg-light">
   <span class="navbar-text">
     Interface Administrateur {{ personne.pseudo }}
   </span>
+
+    <a><img src="{{ asset('uploads/admin/rdvnomade.png') }}" width="15%"></a>
+
   <span class="navbar-text">
     <a class="btn btn-outline-secondary" href="{{ path('home_admin') }}">Home</a>
   </span>
