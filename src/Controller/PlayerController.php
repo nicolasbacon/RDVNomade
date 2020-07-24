@@ -214,6 +214,7 @@ class PlayerController extends AbstractController
      */
     public function listEnigmas(PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $entityManager): Response
     {
+        $lastPage = null;
         $player = $this->getUser();
 
         if ($player instanceof Player) {
@@ -237,12 +238,14 @@ class PlayerController extends AbstractController
             throw $this->createAccessDeniedException("Vous devez etre un joueur pour acceder a cette page !");
         }
 
+        if (isset($_SERVER['HTTP_REFERER'])) $lastPage = $_SERVER['HTTP_REFERER'];
+
         return $this->render('player/listEnigmas.html.twig', [
             'listPlayerEnigma' => $listPlayerEnigma,
             'time' => $time,
             'team' => $player->getTeam(),
             'challenge' => $challenge,
-            'lastPage' => $_SERVER['HTTP_REFERER'],
+            'lastPage' => $lastPage,
         ]);
     }
 

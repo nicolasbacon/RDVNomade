@@ -82,7 +82,7 @@ class Player extends User implements UserInterface
     private $team;
 
     /**
-     * @ORM\OneToMany(targetEntity=PlayerEnigma::class, mappedBy="player")
+     * @ORM\OneToMany(targetEntity=PlayerEnigma::class, mappedBy="player", orphanRemoval=true)
      */
     private $playerEnigmas;
 

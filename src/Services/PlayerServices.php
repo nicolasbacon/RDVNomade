@@ -33,12 +33,7 @@ class PlayerServices
         // Le timestamp de la durée du jeux
         $timestpdeadline = $timestmpNow + $session->getGameTime()->getTimestamp();
 
-        if ($session->getSynchrone()) {
-            // On fait un objet DateTime avec le timestamp de fin de jeux
-            $deadLine = (new \DateTime())->setTimestamp($timestpdeadline);
-            $team->setDeadLine($deadLine);
-            $entityManager->persist($team);
-        } else {
+        if (!$session->getSynchrone()) {
             // On fait un objet DateTime avec le timestamp de fin de jeux
             $deadLine = (new \DateTime())->setTimestamp($timestpdeadline);
             $player->setDeadLine($deadLine);

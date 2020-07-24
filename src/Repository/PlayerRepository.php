@@ -14,11 +14,11 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Player[]    findAll()
  * @method Player[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PlayerRepository extends ServiceEntityRepository
+class PlayerRepository extends UserRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Player::class);
+        parent::__construct($registry);
     }
 
     public function findSuccessfulPlayers($enigme, $team)
@@ -33,6 +33,16 @@ class PlayerRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
+    }
+
+    public function findByUniquePseudo(array $criteria)
+    {
+        return $this->findBy($criteria);
+    }
+
+    public function findByUniqueMail(array $criteria)
+    {
+        return $this->findBy($criteria);
     }
 
     // /**

@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Admin;
+use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -12,11 +14,25 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Admin[]    findAll()
  * @method Admin[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AdminRepository extends ServiceEntityRepository
+class AdminRepository extends UserRepository
 {
+    /**
+     * AdminRepository constructor.
+     * @param ManagerRegistry $registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Admin::class);
+        parent::__construct($registry);
+    }
+
+    public function findByUniquePseudo(array $criteria)
+    {
+        return $this->findBy($criteria);
+    }
+
+    public function findByUniqueMail(array $criteria)
+    {
+        return $this->findBy($criteria);
     }
 
     // /**
@@ -47,4 +63,5 @@ class AdminRepository extends ServiceEntityRepository
         ;
     }
     */
+
 }
