@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 /**
  * @Route("/player")
@@ -28,10 +29,25 @@ class PlayerController extends AbstractController
 {
     /**
      * @Route("/login", name="login_player", methods={"GET","POST"})
+     * @param AuthenticationUtils $authenticationUtils
+     * @return Response
      */
-    public function login()
+    public function login(AuthenticationUtils $authenticationUtils)
     {
-        return $this->render('player/login.html.twig', []);
+        $message = null;
+
+        $error = $authenticationUtils->getLastAuthenticationError();
+        if($error != null)
+        {
+            $message = $error->getMessage();
+            if($message==="Bad credentials.")
+            {
+                $message = "Pseudo Incorrect";
+            }
+        }
+        return $this->render('player/login.html.twig', [
+            'error' => $message,
+        ]);
     }
 
     /**

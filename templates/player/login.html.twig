@@ -3,6 +3,9 @@
 {% block body %}
     <link rel="stylesheet" href="{{ asset ("css/appPlayer.css") }}">
 
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
 
     <form method="post">
         <div class="row">
