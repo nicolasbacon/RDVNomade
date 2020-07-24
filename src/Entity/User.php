@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @UniqueEntity(fields={"pseudo"}, message="Ce pseudo est deja utilisé")
- * @UniqueEntity("mail", message="Cet email est deja utilisé")
+ * @UniqueEntity(fields={"mail"}, message="Cet email est deja utilisé")
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
@@ -25,13 +25,17 @@ abstract class User
     private $id;
 
     /**
+     * @Assert\NotBlank(message="Veuillez remplir le champ pseudo")
+     * @Assert\Length(max="255", maxMessage="Max 255 caractères")
      * @ORM\Column(type="string", length=255, unique=true)
      */
     private $pseudo;
 
     /**
+     * @Assert\NotBlank(message="Veuillez remplir le champ mail")
+     * @Assert\Length(max="255", maxMessage="Max 255 caractères")
+     * @Assert\Email(message="Ceci n'est pas une adresse mail valide")
      * @ORM\Column(type="string", length=255)
-     * @Assert\Email(message="Ceci n'est une adresse mail valide")
      */
     private $mail;
 

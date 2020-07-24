@@ -32,7 +32,7 @@
                     clearInterval(x);
                     document.getElementById("timer").innerHTML = "Jeu Terminé";
                     // Si le groupe est toujours actif on redirige sinon on est toujours rediriger
-                    if ("{{ lastPage }}" != "{{ url('player_terminated') }}") {
+                    if ("{{ lastPage }}" != null && "{{ lastPage }}" != "{{ url('player_terminated') }}") {
                         console.log("{{ lastPage }}");
                         console.log("{{ url('player_terminated') }}");
                         // On redirige vers le controleur de jeux terminer
