@@ -33,7 +33,7 @@ class AdminServices
             $now->add(new \DateInterval('PT2H'));
 
             //Conversion des temps en timestamp pour pouvoir les additionner, afin de créer l'heure de fin de jeu.
-            $tempsdejeu = $team->getTimeTeam();
+            $tempsdejeu = $team->getSession()->getGameTime();
             $timestmpTempsJeu = $tempsdejeu->getTimestamp();
             $timestmpNow = $now->getTimestamp();
 
