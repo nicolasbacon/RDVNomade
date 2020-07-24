@@ -8,8 +8,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @UniqueEntity(fields={"pseudo"}, message="Ce pseudo est deja utilisé")
- * @UniqueEntity(fields={"mail"}, message="Cet email est deja utilisé")
+ * @UniqueEntity(fields={"pseudo"}, message="Ce pseudo est deja utilisé", repositoryMethod="findByUniquePseudo")
+ * @UniqueEntity(fields={"mail"}, message="Cet email est deja utilisé", repositoryMethod="findByUniqueMail")
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
