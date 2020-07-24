@@ -8,8 +8,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @UniqueEntity(fields={"pseudo"}, message="Ce pseudo est deja utilisé", repositoryMethod="findByUniquePseudo")
- * @UniqueEntity(fields={"mail"}, message="Cet email est deja utilisé", repositoryMethod="findByUniqueMail")
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
@@ -35,7 +33,7 @@ abstract class User
      * @Assert\NotBlank(message="Veuillez remplir le champ mail")
      * @Assert\Length(max="255", maxMessage="Max 255 caractères")
      * @Assert\Email(message="Ceci n'est pas une adresse mail valide")
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $mail;
 

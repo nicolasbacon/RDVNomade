@@ -14,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Admin[]    findAll()
  * @method Admin[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AdminRepository extends UserRepository
+class AdminRepository extends ServiceEntityRepository
 {
     /**
      * AdminRepository constructor.
@@ -22,7 +22,7 @@ class AdminRepository extends UserRepository
      */
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry);
+        parent::__construct($registry, Admin::class);
     }
 
     public function findByUniquePseudo(array $criteria)

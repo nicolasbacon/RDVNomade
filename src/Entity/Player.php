@@ -6,10 +6,18 @@ use App\Repository\PlayerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=PlayerRepository::class)
+ * @UniqueEntity(fields={"pseudo"},
+ *     entityClass="App\Entity\User",
+ *      message="Ce pseudo est deja utilisé", repositoryMethod="findByUniquePseudo")
+ * @UniqueEntity(fields={"mail"},
+ *     entityClass="App\Entity\User",
+ *      message="Cet email est deja utilisé", repositoryMethod="findByUniqueMail")
  */
 class Player extends User implements UserInterface
 {

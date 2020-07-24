@@ -14,11 +14,15 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Player[]    findAll()
  * @method Player[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PlayerRepository extends UserRepository
+class PlayerRepository extends ServiceEntityRepository
 {
+    /**
+     * PlayerRepository constructor.
+     * @param ManagerRegistry $registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry);
+        parent::__construct($registry, Player::class);
     }
 
     public function findSuccessfulPlayers($enigme, $team)
