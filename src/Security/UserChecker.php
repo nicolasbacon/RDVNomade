@@ -18,7 +18,7 @@ class UserChecker implements UserCheckerInterface
         {
             if($user->getTeam()->getBeginGame() == false)
             {
-                throw new AuthenticationException("Le jeu n'as pas commencer");
+                throw new AuthenticationException("Le jeu n'a pas commencé !");
             }
         }
         return;
