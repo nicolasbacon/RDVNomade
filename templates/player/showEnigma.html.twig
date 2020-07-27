@@ -182,6 +182,9 @@
             console.log(route);
             xmlhttp.open("GET", route, true);
             xmlhttp.send();
+            playerAskRecevedHelp = -1;
+            acceptHelp = 0;
+            relevanceHelp = 0;
         }
 
         function updateRequest() {
