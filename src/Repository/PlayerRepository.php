@@ -25,7 +25,7 @@ class PlayerRepository extends ServiceEntityRepository
         parent::__construct($registry, Player::class);
     }
 
-    public function findSuccessfulPlayers($enigme, $team)
+    public function findSuccessfullPlayers($enigme, $team)
     {
         return $this->createQueryBuilder('p')
             ->join('p.playerEnigmas', 'pe')

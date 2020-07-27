@@ -8,6 +8,7 @@ use App\Entity\Player;
 use App\Entity\PlayerEnigma;
 use App\Entity\Skill;
 use App\Repository\AdminRepository;
+use App\Repository\EnigmaRepository;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -248,7 +249,7 @@ class PlayerServices
         // On recupere son groupe pour la demande d'aide
         $team = $player->getTeam();
         // Sur le groupe on recupere la liste des autres joueur qui ont reussi l'enigme
-        $listOtherPlayer = $playerRepository->findSuccessfulPlayers($enigma, $team);
+        $listOtherPlayer = $playerRepository->findSuccessfullPlayers($enigma, $team);
         $listAdmin = $adminRepository->findAll();
         foreach ($listAdmin as $admin) {
             $listOtherPlayer[] = $admin;
@@ -335,6 +336,24 @@ class PlayerServices
             }
         }
         $entityManager->flush();
+    }
 
+    public function challenge(Player $connectedPlayer, EntityManagerInterface $em, EnigmaRepository $enigmaRepository) {
+
+        $team = $connectedPlayer->getTeam();
+        $session = $team->getSession();
+
+        // On instancie la liste qui contiendras
+
+        // Si c'est une session synchrone il faut regarder les enigmes non resolue par le groupe
+        if ($session->getSynchrone()) {
+            // On recupere les joueurs du groupe
+            $listPlayer = $team->getListPlayer();
+            // On parcour tous les joueurs
+            foreach ($listPlayer as $player) {
+                $listEnigma = $enigmaRepository->findEnigmasNotSolved($player);
+            }
+            die();
+        }
     }
 }

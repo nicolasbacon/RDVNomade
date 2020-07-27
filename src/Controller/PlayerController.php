@@ -9,6 +9,7 @@ use App\Entity\Skill;
 use App\Form\AnswerType;
 use App\Form\PlayerType;
 use App\Repository\AdminRepository;
+use App\Repository\EnigmaRepository;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
@@ -37,11 +38,9 @@ class PlayerController extends AbstractController
         $message = null;
 
         $error = $authenticationUtils->getLastAuthenticationError();
-        if($error != null)
-        {
+        if ($error != null) {
             $message = $error->getMessage();
-            if($message==="Bad credentials.")
-            {
+            if ($message === "Bad credentials.") {
                 $message = "Pseudo Incorrect";
             }
         }
@@ -53,7 +52,9 @@ class PlayerController extends AbstractController
     /**
      * @Route("/logout", name="logout_player")
      */
-    public function logout(){}
+    public function logout()
+    {
+    }
 
     /**
      * @Route("/", name="player_index", methods={"GET"})
@@ -83,10 +84,8 @@ class PlayerController extends AbstractController
         $form->handleRequest($request);
 
 
-
         if ($form->isSubmitted() && $form->isValid()) {
-            if(!filter_var($player->getMail(), FILTER_VALIDATE_EMAIL))
-            {
+            if (!filter_var($player->getMail(), FILTER_VALIDATE_EMAIL)) {
                 $this->addFlash('danger', 'Adresse mail Incorrecte');
                 return $this->redirectToRoute('player_new');
             }
@@ -238,8 +237,7 @@ class PlayerController extends AbstractController
             if ($player->getDeadLine() == null && $player->getTeam()->getDeadLine() == null) {
                 $playerServices = new PlayerServices();
                 $time = $playerServices->calculDeadLine($player, $entityManager);
-            }
-            // On recupere le deadline soit dans le joueur
+            } // On recupere le deadline soit dans le joueur
             else if ($player->getDeadLine() != null) {
                 $time = $player->getDeadLine();
             } else if ($player->getTeam()->getDeadLine() != null) {
@@ -407,5 +405,24 @@ class PlayerController extends AbstractController
             throw $this->createAccessDeniedException("Vous devez etre un joueur !");
         }
     }
-}
 
+    /**
+     * @Route("/challenge", name="player_challenge", methods={"GET"})
+     * @param EntityManagerInterface $em
+     * @param EnigmaRepository $enigmaRepository
+     * @return Response
+     */
+    public function challenge(EntityManagerInterface $em, EnigmaRepository $enigmaRepository)
+    {
+        $player = $this->getUser();
+        $playerServices = new PlayerServices();
+
+        if ($player instanceof Player) {
+            $playerServices->challenge($player, $em, $enigmaRepository);
+        } else {
+            throw $this->createAccessDeniedException("Vous devez etre un joueur !");
+        }
+
+        return $this->render('player/test.html.twig');
+    }
+}

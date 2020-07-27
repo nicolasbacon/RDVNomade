@@ -28,9 +28,12 @@
                 //On actualise la balise de notre Timer id=timer pour notre affichage
                 document.getElementById("timer").innerHTML = hours + "h "
                     + minutes + "m " + seconds + "s ";
+                // Challenge
                 if (distanceChallenge < 0 && distanceFinJeu > 0 && boolAlert === false) {
                     boolAlert = true
-                    window.alert("Il vous reste moins d'une minute, voulez vous essayer une autre énigme ?");
+                    $('#challengeModal').modal({
+                        show: true
+                    })
                 }
                 // Si jamais notre compteur arrive a ZERO on arrete le chrono + fonction a faire
                 if (distanceFinJeu < 0) {
