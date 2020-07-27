@@ -4,7 +4,7 @@ namespace App\Form;
 
 use App\Entity\Enigma;
 use App\Entity\Skill;
-use Doctrine\DBAL\Types\BooleanType;
+use App\Repository\SkillRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -25,7 +25,10 @@ class EnigmaType extends AbstractType
                 [
                  'label' => "Liste Compétences : ",
                  'class'=> Skill::class,
-                 'choice_label'=> "name",
+                 'query_builder' => function(SkillRepository $repo) {
+                        return $repo->findAllOrdered();
+                        },
+                 'choice_label'=> "namevalue",
                  'multiple' => true])
         ;
     }

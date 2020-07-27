@@ -55,4 +55,9 @@ class Skill
 
         return $this;
     }
+
+    public function getNamevalue()
+    {
+        return $this->getName()." -- ".$this->getValue();
+    }
 }

@@ -17,6 +17,7 @@
             <th>Description</th>
             <th>Réponse</th>
             <th>Enigme avec Etoile</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -26,7 +27,36 @@
                 <td>{{ enigma.description }}</td>
                 <td>{{ enigma.answer }}</td>
                 <td>{{ enigma.star ? 'Oui' : 'Non' }}</td>
+                <!-- Button trigger modal -->
+
+                <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal{{ enigma.id }}">
+                        Supprimer
+                    </button>
+                </td>
             </tr>
+            <!-- Modal -->
+            <div class="modal fade" id="Modal{{ enigma.id }}" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ModalLongTitle">Supprimer l'enigme : {{ enigma.name }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer cette Enigme ?<br>
+                            Vérifiez qu'elle n'est liée à aucune Session <br>
+                            sinon vous ne pourrez pas effectuer cette action
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                            <a class="btn btn-danger" href="{{ path('delete_une_enigme', {'id': enigma.id}) }}">Supprimer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         {% else %}
             <tr>
                 <td colspan="8">Pas d'égnigmes</td>

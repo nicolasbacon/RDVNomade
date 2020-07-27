@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\PlayerAsset;
 use App\Entity\Session;
@@ -10,6 +11,7 @@ use App\Entity\Team;
 use App\Repository\AssetRepository;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\SessionRepository;
+use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ObjectManager;
 
@@ -257,5 +259,46 @@ class AdminServices
         $entityManager->persist($player);
         $entityManager->flush();
         return $player;
+    }
+
+    public function deleteLastSession(ObjectManager $entityManager, SessionRepository $sr, UserRepository $ur)
+    {
+        $Listsession = $sr->findLast();
+        foreach ($Listsession as $session) {
+            if ($session instanceof Session)
+            {
+                $listeTeam = $session->getListTeam();
+                foreach ($listeTeam as $team)
+                {
+                    $listePlayers = $team->getListPlayer();
+                    foreach ($listePlayers as $player)
+                    {
+                        $idUser = $player->getIdUser();
+                        $entityManager->remove($ur->find($idUser));
+                        dump("oui");
+                    }
+                }
+                $entityManager->remove($session);
+                try {
+                    $entityManager->flush();
+                    return 1;
+                }catch (\Exception $exception){
+                    return 0;
+                }
+
+            }
+        }
+    }
+
+    public function deleteEnigme(Enigma $enigme, ObjectManager $entityManager)
+    {
+        try {
+            $entityManager->remove($enigme);
+            $entityManager->flush();
+            return 1;
+        }catch (\Exception $exception)
+        {
+            return 0;
+        }
     }
 }
