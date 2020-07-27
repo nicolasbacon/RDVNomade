@@ -3,7 +3,8 @@
 
             // Mise en place de la deadline en JavaScript
             var deadline = new Date({{ time.timestamp }} * 1000);
-            var challenge = new Date({{ challenge.timestamp }} * 1000);
+            var challenge = new Date(({{ time.timestamp }} - {{ challenge.timestamp }}) * 1000);
+            var boolAlert = false;
 
             // On créer la fonction d'interval de 1 seconde pour actualiser le compteur
             var x = setInterval(function () {
@@ -13,22 +14,26 @@
                 now.setHours(now.getHours() + 2);
 
                 // On calcule la différence entre nos deux temps
-                var distance = deadline - now;
+                var distanceFinJeu = deadline - now;
+                var distanceChallenge = challenge - now;
 
                 // Pour les heures les minutes et les secondes on les récupère dans la différence
-                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var hours = Math.floor((distanceFinJeu % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 hours = pad2(hours);
-                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var minutes = Math.floor((distanceFinJeu % (1000 * 60 * 60)) / (1000 * 60));
                 minutes = pad2(minutes);
-                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                var seconds = Math.floor((distanceFinJeu % (1000 * 60)) / 1000);
                 seconds = pad2(seconds);
 
                 //On actualise la balise de notre Timer id=timer pour notre affichage
                 document.getElementById("timer").innerHTML = hours + "h "
                     + minutes + "m " + seconds + "s ";
-
+                if (distanceChallenge < 0 && distanceFinJeu > 0 && boolAlert === false) {
+                    boolAlert = true
+                    window.alert("Il vous reste moins d'une minute, voulez vous essayer une autre énigme ?");
+                }
                 // Si jamais notre compteur arrive a ZERO on arrete le chrono + fonction a faire
-                if (distance < 0) {
+                if (distanceFinJeu < 0) {
                     clearInterval(x);
                     document.getElementById("timer").innerHTML = "Jeu Terminé";
                     // Si le groupe est toujours actif on redirige sinon on est toujours rediriger

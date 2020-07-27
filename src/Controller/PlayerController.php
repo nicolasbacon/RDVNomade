@@ -340,13 +340,13 @@ class PlayerController extends AbstractController
 
     /**
      * @Route("/help/{id}/{acceptHelp}/{relevanceHelp}", name="player_calcul_help", methods={"GET"})
-     * @param Player $playerAskRecevedHelp
+     * @param ?Player $playerAskRecevedHelp
      * @param int $acceptHelp
      * @param int $relevanceHelp
      * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    public function Help(Player $playerAskRecevedHelp, int $acceptHelp, int $relevanceHelp, EntityManagerInterface $entityManager)
+    public function Help(?Player $playerAskRecevedHelp, int $acceptHelp, int $relevanceHelp, EntityManagerInterface $entityManager)
     {
         $connectedPlayer = $this->getUser();
         $playerServices = new PlayerServices();

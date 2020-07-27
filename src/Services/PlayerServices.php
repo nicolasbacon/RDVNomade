@@ -315,7 +315,7 @@ class PlayerServices
         return null;
     }
 
-    public function calculHelp(Player $connectedPlayer, Player $playerAskRecevedHelp, int $acceptHelp, int $relevanceHelp, EntityManagerInterface $entityManager)
+    public function calculHelp(Player $connectedPlayer, ?Player $playerAskRecevedHelp, int $acceptHelp, int $relevanceHelp, EntityManagerInterface $entityManager)
     {
         $connectedPlayer->setNbrAskHelp($connectedPlayer->getNbrAskHelp() + 1);
         $entityManager->persist($connectedPlayer);
