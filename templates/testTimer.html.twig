@@ -4,7 +4,7 @@
             // Mise en place de la deadline en JavaScript
             var deadline = new Date({{ time.timestamp }} * 1000);
             var challenge = new Date(({{ time.timestamp }} - {{ challenge.timestamp }}) * 1000);
-            var boolAlert = false;
+            var boolAlert = {{ app.user.challenger | number_format}};
 
             // On créer la fonction d'interval de 1 seconde pour actualiser le compteur
             var x = setInterval(function () {
@@ -29,7 +29,8 @@
                 document.getElementById("timer").innerHTML = hours + "h "
                     + minutes + "m " + seconds + "s ";
                 // Challenge
-                if (distanceChallenge < 0 && distanceFinJeu > 0 && boolAlert === false) {
+                console.log(boolAlert);
+                if (distanceChallenge < 0 && distanceFinJeu > 0 && boolAlert == false) {
                     boolAlert = true
                     $('#challengeModal').modal({
                         show: true

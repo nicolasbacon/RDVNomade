@@ -222,9 +222,10 @@ class PlayerController extends AbstractController
      * @Route("/list", name="player_list_enigmas", methods={"GET"})
      * @param PlayerEnigmaRepository $playerEnigmaRepository
      * @param EntityManagerInterface $entityManager
+     * @param PlayerServices $playerServices
      * @return Response
      */
-    public function listEnigmas(PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $entityManager): Response
+    public function listEnigmas(PlayerEnigmaRepository $playerEnigmaRepository, EntityManagerInterface $entityManager, PlayerServices $playerServices): Response
     {
         $lastPage = null;
         $player = $this->getUser();
@@ -238,11 +239,8 @@ class PlayerController extends AbstractController
                 $playerServices = new PlayerServices();
                 $time = $playerServices->calculDeadLine($player, $entityManager);
             } // On recupere le deadline soit dans le joueur
-            else if ($player->getDeadLine() != null) {
-                $time = $player->getDeadLine();
-            } else if ($player->getTeam()->getDeadLine() != null) {
-                // Soit dans le groupe
-                $time = $player->getTeam()->getDeadLine();
+            else {
+                $time = $playerServices->recupererDeadLine($player);
             }
             // On recupere la liste des enigmes du player
             $listPlayerEnigma = $playerEnigmaRepository->findPlayerEnigmaAndEnigmaByPlayer($player);
@@ -338,7 +336,7 @@ class PlayerController extends AbstractController
 
     /**
      * @Route("/help/{id}/{acceptHelp}/{relevanceHelp}", name="player_calcul_help", methods={"GET"})
-     * @param ?Player $playerAskRecevedHelp
+     * @param Player|null $playerAskRecevedHelp
      * @param int $acceptHelp
      * @param int $relevanceHelp
      * @param EntityManagerInterface $entityManager
@@ -417,12 +415,18 @@ class PlayerController extends AbstractController
         $player = $this->getUser();
         $playerServices = new PlayerServices();
 
+        // Si c'est bien un Player
         if ($player instanceof Player) {
-            $playerServices->challenge($player, $em, $enigmaRepository);
+            $dateChallenge = $playerServices->recupererDateChallenge($player);
+            $dateNow = (new \DateTime())->add(new \DateInterval("PT2H"));
+            if ($dateNow < $dateChallenge) throw $this->createAccessDeniedException("Ce n'est pas le moment pour un challenge");
+            $enigma = $playerServices->challenge($player, $em, $enigmaRepository);
         } else {
             throw $this->createAccessDeniedException("Vous devez etre un joueur !");
         }
 
-        return $this->render('player/test.html.twig');
+        return $this->redirectToRoute('player_show_enigma', [
+            'id' => $enigma->getId(),
+        ]);
     }
 }

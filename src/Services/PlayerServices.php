@@ -11,6 +11,7 @@ use App\Repository\AdminRepository;
 use App\Repository\EnigmaRepository;
 use App\Repository\PlayerEnigmaRepository;
 use App\Repository\PlayerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use ErrorException;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
@@ -338,12 +339,19 @@ class PlayerServices
         $entityManager->flush();
     }
 
-    public function challenge(Player $connectedPlayer, EntityManagerInterface $em, EnigmaRepository $enigmaRepository) {
+    public function challenge(Player $connectedPlayer, EntityManagerInterface $em, EnigmaRepository $enigmaRepository): Enigma {
 
+        // On ajoute l'attribut challenger au joueur
+        $connectedPlayer->setChallenger(true);
+        $em->persist($connectedPlayer);
+        $em->flush();
+
+        // On recupere le groupe et la session
         $team = $connectedPlayer->getTeam();
         $session = $team->getSession();
 
-        // On instancie la liste qui contiendras
+        // On instancie la liste qui contiendras les enigmes
+        $listAllEnigma = new ArrayCollection();
 
         // Si c'est une session synchrone il faut regarder les enigmes non resolue par le groupe
         if ($session->getSynchrone()) {
@@ -351,9 +359,46 @@ class PlayerServices
             $listPlayer = $team->getListPlayer();
             // On parcour tous les joueurs
             foreach ($listPlayer as $player) {
+                // Sur chaque joueur on recupere un tableau des enigmes non reussi
                 $listEnigma = $enigmaRepository->findEnigmasNotSolved($player);
+                // On parcour chaqu'une des enigmes
+                foreach ($listEnigma as $enigma) {
+                    // Si elle ne sont pas presente dans le tableau final
+                    // alors on les ajoutent
+                    if (!$listAllEnigma->contains($enigma)) $listAllEnigma->add($enigma);
+                }
             }
-            die();
+            // Sinon si la sesion est asynchrone
+        } else {
+            // On recupere toutes les enigmes que le joueur n'as pas reussi
+            $listEnigma = $enigmaRepository->findEnigmasNotSolved($connectedPlayer);
+            // On parcour chaqu'une des enigmes
+            foreach ($listEnigma as $enigma) {
+                // Si elle ne sont pas presente dans le tableau final
+                // alors on les ajoutent
+                if (!$listAllEnigma->contains($enigma)) $listAllEnigma->add($enigma);
+            }
         }
+        return $listAllEnigma[0];
+    }
+
+    public function recupererDeadLine(Player $player): \DateTimeInterface
+    {
+        $time = null;
+        if ($player->getDeadLine() != null) {
+            // Soit dans le joueur
+            $time = $player->getDeadLine();
+        } else if ($player->getTeam()->getDeadLine() != null) {
+            // Soit dans le groupe
+            $time = $player->getTeam()->getDeadLine();
+        }
+        return $time;
+    }
+
+    public function recupererDateChallenge(Player $player): \DateTime
+    {
+        $timeChallenge = $player->getTeam()->getSession()->getTimeAlert();
+        $deadLine = $this->recupererDeadLine($player);
+        return (new \DateTime())->setTimestamp($deadLine->getTimestamp() - $timeChallenge->getTimestamp());
     }
 }
