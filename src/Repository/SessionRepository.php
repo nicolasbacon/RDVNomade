@@ -37,6 +37,16 @@ class SessionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findLast()
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $qb ->orderBy('s.id', 'ASC')
+            ->setMaxResults(1)
+        ;
+        return $qb->getQuery()->getResult();
+    }
+
     // /**
     //  * @return Session[] Returns an array of Session objects
     //  */

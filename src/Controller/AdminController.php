@@ -19,22 +19,16 @@ use App\Repository\AdminRepository;
 use App\Repository\AssetRepository;
 use App\Repository\EnigmaRepository;
 use App\Repository\PlayerEnigmaRepository;
-use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
 use App\Repository\SkillRepository;
+use App\Repository\UserRepository;
 use App\Services\AdminServices;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * @Route("/admin")
@@ -111,6 +105,9 @@ class AdminController extends AbstractController
 
     /**
      * @Route("/{id}", name="admin_delete", methods={"DELETE"})
+     * @param Request $request
+     * @param Admin $admin
+     * @return Response
      */
     public function delete(Request $request, Admin $admin): Response
     {
@@ -465,7 +462,7 @@ class AdminController extends AbstractController
         return $this->render('admin/attributionAtouts.html.twig', [
             'player' => $player,
             'personne' => $personne,
-            'listeAtouts' =>$player->getPlayerAssets(),
+            'listeAtouts' => $player->getPlayerAssets(),
         ]);
     }
 
@@ -501,6 +498,7 @@ class AdminController extends AbstractController
      * @Route("/validerDescription/{id}", name="validation_description_admin", methods={"POST"})
      * @param Player $player
      * @param PlayerEnigmaRepository $playerEnigmaRepository
+     * @return Response
      */
     public function validerDescription(Player $player, PlayerEnigmaRepository $playerEnigmaRepository)
     {
@@ -511,4 +509,46 @@ class AdminController extends AbstractController
         return $this->showPlayer($player, $playerEnigmaRepository);
     }
 
+    /**
+     * @Route("/deleteDerniereSession", name="delete_last_session")
+     * @param SessionRepository $sr
+     * @param UserRepository $ur
+     */
+    public function deleteDerniereSession(SessionRepository $sr, UserRepository $ur)
+    {
+        $AdminService = new AdminServices();
+        $entityManager = $this->getDoctrine()->getManager();
+        $reponse = $AdminService->deleteLastSession($entityManager, $sr, $ur);
+        switch ($reponse) {
+            case 1:
+                $this->addFlash('success', "Session Supprimée");
+                break;
+            case 0 :
+                $this->addFlash('danger', "Echec un problème est survenu");
+                break;
+        }
+        return $this->redirectToRoute('liste_session');
+    }
+
+
+    /**
+     * @Route("/deleteUneEnigme/{id}", name="delete_une_enigme", methods={"GET"})
+     * @param Enigma $enigme
+     */
+    public function deleteUneEnigme(Enigma $enigme)
+    {
+        $AdminService = new AdminServices();
+        $entityManager = $this->getDoctrine()->getManager();
+        $reponse = $AdminService->deleteEnigme($enigme, $entityManager);
+
+        switch ($reponse) {
+            case 1:
+                $this->addFlash("success", "L'énigme a bien été supprimée");
+                break;
+            case 0 :
+                $this->addFlash("danger", "Une erreur s'est produit");
+                break;
+        }
+        return $this->redirectToRoute('enigma_liste_admin');
+    }
 }
