@@ -15,6 +15,7 @@ use App\Repository\SessionRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\Filesystem\Filesystem;
 
 
 class AdminServices
@@ -262,7 +263,7 @@ class AdminServices
         return $player;
     }
 
-    public function deleteLastSession(ObjectManager $entityManager, SessionRepository $sr, UserRepository $ur)
+    public function deleteLastSession(ObjectManager $entityManager, SessionRepository $sr, UserRepository $ur, String $chemin)
     {
         $Listsession = $sr->findLast();
         foreach ($Listsession as $session) {
@@ -275,8 +276,9 @@ class AdminServices
                     foreach ($listePlayers as $player)
                     {
                         $idUser = $player->getIdUser();
+                        $filesystem = new Filesystem();
+                        $filesystem->remove($chemin.'/'.$player->getPhoto());
                         $entityManager->remove($ur->find($idUser));
-                        dump("oui");
                     }
                 }
                 $entityManager->remove($session);
