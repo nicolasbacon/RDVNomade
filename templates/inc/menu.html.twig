@@ -11,11 +11,11 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menu</h5>
             </div>
             <div class="modal-body">
-                <a class="btn btn-secondary" href="{{ path('logout_player') }}">Quitter</a>
+                <a class="btn btn-secondary btn-lg btn-block" href="{{ path('logout_player') }}">Quitter</a>
                 {% if team.session.synchrone == false %}
-                <a class="btn btn-secondary" href="{{ path('player_show_progress') }}">Voir ma progression</a>
+                <a class="btn btn-secondary btn-lg btn-block" href="{{ path('player_show_progress') }}">Voir ma progression</a>
                 {% endif %}
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Reprendre</button>
+                <button type="button" class="btn btn-secondary btn-lg btn-block" data-dismiss="modal">Reprendre</button>
             </div>
             <div class="modal-footer">
             </div>

@@ -65,8 +65,6 @@ class PlayerServices
 
     public function checkBeforShowEnigma(Player $player, PlayerEnigmaRepository $playerEnigmaRepository, Enigma $enigma, EntityManagerInterface $em)
     {
-        dump($this->isEndOfGame($player));
-        dump($player->getLastChance());
         if ($this->isEndOfGame($player) && !$player->getLastChance()) return new AccessDeniedException("Vous ne pouvez plus repondre à cette enigme !");
 
         // Soit on recupere la ligne de PlayerEnigma soit on recupere null si c'est pas son enigme
@@ -253,10 +251,22 @@ class PlayerServices
         $team = $player->getTeam();
         // Sur le groupe on recupere la liste des autres joueur qui ont reussi l'enigme
         $listOtherPlayer = $playerRepository->findSuccessfullPlayers($enigma, $team);
+        // Si la session est asynchrone on retire ceux qui ont leurs deadline de depasser
+        if (!$team->getSession()->getSynchrone()) {
+            $dateNow = (new \DateTime())->add(new \DateInterval("PT2H"));
+            foreach ($listOtherPlayer as $player) {
+                if ($player->getDeadLine() < $dateNow) {
+                    // array_search trouve la clef de la valeur corespondante
+                    // unset retire l'element du tableau a l'index donné
+                    unset($listOtherPlayer[array_search($player, $listOtherPlayer)]);
+                }
+            }
+        }
         $listAdmin = $adminRepository->findAll();
         foreach ($listAdmin as $admin) {
             $listOtherPlayer[] = $admin;
         }
+
         return $listOtherPlayer;
     }
 
