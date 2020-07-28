@@ -109,13 +109,16 @@
                 </div>
                 <div class="modal-body">
                     La personne vous a-t'elle aidé ?
-                    <button class="btn border" style="padding: 0 50px 0 0" onclick="increaseAcceptHelp()"
+                </div>
+                <div class="modal-footer justify-content-around" style="padding: 0 0 0 0">
+
+                    <button class="btn btn-secondary" onclick="sendRequest()" data-dismiss="modal">Non</button>
+
+                    <button class="btn border" onclick="increaseAcceptHelp()"
                             data-toggle="modal"
                             data-target="#relevanceHelpModal" data-dismiss="modal">Oui
                     </button>
-                    <button onclick="sendRequest()" data-dismiss="modal">Non</button>
-                </div>
-                <div class="modal-footer">
+
                 </div>
             </div>
         </div>
@@ -132,13 +135,15 @@
                 </div>
                 <div class="modal-body">
                     Sa réponse était elle pertinente ?
-                    <button class="btn border" style="padding: 0 50px 0 0" onclick="increaseRelevanceHelp()"
+                </div>
+                <div class="modal-footer justify-content-around">
+                    <button class="btn btn-secondary" onclick="sendRequest()" data-dismiss="modal">Non</button>
+
+                    <button class="btn border" onclick="increaseRelevanceHelp()"
                             data-toggle="modal"
                             data-dismiss="modal">Oui
                     </button>
-                    <button onclick="sendRequest()" data-dismiss="modal">Non</button>
-                </div>
-                <div class="modal-footer">
+
                 </div>
             </div>
         </div>
