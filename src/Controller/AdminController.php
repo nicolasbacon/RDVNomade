@@ -534,6 +534,7 @@ class AdminController extends AbstractController
     /**
      * @Route("/deleteUneEnigme/{id}", name="delete_une_enigme", methods={"GET"})
      * @param Enigma $enigme
+     * @return RedirectResponse
      */
     public function deleteUneEnigme(Enigma $enigme)
     {
@@ -550,5 +551,27 @@ class AdminController extends AbstractController
                 break;
         }
         return $this->redirectToRoute('enigma_liste_admin');
+    }
+
+    /**
+     * @Route("/deleteUneCompetence/{id}", name="delete_une_competence", methods={"GET"})
+     * @param Skill $skill
+     * @return RedirectResponse
+     */
+    public function deleteUneCompetence(Skill $skill)
+    {
+        $AdminService = new AdminServices();
+        $entityManager = $this->getDoctrine()->getManager();
+        $reponse = $AdminService->deleteCompetence($skill, $entityManager);
+
+        switch ($reponse) {
+            case 1:
+                $this->addFlash("success", "La Compétence a bien été supprimée");
+                break;
+            case 0 :
+                $this->addFlash("danger", "Une erreur s'est produit");
+                break;
+        }
+        return $this->redirectToRoute('competence_liste_admin');
     }
 }

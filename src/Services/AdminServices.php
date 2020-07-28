@@ -7,6 +7,7 @@ use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\PlayerAsset;
 use App\Entity\Session;
+use App\Entity\Skill;
 use App\Entity\Team;
 use App\Repository\AssetRepository;
 use App\Repository\PlayerEnigmaRepository;
@@ -294,6 +295,18 @@ class AdminServices
     {
         try {
             $entityManager->remove($enigme);
+            $entityManager->flush();
+            return 1;
+        }catch (\Exception $exception)
+        {
+            return 0;
+        }
+    }
+
+    public function deleteCompetence(Skill $skill, ObjectManager $entityManager)
+    {
+        try {
+            $entityManager->remove($skill);
             $entityManager->flush();
             return 1;
         }catch (\Exception $exception)
