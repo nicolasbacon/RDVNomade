@@ -18,10 +18,10 @@
     </div>
 
     <div class="row justify-content-center">
-        Tu gagnes un point de
+        Tu gagnes
         {% for skill in enigma.listSkill %}
-            {{ skill.name }}
-            {{ loop.last ? '.' : 'et de '}}
+            {{ skill.value }} point{% if skill.value > 1 %}s{% endif%} en
+            {{ skill.name }}{{ loop.last ? '.' : loop.index == loop.length-1 ? ' et' : ','}}
         {% endfor %}
     </div>
 {% endblock %}
