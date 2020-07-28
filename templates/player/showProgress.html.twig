@@ -3,8 +3,20 @@
 {% block title %}Player{% endblock %}
 
 {% block body %}
-    <canvas id="diagramSkill"></canvas>
-    <canvas id="diagramAsset"></canvas>
+    <div>
+        <h1>Voici le diagramme de vos compétences et atouts obtenus</h1>
+        <canvas id="diagramSkill"></canvas>
+        <canvas id="diagramAsset"></canvas>
+        <div class="row justify-content-center" style="margin-top: 50px">
+            <div>
+                <h3>Voici ce que les organisateurs ont pensés de toi :</h3>
+                <div class="row justify-content-center">
+                    {{ app.user.descByAdmin }}
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
@@ -68,7 +80,7 @@
                 datasets: [{
                     label: "Tableau d'atouts",
                     data: [
-                        {% for asset in player.playerAssets%}
+                        {% for asset in player.playerAssets %}
                         {% if asset.value != 0 %}
                         {{ asset.value }},
                         {% endif %}
@@ -81,7 +93,7 @@
                         'rgba(54, 162, 235, 1)',
                     ],
                     borderWidth: 1,
-                    pointBackgroundColor:'rgba(213, 39, 236, 0.5)'
+                    pointBackgroundColor: 'rgba(213, 39, 236, 0.5)'
                 },
                 ]
             },

@@ -32,6 +32,18 @@ class EnigmaRepository extends ServiceEntityRepository
             ;
     }
 
+    public function findEnigmasSolved($player)
+    {
+        return $this->createQueryBuilder('e')
+            ->join('e.playerEnigmas', 'pe')
+            ->where('pe.player = :player')
+            ->setParameter(':player', $player)
+            ->andWhere('pe.solved = 3')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     // /**
     //  * @return Enigma[] Returns an array of Enigma objects
     //  */

@@ -43,19 +43,26 @@
     </div>
 
     <!-- Modal Challenge-->
-    <div class="modal fade" id="challengeModal" tabindex="-1" role="dialog" aria-labelledby="challengeModalLabel" aria-hidden="true">
+    <div class="modal fade modal-xl" id="challengeModal" tabindex="-1" role="dialog"
+         aria-labelledby="challengeModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="challengeModalLabel">Challenge</h5>
                 </div>
                 <div class="modal-body">
-                    Il vous reste moin de {{ challenge.format('i:s') }} minutes avant la fin du jeux,
-                    voulez vous tester une enigme que vous n'avez pas encore résolue ?
+                    Il vous reste moin de {{ challenge.format('i:s') }} minutes avant la fin,
+                    voulez vous tester une enigme qui n'a pas encore été résolue ?
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
-                    <a href="{{ path('player_challenge') }}" class="btn border">Oui</a>
+                <div class="modal-footer" style="padding: 0 0 0 0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="width: auto">Non</button>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ path('player_challenge') }}" class="btn border" style="width: auto">Oui </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

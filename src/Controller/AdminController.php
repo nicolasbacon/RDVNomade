@@ -140,6 +140,7 @@ class AdminController extends AbstractController
         // Double création de formulaire, un qui récupère les éléments liés à la session
         // l'autre qui récupère les éléments liés à un groupe, en particulier le Temps de Jeu
         $session = new Session();
+        $session->setDateEndSession((new \DateTime)->add(new \DateInterval("PT2H")));
         $team = new Team();
 
         $form = $this->createForm(SessionType::class, $session);
