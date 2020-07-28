@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block meta %}
-<meta http-equiv="refresh" content="3;{{ path('player_list_enigmas') }}" />
+    <meta http-equiv="refresh" content="3;{{ path('player_list_enigmas') }}" />
 {% endblock %}
 
 {% block title %}Terminer{% endblock %}
@@ -10,11 +10,13 @@
     <div class="row align-items-center" style="height: 100vh;">
         <div class="col">
             <div class="row justify-content-center">
-                <h1>Le jeu est terminé</h1>
+                <div>
+                    <h1>Le jeu est terminé</h1>
 
-                Il vous reste une derniere chance de repondre a l'enigme que vous souhaitez,
-                reflechissez bien car apres celle ci tout est fini !
-                ;)
+                    Il vous reste une derniere chance de repondre a l'enigme que vous souhaitez,
+                    reflechissez bien car apres celle ci tout est fini !
+                    ;)
+                </div>
             </div>
         </div>
     </div>

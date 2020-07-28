@@ -331,6 +331,7 @@ class PlayerController extends AbstractController
             'enigma' => $enigma,
             'form' => $form->createView(),
             'listOtherPlayer' => $listOtherPlayer,
+            'team' => $player->getTeam(),
         ]);
     }
 
@@ -363,9 +364,7 @@ class PlayerController extends AbstractController
     public function showProgress(PlayerEnigmaRepository $playerEnigmaRepository)
     {
         $player = $this->getUser();
-        $listSkills = array();
         $playerServices = new PlayerServices();
-        $skillMax = new Skill();
 
         if ($player instanceof Player) {
             $listSkills = $playerServices->createTableSkill($player, $playerEnigmaRepository);
@@ -384,18 +383,22 @@ class PlayerController extends AbstractController
     /**
      * @Route("/terminated", name="player_terminated", methods={"GET"})
      * @param EntityManagerInterface $em
+     * @param EnigmaRepository $enigmaRepository
      * @return Response
      */
-    public function terminated(EntityManagerInterface $em)
+    public function terminated(EntityManagerInterface $em, EnigmaRepository $enigmaRepository)
     {
         $player = $this->getUser();
         $playerServices = new PlayerServices();
 
         if ($player instanceof Player) {
 
-            $resultEOG = $playerServices->EndOfGame($player, $this->get('session')->getFlashBag(), $em);
+            $resultEOG = $playerServices->EndOfGame($player, $this->get('session')->getFlashBag(), $em, $enigmaRepository);
 
-            if ($resultEOG === true) return $this->render('player/lastChance.html.twig');
+            if ($resultEOG === true) {
+
+                return $this->render('player/lastChance.html.twig');
+            }
             elseif ($resultEOG === false) return $this->render('player/terminated.html.twig');
             else return $this->redirectToRoute('player_list_enigmas');
 

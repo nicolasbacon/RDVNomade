@@ -65,6 +65,8 @@ class PlayerServices
 
     public function checkBeforShowEnigma(Player $player, PlayerEnigmaRepository $playerEnigmaRepository, Enigma $enigma, EntityManagerInterface $em)
     {
+        dump($this->isEndOfGame($player));
+        dump($player->getLastChance());
         if ($this->isEndOfGame($player) && !$player->getLastChance()) return new AccessDeniedException("Vous ne pouvez plus repondre à cette enigme !");
 
         // Soit on recupere la ligne de PlayerEnigma soit on recupere null si c'est pas son enigme
@@ -271,7 +273,7 @@ class PlayerServices
             } catch (\Exception $e) {
             }
         } else if ($object->getTeam()->getDeadLine() != null) {
-            if ($object->getDeadLine() < new \DateTime()) {
+            if ($object->getTeam()->getDeadLine() < $date) {
                 return true;
             } else return false;
         }
@@ -279,7 +281,7 @@ class PlayerServices
         return null;
     }
 
-    public function EndOfGame(Player $player, FlashBagInterface $flashBag, EntityManagerInterface $em)
+    public function EndOfGame(Player $player, FlashBagInterface $flashBag, EntityManagerInterface $em, EnigmaRepository $enigmaRepository)
     {
         switch ($this->isEndOfGame($player)) {
 
@@ -295,22 +297,26 @@ class PlayerServices
                         $em->flush();
                     }
                 }
-                // Si le lastChance du joueur est a true alors on renvoie true pour qu'il soit rediriger vers la page
-                // derniere chance
-                if ($player->getLastChance()) return true;
+                // On recupere toute les enigmes que le joueur n'a pas reussi
+                // pour savoir si on le redirige vers la page dernière chance
+                $listEnigmaNotSolved = new ArrayCollection($enigmaRepository->findEnigmasNotSolved($player));
+                // Si le lastChance du joueur est a true
+                // et que la liste des enigmes non reussi n'est pas vide
+                // alors on renvoie true pour qu'il soit rediriger vers la page derniere chance
+                if ($player->getLastChance() && !$listEnigmaNotSolved->isEmpty()) return true;
                 else return false;
                 break;
 
             // Si le temps du jeux du joueur n'est pas depasser
             case false :
                 // On redirige vers la liste des enigmes
-                $flashBag->add('error', "Votre temps de jeu n'est pas encore terminé");
+                $flashBag->add('danger', "Votre temps de jeu n'est pas encore terminé");
                 return null;
                 break;
 
             // Si la fonction isEndOfGame renvoie null c'est qu'il y a une erreur
             case null :
-                $flashBag->add('error', "Il y a une erreur avec votre session !");
+                $flashBag->add('danger', "Il y a une erreur avec votre session !");
                 return null;
                 break;
         }
@@ -357,29 +363,40 @@ class PlayerServices
         if ($session->getSynchrone()) {
             // On recupere les joueurs du groupe
             $listPlayer = $team->getListPlayer();
+            // On recupere ensuite la liste des enigmes que le joueur a reussi
+            $listEnigmaSolved = new ArrayCollection($enigmaRepository->findEnigmasSolved($connectedPlayer));
             // On parcour tous les joueurs
             foreach ($listPlayer as $player) {
                 // Sur chaque joueur on recupere un tableau des enigmes non reussi
-                $listEnigma = $enigmaRepository->findEnigmasNotSolved($player);
+                $listEnigmaNotSolved = $enigmaRepository->findEnigmasNotSolved($player);
                 // On parcour chaqu'une des enigmes
-                foreach ($listEnigma as $enigma) {
-                    // Si elle ne sont pas presente dans le tableau final
-                    // alors on les ajoutent
-                    if (!$listAllEnigma->contains($enigma)) $listAllEnigma->add($enigma);
+                foreach ($listEnigmaNotSolved as $enigma) {
+                    // Si le tableau des enigmes reussi par le joueur
+                    // et que le tableau final ne contient pas deja cette enigme
+                    // alors on l'ajoute dedans
+                    if (!$listEnigmaSolved->contains($enigma) && !$listAllEnigma->contains($enigma)) $listAllEnigma->add($enigma);
                 }
+            }
+            if ($listAllEnigma->isEmpty()) {
+                $listAllEnigma = $this->getEgnimaSolved($enigmaRepository,$connectedPlayer,$listAllEnigma);
             }
             // Sinon si la sesion est asynchrone
         } else {
-            // On recupere toutes les enigmes que le joueur n'as pas reussi
-            $listEnigma = $enigmaRepository->findEnigmasNotSolved($connectedPlayer);
-            // On parcour chaqu'une des enigmes
-            foreach ($listEnigma as $enigma) {
-                // Si elle ne sont pas presente dans le tableau final
-                // alors on les ajoutent
-                if (!$listAllEnigma->contains($enigma)) $listAllEnigma->add($enigma);
-            }
+            $listAllEnigma = $this->getEgnimaSolved($enigmaRepository,$connectedPlayer,$listAllEnigma);
         }
         return $listAllEnigma[0];
+    }
+
+    public function getEgnimaSolved(EnigmaRepository $enigmaRepository, Player $player, ArrayCollection $listAllEnigma): ArrayCollection {
+        // On recupere toutes les enigmes que le joueur n'as pas reussi
+        $listEnigma = $enigmaRepository->findEnigmasNotSolved($player);
+        // On parcour chaqu'une des enigmes
+        foreach ($listEnigma as $enigma) {
+            // Si elle ne sont pas presente dans le tableau final
+            // alors on les ajoutent
+            if (!$listAllEnigma->contains($enigma)) $listAllEnigma->add($enigma);
+        }
+        return $listAllEnigma;
     }
 
     public function recupererDeadLine(Player $player): \DateTimeInterface
