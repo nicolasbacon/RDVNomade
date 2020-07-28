@@ -518,7 +518,8 @@ class AdminController extends AbstractController
     {
         $AdminService = new AdminServices();
         $entityManager = $this->getDoctrine()->getManager();
-        $reponse = $AdminService->deleteLastSession($entityManager, $sr, $ur);
+        $chemin = $this->getParameter('image_directory');
+        $reponse = $AdminService->deleteLastSession($entityManager, $sr, $ur, $chemin);
         switch ($reponse) {
             case 1:
                 $this->addFlash('success', "Session Supprimée");
