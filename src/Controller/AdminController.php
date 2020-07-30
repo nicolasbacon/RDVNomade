@@ -144,14 +144,10 @@ class AdminController extends AbstractController
         $team = new Team();
 
         $form = $this->createForm(SessionType::class, $session);
-        $formTeam = $this->createForm(TeamType::class, $team);
-
         $form->handleRequest($request);
-        $formTeam->handleRequest($request);
 
         $nbrTeam = $request->get('nbrTeam');
 
-        $session->setEnable(false);
         $personne = $this->getUser();
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -163,7 +159,6 @@ class AdminController extends AbstractController
         return $this->render('admin/créerSession.html.twig', [
             'session' => $session,
             'form' => $form->createView(),
-            'formTeam' => $formTeam->createView(),
             'personne' => $personne,
         ]);
     }

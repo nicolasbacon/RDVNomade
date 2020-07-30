@@ -1,15 +1,56 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+    {{ form_label(form.name) }}
+    {{ form_widget(form.name) }}
 
-{{ form_start(formTeam) }}
-    {{ form_widget(formTeam) }}
+<div class="row">
+    <div class="col-4 justify-content-center align-items-center" style="display: flex">
+    {{ form_label(form.synchrone) }}
+    {{ form_widget(form.synchrone) }}
+    </div>
+    <div class="col-8  justify-content-center" >
+        <div class="row justify-content-center">
+            <div>
+            {{ form_label(form.dateEndSession) }}
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            {{ form_widget(form.dateEndSession) }}
+        </div>
+    </div>
+</div>
+    {{ form_label(form.listEnigma) }}
+    {{ form_widget(form.listEnigma) }}
 
+<div class="row" >
+    <div class="col-6 justify-content-center">
+        <div class="row justify-content-center">
+            <div>
+                {{ form_label(form.timeAlert) }}
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            {{ form_widget(form.timeAlert) }}
+        </div>
+    </div>
+    <div class="col-6 justify-content-center">
+        <div class="row justify-content-center">
+            <div>
+             {{ form_label(form.gameTime) }}
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            {{ form_widget(form.gameTime) }}
+        </div>
+    </div>
+</div>
+<br>
 
-<div class="form-example">
+<div class="form-example row justify-content-center align-content-center">
     <label for="nbrTeam">Nombre d'équipes : </label>
     <input type="number" name="nbrTeam" id="nbrTeam" required min="1" value="1">
 </div>
-
-    <button class="btn-success">{{ button_label|default('Sauvegarder') }}</button>
+<br>
+<div class="row justify-content-center">
+    <button class="btn btn-success">{{ button_label|default('Sauvegarder') }}</button>
+</div>
 {{ form_end(form) }}
-{{ form_end(formTeam) }}

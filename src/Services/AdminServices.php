@@ -71,6 +71,7 @@ class AdminServices
 
     public function creationSession(Session $session, ObjectManager $entityManager, int $nbrTeam, Team $team)
     {
+        $session->setEnable(false);
         $entityManager->persist($session);
 
         $scale = 1;
