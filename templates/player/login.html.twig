@@ -3,23 +3,26 @@
 {% block body %}
     <link rel="stylesheet" href="{{ asset ("css/appPlayer.css") }}">
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
+    <div class="row justify-content-center">
 
-    <form method="post">
-        <div class="row">
-            <label for="username">Pseudo : </label>
-            <input type="text" name="_username" id="username">
-            <input type="password" name="_password" id="password" value="123" hidden >
-        </div>
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
 
-        <div class="row">
-            <button class="btn border active" type="submit">Connexion</button>
-            <a class="btn border" href="{{ path('player_new') }}">S'inscrire</a>
-        </div>
-    </form>
+        <form method="post">
+            <div class="row">
+                <label for="username">Pseudo : </label>
+                <input type="text" name="_username" id="username">
+                <input type="password" name="_password" id="password" value="123" hidden>
+            </div>
 
+            <div class="row">
+                <button class="btn border active" type="submit">Connexion</button>
+                <a class="btn border" href="{{ path('player_new') }}">S'inscrire</a>
+            </div>
+        </form>
+
+    </div>
 
 {% endblock %}
 

@@ -10,7 +10,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Menu</h5>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding: 0.5rem">
                 <a class="btn btn-secondary btn-lg btn-block" href="{{ path('logout_player') }}">Quitter</a>
                 {% if team.session.synchrone == false %}
                 <a class="btn btn-secondary btn-lg btn-block" href="{{ path('player_show_progress') }}">Voir ma progression</a>
