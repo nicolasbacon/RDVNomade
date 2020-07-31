@@ -15,6 +15,7 @@
                 </div>
             </div>
         </div>
+        <button id="button_id">PDF</button>
     </div>
 
 
@@ -109,6 +110,14 @@
                     }
                 }
             }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#button_id").click(function() {
+                window.print();
+                return false;
+            });
         });
     </script>
 {% endblock %}
