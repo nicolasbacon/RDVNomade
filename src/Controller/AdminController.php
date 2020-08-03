@@ -134,6 +134,7 @@ class AdminController extends AbstractController
      * @Route("/sessionNew", name="session_new_admin", methods={"GET","POST"})
      * @param Request $request
      * @return Response
+     * @throws \Exception
      */
     public function newSession(Request $request): Response
     {
@@ -141,6 +142,8 @@ class AdminController extends AbstractController
         // l'autre qui récupère les éléments liés à un groupe, en particulier le Temps de Jeu
         $session = new Session();
         $session->setDateEndSession((new \DateTime)->add(new \DateInterval("PT2H")));
+        $session->setGameTime((new \DateTime())->setTimestamp(3600));
+        $session->setTimeAlert((new \DateTime())->setTimestamp(300));
         $team = new Team();
 
         $form = $this->createForm(SessionType::class, $session);
@@ -570,5 +573,27 @@ class AdminController extends AbstractController
                 break;
         }
         return $this->redirectToRoute('competence_liste_admin');
+    }
+
+    /**
+     * @Route("/deleteUnAtout/{id}", name="delete_un_atout", methods={"GET"})
+     * @param Asset $atout
+     * @return RedirectResponse
+     */
+    public function deleteUnAtout(Asset $atout)
+    {
+        $AdminService = new AdminServices();
+        $entityManager = $this->getDoctrine()->getManager();
+        $reponse = $AdminService->deleteAtout($atout, $entityManager);
+
+        switch ($reponse) {
+            case 1:
+                $this->addFlash("success", "L'Atout' a bien été supprimé");
+                break;
+            case 0 :
+                $this->addFlash("danger", "Une erreur s'est produit");
+                break;
+        }
+        return $this->redirectToRoute('asset_liste_admin');
     }
 }
