@@ -15,6 +15,8 @@ use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
 use App\Services\PlayerServices;
 use Doctrine\ORM\EntityManagerInterface;
+use Swift_Attachment;
+use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -398,8 +400,7 @@ class PlayerController extends AbstractController
             if ($resultEOG === true) {
 
                 return $this->render('player/lastChance.html.twig');
-            }
-            elseif ($resultEOG === false) return $this->render('player/terminated.html.twig');
+            } elseif ($resultEOG === false) return $this->render('player/terminated.html.twig');
             else return $this->redirectToRoute('player_list_enigmas');
 
         } else {
@@ -431,5 +432,24 @@ class PlayerController extends AbstractController
         return $this->redirectToRoute('player_show_enigma', [
             'id' => $enigma->getId(),
         ]);
+    }
+
+
+    /**
+     * @Route("/mailtoplayer/{id}", name="mail_to_player", methods={"GET"})
+     * @param Swift_Mailer $mailer
+     * @param Player $player
+     * @return Response
+     */
+    public function mailToPlayer(Swift_Mailer $mailer, Player $player)
+    {
+        $message = (new \Swift_Message('Hello Email'))
+            ->setFrom(['rdv.nomade.session@gmail.com' => 'Resultats RDV NOMADE'])
+            ->setTo($player->getMail())
+            ->setBody("Oui ici c'est le texte j'espere que ça marchera")//->attach(Swift_Attachment::fromPath('/path/to/a/file.zip'))
+        ;
+        $mailer->send($message);
+
+        return $this->redirectToRoute('login_player');
     }
 }

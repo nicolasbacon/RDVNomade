@@ -1,0 +1,15 @@
+# See https://symfony.com/doc/current/email/dev_environment.html
+swiftmailer:
+  spool: { type: 'memory' }
+  transport: gmail
+  host: smtp.gmail.com
+  port: 465
+  auth_mode: login
+  username: rdv.nomade.session@gmail.com
+  password: rdvnomade2020
+  encryption: ssl
+  stream_options:
+    ssl:
+      allow_self_signed: true
+      verify_peer: false
+      verify_peer_name: false

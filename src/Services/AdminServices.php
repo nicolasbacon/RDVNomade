@@ -317,4 +317,16 @@ class AdminServices
             return 0;
         }
     }
+
+    public function deleteAtout(\App\Entity\Asset $atout, ObjectManager $entityManager)
+    {
+        try {
+            $entityManager->remove($atout);
+            $entityManager->flush();
+            return 1;
+        }catch (\Exception $exception)
+        {
+            return 0;
+        }
+    }
 }

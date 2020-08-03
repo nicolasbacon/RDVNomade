@@ -15,13 +15,38 @@
         <thead>
         <tr>
             <th>Nom</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
         {% for asset in assets %}
             <tr>
                 <td>{{ asset.name }}</td>
+                <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal{{ asset.id }}">
+                        Supprimer
+                    </button></td>
             </tr>
+            <!-- Modal -->
+            <div class="modal fade" id="Modal{{ asset.id }}" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ModalLongTitle">Supprimer l'enigme : {{ asset.name }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer cet Atout ?<br>
+                            Cet atout ne pourra être récupéré, il faudra le recréer au besoin <br>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                            <a class="btn btn-danger" href="{{ path('delete_un_atout', {'id': asset.id}) }}">Supprimer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% else %}
             <tr>
                 <td colspan="4">Aucun Atout en base</td>

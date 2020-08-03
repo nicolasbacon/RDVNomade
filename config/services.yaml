@@ -5,7 +5,11 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     image_directory: '%kernel.project_dir%/public/uploads'
-
+    mailer_transport: 'smtp.gmail.com'
+    mailer_host: '465'
+    mailer_user: 'rdv.nomade.session@gmail.com'
+    mailer_password: 'rdvnomade2020'
+    mailer_encryption: 'tls'
 
 services:
     # default configuration for services in *this* file

@@ -1,10 +1,13 @@
-
 {% extends 'base.html.twig' %}
 
 {% block title %}Statistiques Joueur{% endblock %}
 
 {% block body %}
+
+    <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
+    <!-- jsPDF library -->
+    <script src="{{ asset('jsPDF-1.3.2/dist/jspdf.min.js') }}"></script>
     {% include "admin/navAdmin.html.twig" %}
     <div class="row justify-content-center">
         <h1>{{ player.pseudo }}</h1>
@@ -12,8 +15,10 @@
 
     <h2>
         <div class="row">
-            <a class="btn btn-warning col-6" href="{{ path('player_setAsset_joueur', {'id': player.id}) }}">Attribuer Atouts</a>
-            <button class="btn btn-warning col-6" type="button" data-toggle="collapse" data-target="#collapseAtouts" aria-expanded="false" aria-controls="collapseAtouts">
+            <a class="btn btn-warning col-6" href="{{ path('player_setAsset_joueur', {'id': player.id}) }}">Attribuer
+                Atouts</a>
+            <button class="btn btn-warning col-6" type="button" data-toggle="collapse" data-target="#collapseAtouts"
+                    aria-expanded="false" aria-controls="collapseAtouts">
                 Afficher Diagramme
             </button>
         </div>
@@ -22,19 +27,23 @@
         <div class="card card-body">
             <canvas id="diagramAsset"></canvas>
         </div>
+        <a class="btn btn-primary" onclick="htmlTopdf()">PDF</a>
     </div>
 
     <table class="table">
         <tr>
             <th>Photo</th>
-            <td><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="20%"></td>
+            <td><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil"
+                     width="20%"></td>
         </tr>
         <tr>
-            <th><a class="btn btn-info" href="{{ path('admin_set_description', {'id': player.id}) }}">Description de l'Administrateur</a>
+            <th><a class="btn btn-info" href="{{ path('admin_set_description', {'id': player.id}) }}">Description de
+                    l'Administrateur</a>
                 <div class="row justify-content-center">
                     <div>
                         {% if player.challenger %}
-                            <a><img src="{{ asset('uploads/admin/muscle.png') }}" width="4%"> Ce Joueur a le goût du risque !</a>
+                            <a><img src="{{ asset('uploads/admin/muscle.png') }}" width="4%"> Ce Joueur a le goût du
+                                risque !</a>
                         {% endif %}
                     </div>
                 </div>
@@ -43,14 +52,17 @@
         </tr>
         <tr>
             <th>Compétences</th>
-            <td>  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseCompetences" aria-expanded="false" aria-controls="collapseCompetences">
+            <td>
+                <button class="btn btn-primary" type="button" data-toggle="collapse"
+                        data-target="#collapseCompetences" aria-expanded="false"
+                        aria-controls="collapseCompetences">
                     Afficher
                 </button>
                 <div class="collapse" id="collapseCompetences">
                     <div class="card card-body">
                         {% for skill in playerSkills %}
                             <a>{{ skill.name }} : {{ skill.value }}
-                                {% for skillmax in skillsMax%}
+                                {% for skillmax in skillsMax %}
                                     {% if skillmax.id == skill.id %}
                                         / {{ skillmax.value }}
                                     {% endif %}
@@ -96,7 +108,10 @@
         </tr>
 
     </table>
-    <a class="btn btn-success col-12" href="{{ path('team_show_admin', {'id': player.team.id}) }}">Retour au Groupe</a>
+
+
+    <a class="btn btn-success col-12" href="{{ path('team_show_admin', {'id': player.team.id}) }}">Retour au
+        Groupe</a>
 
 
     <script>
@@ -108,16 +123,16 @@
                 labels: [
                     {% for asset in player.playerAssets %}
                     {% if asset.value != 0 %}
-                        "{{ asset.asset.name }}",
+                    "{{ asset.asset.name }}",
                     {% endif %}
                     {% endfor %}
                 ],
                 datasets: [{
                     label: "Tableau d'atouts",
                     data: [
-                        {% for asset in player.playerAssets%}
+                        {% for asset in player.playerAssets %}
                         {% if asset.value != 0 %}
-                            {{ asset.value }},
+                        {{ asset.value }},
                         {% endif %}
                         {% endfor %}
                     ],
@@ -128,7 +143,7 @@
                         'rgba(54, 162, 235, 1)',
                     ],
                     borderWidth: 1,
-                    pointBackgroundColor:'rgba(213, 39, 236, 0.5)'
+                    pointBackgroundColor: 'rgba(213, 39, 236, 0.5)'
                 },
                 ]
             },
@@ -145,6 +160,15 @@
                 }
             }
         });
+    </script>
+    <script>
+        function htmlTopdf() {
+            var canvas = document.getElementById("diagramAsset");
+            var dataURL = canvas.toDataURL("image/png");
+            var pdf = new jsPDF();
+            pdf.addImage(dataURL, 'png', -50, 30, 300, 150); //addImage(image, format, x-coordinate, y-coordinate, width, height)
+            pdf.save("download.pdf");
+        }
     </script>
 
 {% endblock %}
