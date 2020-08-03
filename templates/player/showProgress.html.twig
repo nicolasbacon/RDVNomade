@@ -19,6 +19,8 @@
     </div>
 
 
+    <script type="text/javascript" src="{{ asset('jsPDF-1.3.2/dist/jspdf.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('tableExport.jquery.plugin-master/html2canvas.js') }}"></script>
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
     <script>
@@ -46,7 +48,8 @@
                     borderColor: [
                         'rgba(54, 162, 235, 1)',
                     ],
-                    borderWidth: 2
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(213, 39, 236, 0.5)'
                 },
 
                 ]
@@ -113,11 +116,33 @@
         });
     </script>
     <script>
-        $(document).ready(function() {
-            $("#button_id").click(function() {
-                window.print();
-                return false;
-            });
+        $("#button_id").on('click', function () {
+            var diagrammeSkill = document.getElementById("diagramSkill");
+            var diagrammeAsset = document.getElementById("diagramAsset");
+            var imgDiagrammeSkill = diagrammeSkill.toDataURL("image/png");
+            var imgDiagrammeAsset = diagrammeAsset.toDataURL("image/png");
+            var pdf = new jsPDF();
+            pdf.addImage(imgDiagrammeSkill, 'png', -50, 30, 300, 150); //addImage(image, format, x-coordinate, y-coordinate, width, height)
+            pdf.addPage();
+            pdf.addImage(imgDiagrammeAsset, 'png', -50, 30, 300, 150); //addImage(image, format, x-coordinate, y-coordinate, width, height)
+
+            var pdfBASE64 = btoa(pdf.output());
+
+            var data = new FormData();
+            data.append('data', pdfBASE64);
+
+            let xmlhttp;
+            if (window.XMLHttpRequest) {
+                // code for modern browsers
+                xmlhttp = new XMLHttpRequest();
+            } else {
+                // code for old IE browsers
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+            xmlhttp.open("POST", '{{ path('player_pdf') }}', true);
+            xmlhttp.send(data);
+
         });
     </script>
 {% endblock %}
