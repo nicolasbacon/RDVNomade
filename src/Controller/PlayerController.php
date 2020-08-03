@@ -446,7 +446,8 @@ class PlayerController extends AbstractController
         $message = (new \Swift_Message('Hello Email'))
             ->setFrom(['rdv.nomade.session@gmail.com' => 'Resultats RDV NOMADE'])
             ->setTo($player->getMail())
-            ->setBody("Oui ici c'est le texte j'espere que ça marchera")//->attach(Swift_Attachment::fromPath('/path/to/a/file.zip'))
+            ->setBody("Oui ici c'est le texte j'espere que ça marchera")
+            ->attach(Swift_Attachment::fromPath($this->getParameter('image_directory').'/'.$player->getPhoto()))
         ;
         $mailer->send($message);
 
