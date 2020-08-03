@@ -128,10 +128,8 @@
             pdf.addPage();
             pdf.addImage(imgDiagrammeAsset, 'png', -50, 30, 300, 150); //addImage(image, format, x-coordinate, y-coordinate, width, height)
 
-            var pdfBASE64 = btoa(pdf.output());
-
             var data = new FormData();
-            data.append('data', pdfBASE64);
+            data.append('data', pdf);
 
             let xmlhttp;
             if (window.XMLHttpRequest) {
