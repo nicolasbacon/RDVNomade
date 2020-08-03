@@ -454,24 +454,6 @@ class PlayerController extends AbstractController
     }
 
     /**
-     * @Route("/mailtoplayer/{id}", name="mail_to_player", methods={"GET"})
-     * @param Swift_Mailer $mailer
-     * @param Player $player
-     * @return Response
-     */
-    public function mailToPlayer(Swift_Mailer $mailer, Player $player)
-    {
-        $message = (new \Swift_Message('Hello Email'))
-            ->setFrom(['rdv.nomade.session@gmail.com' => 'Resultats RDV NOMADE'])
-            ->setTo($player->getMail())
-            ->setBody("Oui ici c'est le texte j'espere que ça marchera")//->attach(Swift_Attachment::fromPath('/path/to/a/file.zip'))
-        ;
-        $mailer->send($message);
-
-        return $this->redirectToRoute('login_player');
-    }
-
-    /**
      * @Route("/PDF", name="player_pdf", methods={"POST"})
      */
     public function sendPDF()
