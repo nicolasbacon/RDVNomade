@@ -7,27 +7,39 @@
         <h1>Voici le diagramme de vos compétences et atouts obtenus</h1>
         <canvas id="diagramSkill"></canvas>
         <canvas id="diagramAsset"></canvas>
-        <div class="row justify-content-center" style="margin-top: 50px">
-            <div>
-                <h3>Voici ce que les organisateurs ont pensés de toi :</h3>
-                <div class="row justify-content-center">
+
+        <div class="row justify-content-md-center" style="margin-top: 50px">
+            <div class="row">
+                <div class="col-md-auto">
+                <h3>Voici ce que les organisateurs ont pensé de toi :</h3>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col col-2">
+
+                </div>
+                <div id="desc" class="col-8">
                     {{ app.user.descByAdmin }}
+                </div>
+                <div class="col col-2">
+
                 </div>
             </div>
         </div>
+
         <button id="button_id">PDF</button>
-        <a class="btn btn-danger" href="{{ path('mail_to_player', {'id': app.user.id}) }}" >MAIL LALALALALALA </a>
+        <a class="btn btn-danger" href="{{ path('mail_to_player', {'id': app.user.id}) }}">MAIL LALALALALALA </a>
     </div>
 
     <script type="text/javascript" src="{{ asset('jsPDF-1.3.2/dist/jspdf.debug.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('tableExport.jquery.plugin-master/html2canvas.js') }}"></script>
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('MDB-Free_4.19.1/js/mdb.min.js') }}"></script>
 
     <script>
         // Fix background black
         Chart.plugins.register({
-            beforeDraw: function(chartInstance) {
+            beforeDraw: function (chartInstance) {
                 var ctx = chartInstance.chart.ctx;
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
@@ -88,9 +100,9 @@
             data: {
                 labels: [
                     {% for asset in player.playerAssets %}
-                        {% if asset.value != 0 %}
-                        "{{ asset.asset.name | raw}}",
-                        {% endif %}
+                    {% if asset.value != 0 %}
+                    "{{ asset.asset.name | raw }}",
+                    {% endif %}
                     {% endfor %}
                 ],
                 datasets: [{
@@ -131,14 +143,18 @@
         $("#button_id").on('click', function () {
             var diagrammeSkill = document.getElementById("diagramSkill");
             var diagrammeAsset = document.getElementById("diagramAsset");
+            var textAdmin = document.getElementById("desc");
             var imgDiagrammeSkill = diagrammeSkill.toDataURL("image/jpeg", 0.5);
             var imgDiagrammeAsset = diagrammeAsset.toDataURL("image/jpeg", 0.5);
-            var pdf = new jsPDF('p','mm','a4');
+            var pdf = new jsPDF('p', 'mm', 'a4');
 
             pdf.addImage(imgDiagrammeSkill, 'JPEG', -50, 30, 300, 150); //addImage(image, format, x-coordinate, y-coordinate, width, height)
             pdf.addPage();
             pdf.addImage(imgDiagrammeAsset, 'JPEG', -50, 30, 300, 150); //addImage(image, format, x-coordinate, y-coordinate, width, height)
-
+            pdf.setFontSize(18);
+            pdf.text("Voici ce que les organisateurs ont pensé de toi :", 40, 210);
+            pdf.setFontSize(12);
+            pdf.text(textAdmin.innerText, 25, 220);
             var pdfBASE64 = btoa(pdf.output());
 
             var data = new FormData();
