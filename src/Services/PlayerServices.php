@@ -439,8 +439,8 @@ class PlayerServices
                 ->setFrom(['rdv.nomade.session@gmail.com' => 'Resultats RDV NOMADE'])
                 ->setTo($player->getMail())
                 ->setSubject("Résultats de votre parcours avec RDV Nomade")
-                ->setBody('')
-                ->attach(Swift_Attachment::fromPath($chemin.'/competence'.$player->getUsername()));
+                ->setBody('Ne répondez pas à ce mail.')
+                ->attach(Swift_Attachment::fromPath($chemin.'/competence'.$player->getUsername().'.pdf'));
 
             ;
             if($mailer->send($message))
