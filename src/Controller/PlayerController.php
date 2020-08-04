@@ -458,15 +458,14 @@ class PlayerController extends AbstractController
      */
     public function sendPDF()
     {
+        $user = $this->getUser();
         if(!empty($_POST['data'])){
             $data = base64_decode($_POST['data']);
-            //$data = $_POST['data'];
-            $name = "testPDF";
-            $fname = $name."_bell_quote.pdf"; // name the file
+            $name = "competence";
+            $fname = $name.$user->getUsername().".pdf"; // name the file
             $file = fopen($this->getParameter('image_directory')."/" .$fname, 'w'); // open the file path
             fwrite($file, $data); //save data
             fclose($file);
-            dump("Bell Quote saved");
         }
         else {
             throw new \Exception("No Data Sent");
