@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Controller\PlayerController;
 use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\PlayerEnigma;
@@ -14,6 +15,8 @@ use App\Repository\PlayerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use ErrorException;
+use mysql_xdevapi\Exception;
+use Swift_Attachment;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -427,5 +430,28 @@ class PlayerServices
         $timeChallenge = $player->getTeam()->getSession()->getTimeAlert();
         $deadLine = $this->recupererDeadLine($player);
         return (new \DateTime())->setTimestamp($deadLine->getTimestamp() - $timeChallenge->getTimestamp());
+    }
+
+    public function mailToPlayer(\Swift_Mailer $mailer, Player $player, String $chemin)
+    {
+        try {
+            $message = (new \Swift_Message('Hello Email'))
+                ->setFrom(['rdv.nomade.session@gmail.com' => 'Resultats RDV NOMADE'])
+                ->setTo($player->getMail())
+                ->setSubject("Résultats de votre parcours avec RDV Nomade")
+                ->setBody('')
+                ->attach(Swift_Attachment::fromPath($chemin.'/competence'.$player->getUsername()));
+
+            ;
+            if($mailer->send($message))
+                return true;
+            else
+                return false;
+        }catch(\Swift_SwiftException $se)
+        {
+            return false;
+        }
+
+
     }
 }

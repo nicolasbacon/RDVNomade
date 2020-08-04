@@ -439,18 +439,17 @@ class PlayerController extends AbstractController
      * @Route("/mailtoplayer/{id}", name="mail_to_player", methods={"GET"})
      * @param Swift_Mailer $mailer
      * @param Player $player
+     * @param PlayerEnigmaRepository $pe
      * @return Response
      */
     public function mailToPlayer(Swift_Mailer $mailer, Player $player)
     {
-        $message = (new \Swift_Message('Hello Email'))
-            ->setFrom(['rdv.nomade.session@gmail.com' => 'Resultats RDV NOMADE'])
-            ->setTo($player->getMail())
-            ->setBody("Oui ici c'est le texte j'espere que ça marchera")
-            ->attach(Swift_Attachment::fromPath($this->getParameter('image_directory').'/testPDF_bell_quote.pdf'))
-        ;
-        $mailer->send($message);
-
+        $playerService = new PlayerServices();
+        $chemin = $this->getParameter('image_directory');
+        if($playerService->mailToPlayer($mailer, $player, $chemin))
+            $this->addFlash('success', "Le mail a été envoyé");
+        else
+            $this->addFlash('danger', 'Echec Envoi, Vérifiez la Connexion');
         return $this->redirectToRoute('login_player');
     }
 
