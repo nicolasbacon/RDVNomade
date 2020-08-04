@@ -154,7 +154,8 @@
             pdf.setFontSize(18);
             pdf.text("Voici ce que les organisateurs ont pensé de toi :", 40, 210);
             pdf.setFontSize(12);
-            pdf.text(textAdmin.innerText, 25, 220);
+            var splitDesc = pdf.splitTextToSize(textAdmin.innerText, 160);
+            pdf.text(splitDesc, 25, 220);
             var pdfBASE64 = btoa(pdf.output());
 
             var data = new FormData();
