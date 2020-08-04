@@ -439,17 +439,17 @@ class PlayerController extends AbstractController
      * @Route("/mailtoplayer/{id}", name="mail_to_player", methods={"GET"})
      * @param Swift_Mailer $mailer
      * @param Player $player
+     * @param PlayerEnigmaRepository $pe
      * @return Response
      */
     public function mailToPlayer(Swift_Mailer $mailer, Player $player)
     {
-        $message = (new \Swift_Message('Hello Email'))
-            ->setFrom(['rdv.nomade.session@gmail.com' => 'Resultats RDV NOMADE'])
-            ->setTo($player->getMail())
-            ->setBody("Oui ici c'est le texte j'espere que ça marchera")//->attach(Swift_Attachment::fromPath('/path/to/a/file.zip'))
-        ;
-        $mailer->send($message);
-
+        $playerService = new PlayerServices();
+        $chemin = $this->getParameter('image_directory');
+        if($playerService->mailToPlayer($mailer, $player, $chemin))
+            $this->addFlash('success', "Le mail a été envoyé");
+        else
+            $this->addFlash('danger', 'Echec Envoi, Vérifiez la Connexion');
         return $this->redirectToRoute('login_player');
     }
 
@@ -458,14 +458,15 @@ class PlayerController extends AbstractController
      */
     public function sendPDF()
     {
-        $user = $this->getUser();
         if(!empty($_POST['data'])){
             $data = base64_decode($_POST['data']);
-            $name = "competence";
-            $fname = $name.$user->getUsername().".pdf"; // name the file
+            //$data = $_POST['data'];
+            $name = "testPDF";
+            $fname = $name."_bell_quote.pdf"; // name the file
             $file = fopen($this->getParameter('image_directory')."/" .$fname, 'w'); // open the file path
             fwrite($file, $data); //save data
             fclose($file);
+            dump("Bell Quote saved");
         }
         else {
             throw new \Exception("No Data Sent");

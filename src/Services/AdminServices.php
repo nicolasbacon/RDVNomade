@@ -279,6 +279,7 @@ class AdminServices
                         $idUser = $player->getIdUser();
                         $filesystem = new Filesystem();
                         $filesystem->remove($chemin.'/'.$player->getPhoto());
+                        $filesystem->remove($chemin.'/competence'.$player->getUsername());
                         $entityManager->remove($ur->find($idUser));
                     }
                 }
