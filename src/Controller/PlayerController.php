@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Enigma;
 use App\Entity\Player;
 use App\Entity\PlayerEnigma;
-use App\Entity\Skill;
 use App\Form\AnswerType;
 use App\Form\PlayerType;
 use App\Repository\AdminRepository;
@@ -15,7 +14,6 @@ use App\Repository\PlayerRepository;
 use App\Repository\SessionRepository;
 use App\Services\PlayerServices;
 use Doctrine\ORM\EntityManagerInterface;
-use Swift_Attachment;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -436,41 +434,25 @@ class PlayerController extends AbstractController
 
 
     /**
-     * @Route("/mailtoplayer/{id}", name="mail_to_player", methods={"GET"})
+     * @Route("/mailtoplayer", name="mail_to_player", methods={"POST"})
      * @param Swift_Mailer $mailer
-     * @param Player $player
-     * @param PlayerEnigmaRepository $pe
      * @return Response
      */
-    public function mailToPlayer(Swift_Mailer $mailer, Player $player)
-    {
-        $playerService = new PlayerServices();
-        $chemin = $this->getParameter('image_directory');
-        if($playerService->mailToPlayer($mailer, $player, $chemin))
-            $this->addFlash('success', "Le mail a été envoyé");
-        else
-            $this->addFlash('danger', 'Echec Envoi, Vérifiez la Connexion');
-        return $this->redirectToRoute('login_player');
-    }
-
-    /**
-     * @Route("/PDF", name="player_pdf", methods={"POST"})
-     */
-    public function sendPDF()
+    public function mailToPlayer(Swift_Mailer $mailer)
     {
         $user = $this->getUser();
-        if(!empty($_POST['data'])){
-            $data = base64_decode($_POST['data']);
-            $name = "competence";
-            $fname = $name.$user->getUsername().".pdf"; // name the file
-            $file = fopen($this->getParameter('image_directory')."/" .$fname, 'w'); // open the file path
-            fwrite($file, $data); //save data
-            fclose($file);
-        }
-        else {
-            throw new \Exception("No Data Sent");
-        }
+        $playerService = new PlayerServices();
+        $chemin = $this->getParameter('image_directory');
 
-        return new Response();
+        if ($user instanceof Player) {
+            $playerService->createPDF($user, $chemin);
+            if($playerService->mailToPlayer($mailer, $user, $chemin))
+                $this->addFlash('success', "Le mail a été envoyé");
+            else
+                $this->addFlash('danger', 'Echec Envoi, Vérifiez la Connexion');
+        } else {
+            throw $this->createAccessDeniedException("Vous devez etre un joueur !");
+        }
+        return $this->redirectToRoute('login_player');
     }
 }

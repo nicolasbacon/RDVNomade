@@ -451,7 +451,19 @@ class PlayerServices
         {
             return false;
         }
+    }
 
-
+    public function createPDF(Player $user, String $filePath) {
+        if(!empty($_POST['data'])){
+            $data = base64_decode($_POST['data']);
+            $name = "competence";
+            $fname = $name.$user->getUsername().".pdf"; // name the file
+            $file = fopen($filePath."/" .$fname, 'w'); // open the file path
+            fwrite($file, $data); //save data
+            fclose($file);
+        }
+        else {
+            throw new \Exception("No Data Sent");
+        }
     }
 }
