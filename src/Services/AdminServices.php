@@ -279,7 +279,7 @@ class AdminServices
                         $idUser = $player->getIdUser();
                         $filesystem = new Filesystem();
                         $filesystem->remove($chemin.'/'.$player->getPhoto());
-                        $filesystem->remove($chemin.'/competence'.$player->getUsername());
+                        $filesystem->remove($chemin.'/competence'.$player->getUsername().'.pdf');
                         $entityManager->remove($ur->find($idUser));
                     }
                 }
