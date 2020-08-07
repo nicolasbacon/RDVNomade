@@ -27,7 +27,6 @@
         <div class="card card-body">
             <canvas id="diagramAsset"></canvas>
         </div>
-        <a class="btn btn-primary" onclick="htmlTopdf()">PDF</a>
     </div>
 
     <table class="table">
@@ -161,14 +160,4 @@
             }
         });
     </script>
-    <script>
-        function htmlTopdf() {
-            var canvas = document.getElementById("diagramAsset");
-            var dataURL = canvas.toDataURL("image/png");
-            var pdf = new jsPDF();
-            pdf.addImage(dataURL, 'png', -50, 30, 300, 150); //addImage(image, format, x-coordinate, y-coordinate, width, height)
-            pdf.save("download.pdf");
-        }
-    </script>
-
 {% endblock %}

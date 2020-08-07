@@ -20,7 +20,7 @@
         {% for atout in listeAtouts %}
             <tr>
                 <td>{{ atout.asset.name }}</td>
-                <td><input type="number" id="atout{{ atout.id }}" name="atout{{ atout.id }}" value="{{ atout.value }}"></td>
+                <td><input type="number" id="atout{{ atout.id }}" name="atout{{ atout.id }}" value="{{ atout.value }}" min="0"></td>
             </tr>
         {% else %}
             <tr>

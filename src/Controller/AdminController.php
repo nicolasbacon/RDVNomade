@@ -191,9 +191,11 @@ class AdminController extends AbstractController
         $personne = $this->getUser();
         //On prend la liste qui est dans la session pour avoir tous les groupes
         $groupes = $session->getListTeam();
+        $enigmes = $session->getListEnigma();
         return $this->render('admin/showSession.html.twig', [
             'session' => $session,
             'groupes' => $groupes,
+            'enigmes' => $enigmes,
             'personne' => $personne,
         ]);
     }
