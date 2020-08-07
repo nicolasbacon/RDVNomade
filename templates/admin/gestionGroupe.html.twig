@@ -12,23 +12,27 @@
             <th>Numéro du groupe</th>
             <th>Ouvert</th>
             <th>Jeu Commencé</th>
+            <th>Chrono</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>{{ team.number }}</td>
-                <td>{{ team.enable ? 'Oui' : 'Non' }}</td>
-                <td>{{ team.beginGame ? 'Oui' : 'Non' }}</td>
-                <td>
-                    {% if team.enable == false %}
-                        <a class="btn btn-outline-success" href="{{ path('admin_active_team', {'id': team.id}) }}">Ouvrir Groupe</a>
-                    {% endif %}
-                    {% if team.beginGame == false %}
-                        <a class="btn btn-outline-success" href="{{ path('admin_letsplay_team', {'id': team.id}) }}">Commencer le Jeu</a>
-                    {% endif %}
-                </td>
-            </tr>
+        <tr>
+            <td>{{ team.number }}</td>
+            <td>{{ team.enable ? 'Oui' : 'Non' }}</td>
+            <td>{{ team.beginGame ? 'Oui' : 'Non' }}</td>
+            <td><span id="timer"></span></td>
+            <td>
+                {% if team.enable == false %}
+                    <a class="btn btn-outline-success" href="{{ path('admin_active_team', {'id': team.id}) }}">Ouvrir
+                        Groupe</a>
+                {% endif %}
+                {% if team.beginGame == false %}
+                    <a class="btn btn-outline-success" href="{{ path('admin_letsplay_team', {'id': team.id}) }}">Commencer
+                        le Jeu</a>
+                {% endif %}
+            </td>
+        </tr>
         </tbody>
     </table>
 
@@ -55,12 +59,14 @@
         {% for player in players %}
             <tr>
 
-                <td style="width:20%"><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}" alt="Photo profil" width="100%"></td>
+                <td style="width:20%"><img class="photoProfil" src="{{ asset('uploads/' ~ player.photo) }}"
+                                           alt="Photo profil" width="100%"></td>
                 <td style="width:10%">{{ player.pseudo }}</td>
                 <td style="width:20%">{{ player.mail }}</td>
                 <td style="width:40%">{{ player.descByAdmin }}</td>
                 <td style="width:10%">
-                    <a class="btn btn-primary" href="{{ path('player_show_admin', {'id': player.id}) }}">Afficher Joueur</a>
+                    <a class="btn btn-primary" href="{{ path('player_show_admin', {'id': player.id}) }}">Afficher
+                        Joueur</a>
                 </td>
             </tr>
         {% else %}
@@ -70,4 +76,8 @@
         {% endfor %}
         </tbody>
     </table>
+    {% if team.deadLine is not null %}
+        {% include 'timer.html.twig' %}
+    {% endif %}
+
 {% endblock %}
