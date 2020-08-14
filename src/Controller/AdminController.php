@@ -157,6 +157,7 @@ class AdminController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $AdminService = new AdminServices();
             $AdminService->creationSession($session, $entityManager, $nbrTeam, $team);
+            $this->addFlash("success", "Session Créée");
             return $this->redirectToRoute('gestion_session', ['personne' => $personne,]);
         }
         return $this->render('admin/créerSession.html.twig', [
@@ -427,11 +428,16 @@ class AdminController extends AbstractController
     {
         //Grace
         $personne = $this->getUser();
+        //Appel de l'admin service dont les fonctions nous servirons ci-dessous
         $AdminService = new AdminServices();
 
+        //La fonction creerStatistiques permet de recevoir les statistiques
+        //en fonction du player envoyé
         $statistiques = $AdminService->creerStatistiques($player);
+        //La fonction creerTaux, renvoie une liste de taux en fonction des statistiques
         $taux = $AdminService->creerTaux($statistiques);
-
+        //La fonction creerListeCompetence renvoie un tableau de deux listes qui sont
+        //remises dans la variable correspondante.
         $listes = $AdminService->creerListeCompetence($player, $playerEnigmaRepository);
         $listePlayerSkill = $listes[0];
         $listeSkillMax = $listes[1];

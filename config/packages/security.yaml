@@ -11,9 +11,6 @@ security:
                 property: pseudo
 
     firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
 
         admin:
             provider: prodiver_admin
@@ -56,6 +53,6 @@ security:
             - { path: '^/admin/login$', roles: IS_AUTHENTICATED_ANONYMOUSLY }
             - { path: '^/player/login$', roles: IS_AUTHENTICATED_ANONYMOUSLY }
             - { path: '^/player/new$', roles: IS_AUTHENTICATED_ANONYMOUSLY }
-            - { path: '^/admin/new$', roles: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: '^/admin/new$', roles: ROLE_ADMIN }
             - { path: '^/admin', roles: ROLE_ADMIN }
             - { path: '^/player', roles: ROLE_PLAYER }

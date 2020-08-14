@@ -85,12 +85,12 @@
 
         <tr>
             <th>Taux de fiabilité (Bonne réponses/Essais)</th>
-            <td>{{ taux.get("rFiabilite") }}%</td>
+            <td>{{ taux.get("rFiabilite")|number_format(2, '.', ',') }}%</td>
         </tr>
 
         <tr>
             <th>Taux d'Efficacité</th>
-            <td>{{ taux.get("rEfficacite") }}%</td>
+            <td>{{ taux.get("rEfficacite")|number_format(2, '.', ',') }}%</td>
         </tr>
 
         <tr>
