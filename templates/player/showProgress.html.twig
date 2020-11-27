@@ -156,19 +156,19 @@
             var imgDiagrammeAsset = diagrammeAsset.toDataURL("image/jpeg", 0.5);
             var pdf = new jsPDF('p', 'mm', 'a4');
 
-            pdf.addImage(imgDiagrammeSkill, 'JPEG', -50, 30, 300, 150); //addImage(image, format, x-coordinate, y-coordinate, width, height)
+            //addImage(image, format, x-coordinate, y-coordinate, width, height)
+            pdf.addImage(imgDiagrammeSkill, 'JPEG', -50, 30, 300, 150);
             pdf.addPage();
-            pdf.addImage(imgDiagrammeAsset, 'JPEG', -50, 30, 300, 150); //addImage(image, format, x-coordinate, y-coordinate, width, height)
+            pdf.addImage(imgDiagrammeAsset, 'JPEG', -50, 30, 300, 150);
             pdf.setFontSize(18);
             pdf.text("Voici ce que les organisateurs ont pensé de toi :", 40, 210);
             pdf.setFontSize(12);
             var splitDesc = pdf.splitTextToSize(textAdmin.innerText, 160);
             pdf.text(splitDesc, 25, 220);
-            var pdfBASE64 = btoa(pdf.output());
 
+            var pdfBASE64 = btoa(pdf.output());
             var data = new FormData();
             data.append('data', pdfBASE64);
-
             let xmlhttp;
             if (window.XMLHttpRequest) {
                 // code for modern browsers

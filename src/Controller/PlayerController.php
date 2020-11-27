@@ -269,7 +269,8 @@ class PlayerController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    public function showEnigma(Request $request, Enigma $enigma, PlayerEnigmaRepository $playerEnigmaRepository, PlayerRepository $playerRepository, AdminRepository $adminRepository, EntityManagerInterface $em): Response
+    public function showEnigma(Request $request, Enigma $enigma, PlayerEnigmaRepository $playerEnigmaRepository,
+                               PlayerRepository $playerRepository, AdminRepository $adminRepository, EntityManagerInterface $em): Response
     {
         $playerServices = new PlayerServices();
 
@@ -292,16 +293,17 @@ class PlayerController extends AbstractController
 
         } else throw $this->createAccessDeniedException("Vous devez etre un joueur !");
 
-
+        // On instancie le formulaire
         $form = $this->createForm(AnswerType::class);
+        // On l'hydrate avec la requete qui contient la reponse soumise
+        // si le formulaire a ete soumis
         $form->handleRequest($request);
 
-        // Traitement du formulaire de reponses
+        // Si le formulaire a été soumis
         if ($form->isSubmitted() && $form->isValid()) {
             // On recupere la reponse donnée
             $answer = $form->get('answer')->getData();
             // On verifie si c'est la bonne reponse
-
             switch ($playerServices->checkAnswer($player, $enigma, $answer, $em, $playerEnigmaRepository)) {
 
                 case 1 :

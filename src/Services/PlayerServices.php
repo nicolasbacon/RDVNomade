@@ -96,7 +96,6 @@ class PlayerServices
     {
         // On recupere le user et son enigme
         $playerEnigma = $playerEnigmaRepository->findOneBy(['player' => $player, 'enigma' => $enigma]);
-
         // Si le joueur est bien une instance de Player
         if ($playerEnigma instanceof PlayerEnigma) {
             // On incremente le nombre de tentative
@@ -108,28 +107,27 @@ class PlayerServices
                 $em->flush();
             }
         }
-
-        // On initialse le nombre de bon charactere a 0
+        // On initialse le nombre de bon caractere a 0
         $goodChara = 0;
-
         try {
-            // On parcour chaque charactere de la reponse données par l'utilisateur
+            // On parcour chaque caractere de la reponse donnée par l'utilisateur
             for ($i = 0; $i < strlen($answer); $i++) {
-                // Si le charactere de la bonne reponse corespond au charactere données un incremente goodChara de 1
+                // Si le caractere de la bonne reponse corespond au charactere donnée on incremente goodChara
                 if ($enigma->getAnswer()[$i] == $answer[$i]) $goodChara += 1;
             }
         } catch (ErrorException $e) {
+            // Si une erreur est generer c'est que la reponse du joueur est plus grande que la bonne reponse
+            // On retourne donc 1 car il n'as forcement pas bon
             return 1;
         }
-
         $average = ($goodChara / strlen($enigma->getAnswer())) * 100;
-
         switch (true) {
 
             case ($average == 100) :
                 $playerEnigma->setSolved(3);
                 $em->persist($playerEnigma);
                 $em->flush();
+                // On retourne 3 si il a bon
                 return 3;
                 break;
 
@@ -137,10 +135,12 @@ class PlayerServices
                 $playerEnigma->setSolved(2);
                 $em->persist($playerEnigma);
                 $em->flush();
+                // On retourne 2 si il a presque bon
                 return 2;
                 break;
 
             default :
+                // On retourne 1 si il n'as pas bon du tout
                 return 1;
                 break;
         }
